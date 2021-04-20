@@ -1,4 +1,8 @@
+using System;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 
 namespace Playlister
@@ -7,13 +11,30 @@ namespace Playlister
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            CreateWebHostBuilder(args).Build().Run();
         }
 
-        private static IHostBuilder CreateHostBuilder(string[] args)
+        // ReSharper disable once MemberCanBePrivate.Global
+        internal static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args)
+                .UseKestrel(LogDevelopmentConfiguration)
+                .UseStartup<Startup>();
+
+        private static void LogDevelopmentConfiguration(WebHostBuilderContext context, KestrelServerOptions options)
         {
-            return Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
+            if (context.HostingEnvironment.IsDevelopment())
+            {
+                ShowConfig(context.Configuration);
+            }
+        }
+
+        private static void ShowConfig(IConfiguration configuration)
+        {
+            foreach (IConfigurationSection pair in configuration.GetChildren())
+            {
+                Console.WriteLine($"{pair.Path} - {pair.Value}");
+                ShowConfig(pair);
+            }
         }
     }
 }

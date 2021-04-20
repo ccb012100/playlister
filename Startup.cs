@@ -9,7 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.HttpClients;
-using Refit;
+
+// ReSharper disable TemplateIsNotCompileTimeConstantProblem
 
 namespace Playlister
 {
@@ -20,7 +21,6 @@ namespace Playlister
             Configuration = configuration;
         }
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         private IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -45,9 +45,7 @@ namespace Playlister
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
-                    .UseSwagger()
-                    .UseSwaggerUI(c =>
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister v1"));
+                    .UseSwagger().UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister v1"));
             }
 
             app.UseHttpsRedirection().UseRouting().UseAuthorization()
@@ -56,11 +54,17 @@ namespace Playlister
                     if (env.IsDevelopment())
                     {
                         // view app settings at ~/debug
-                        endpoints.MapGet("/debug", ctx =>
-                        {
-                            string config = (Configuration as IConfigurationRoot).GetDebugView();
-                            return ctx.Response.WriteAsync(config);
-                        });
+                        endpoints.MapGet("/debug",
+                            async context =>
+                            {
+                                string config = (Configuration as IConfigurationRoot).GetDebugView();
+                                await context.Response.WriteAsync(config);
+                            });
+                        endpoints.MapGet("/",
+                            async context =>
+                            {
+                                await context.Response.WriteAsync($"{GetType().Namespace} - {DateTime.Now}");
+                            });
                     }
 
                     endpoints.MapControllers();
