@@ -54,18 +54,15 @@ namespace Playlister
                     if (env.IsDevelopment())
                     {
                         // view app settings at ~/debug
-                        endpoints.MapGet("/debug",
-                            async context =>
-                            {
-                                string config = (Configuration as IConfigurationRoot).GetDebugView();
-                                await context.Response.WriteAsync(config);
-                            });
-                        endpoints.MapGet("/",
-                            async context =>
-                            {
-                                await context.Response.WriteAsync($"{GetType().Namespace} - {DateTime.Now}");
-                            });
+                        endpoints.MapGet("/debug", async context
+                            => await context.Response.WriteAsync((Configuration as IConfigurationRoot).GetDebugView()));
+                        endpoints.MapGet("/", async context
+                            => await context.Response.WriteAsync($"{GetType().Namespace}\n{DateTime.Now}")
+                        );
                     }
+
+                    endpoints.MapGet("/info", async context
+                        => await context.Response.WriteAsJsonAsync(new AppInfo()));
 
                     endpoints.MapControllers();
                 });
