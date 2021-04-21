@@ -29,7 +29,7 @@ namespace Playlister
             services
                 .AddMediatR(typeof(Startup))
                 .AddConfigOptions(Configuration)
-                .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
+                .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
                 .AddHttpClients(Configuration)
                 .AddScoped<ISpotifyApi>(_ => new SpotifyApi(Configuration.Get<SpotifyOptions>().ApiBaseUrl))
                 .AddScoped<ISpotifyAuthorizationApi>(_ =>
@@ -45,7 +45,7 @@ namespace Playlister
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
-                    .UseSwagger().UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister v1"));
+                    .UseSwagger().UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister.Api v1"));
             }
 
             app.UseHttpsRedirection().UseRouting().UseAuthorization()

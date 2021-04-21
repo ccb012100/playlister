@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
     <UserSecretsId>bbcd9d14-59ef-4b54-87c8-107365b06f67</UserSecretsId>
+    <RootNamespace>Playlister</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -18,16 +19,33 @@
 
   <ItemGroup>
     <Content Remove="appsettings.Development.json" />
+    <Content Remove="out\**" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Folder.DotSettings" />
+    <None Remove="out\**" />
   </ItemGroup>
 
   <ItemGroup>
     <Folder Include="Commands" />
     <Folder Include="RequestHandlers" />
     <Folder Include="Services" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="out\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Remove="out\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="out\web.config" />
+    <_ContentIncludedByDefault Remove="out\appsettings.json" />
+    <_ContentIncludedByDefault Remove="out\Playlister.deps.json" />
+    <_ContentIncludedByDefault Remove="out\Playlister.runtimeconfig.json" />
   </ItemGroup>
 
 </Project>
