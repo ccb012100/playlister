@@ -4,44 +4,45 @@
         <TargetFramework>net5.0</TargetFramework>
         <UserSecretsId>bbcd9d14-59ef-4b54-87c8-107365b06f67</UserSecretsId>
         <RootNamespace>Playlister</RootNamespace>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="AutoMapper" Version="10.1.1"/>
-        <PackageReference Include="FluentValidator" Version="2.0.4"/>
-        <PackageReference Include="Mediatr" Version="9.0.0"/>
-        <PackageReference Include="Mediatr.Extensions.Microsoft.DependencyInjection" Version="9.0.0"/>
-        <PackageReference Include="Polly" Version="7.2.2"/>
-        <PackageReference Include="Refit" Version="6.0.38"/>
-        <PackageReference Include="Refit.HttpClientFactory" Version="6.0.38"/>
-        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+        <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="FluentValidator" Version="2.0.4" />
+        <PackageReference Include="Mediatr" Version="9.0.0" />
+        <PackageReference Include="Mediatr.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Polly" Version="7.2.2" />
+        <PackageReference Include="Refit" Version="6.0.38" />
+        <PackageReference Include="Refit.HttpClientFactory" Version="6.0.38" />
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove="appsettings.Development.json"/>
-        <Content Remove="out\**"/>
-        <None Remove="Folder.DotSettings"/>
+        <Content Remove="appsettings.Development.json" />
+        <Content Remove="out\**" />
+        <None Remove="Folder.DotSettings" />
     </ItemGroup>
 
     <ItemGroup>
-        <Folder Include="Commands"/>
-        <Folder Include="RequestHandlers"/>
-        <Folder Include="Services"/>
+        <Folder Include="Commands" />
+        <Folder Include="RequestHandlers" />
+        <Folder Include="Services" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="out\**"/>
+        <Compile Remove="out\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="out\**"/>
+        <EmbeddedResource Remove="out\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <_ContentIncludedByDefault Remove="out\web.config"/>
-        <_ContentIncludedByDefault Remove="out\appsettings.json"/>
-        <_ContentIncludedByDefault Remove="out\Playlister.deps.json"/>
-        <_ContentIncludedByDefault Remove="out\Playlister.runtimeconfig.json"/>
+        <_ContentIncludedByDefault Remove="out\web.config" />
+        <_ContentIncludedByDefault Remove="out\appsettings.json" />
+        <_ContentIncludedByDefault Remove="out\Playlister.deps.json" />
+        <_ContentIncludedByDefault Remove="out\Playlister.runtimeconfig.json" />
     </ItemGroup>
 
 </Project>
