@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.HttpClients;
+using Playlister.Services;
 
 namespace Playlister
 {
@@ -32,6 +33,7 @@ namespace Playlister
                 .AddScoped<ISpotifyApi>(_ => new SpotifyApi(Configuration.Get<SpotifyOptions>().ApiBaseUrl))
                 .AddScoped<ISpotifyAuthorizationApi>(_ =>
                     new SpotifyAuthorizationApi(Configuration.Get<SpotifyOptions>().ClientId))
+                .AddScoped<ISpotifyAuthorizationService, SpotifyAuthorizationService>()
                 .AddControllers();
         }
 

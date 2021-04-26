@@ -27,7 +27,6 @@
     <ItemGroup>
         <Folder Include="Commands" />
         <Folder Include="RequestHandlers" />
-        <Folder Include="Services" />
     </ItemGroup>
 
     <ItemGroup>
