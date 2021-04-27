@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
 
 namespace Playlister.Services
@@ -9,10 +10,10 @@ namespace Playlister.Services
         private readonly ISpotifyAccountsApi _accountsApi;
         private readonly string _clientId;
 
-        public SpotifyAccountsService(ISpotifyAccountsApi authApi, string clientId)
+        public SpotifyAccountsService(ISpotifyAccountsApi authApi, IOptions<SpotifyOptions> spotifyOptions)
         {
             _accountsApi = authApi;
-            _clientId = clientId;
+            _clientId = spotifyOptions.Value.ClientId;
         }
 
         public async Task<object> Authorize()

@@ -30,10 +30,7 @@ namespace Playlister
                 .AddConfigOptions(Configuration)
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
                 .AddHttpClients(Configuration)
-                .AddScoped<ISpotifyAccountsService>(provider =>
-                    new SpotifyAccountsService(
-                        provider.GetRequiredService<ISpotifyAccountsApi>(),
-                        Configuration.Get<SpotifyOptions>().ClientId))
+                .AddScoped<ISpotifyAccountsService, SpotifyAccountsService>()
                 .AddControllers();
         }
 
