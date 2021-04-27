@@ -11,6 +11,6 @@ namespace Playlister
 
         public string ClientId { get; } = null!;
         public Uri ApiBaseUrl { get; } = null!;
-        public Uri AuthorizationUrl { get; } = null!;
+        public Uri AccountsUrl { get; } = null!;
     }
 }

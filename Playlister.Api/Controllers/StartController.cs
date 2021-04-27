@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Services;
@@ -9,17 +8,19 @@ namespace Playlister.Controllers
     [Route("api/[controller]")]
     public class StartController : Controller
     {
-        private readonly ISpotifyAuthorizationService _spotifyAuthService;
+        private readonly ISpotifyAccountsService _spotifyAccountsService;
 
-        public StartController(ISpotifyAuthorizationService spotifyAuthService)
+        public StartController(ISpotifyAccountsService spotifyAccountsService)
         {
-            _spotifyAuthService = spotifyAuthService;
+            _spotifyAccountsService = spotifyAccountsService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            return await Task.FromResult(Ok(DateTime.Now));
+            object? result = await _spotifyAccountsService.Authorize();
+
+            return Ok(result);
         }
     }
 }

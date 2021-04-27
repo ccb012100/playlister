@@ -18,8 +18,8 @@ namespace Playlister
                 .ConfigureHttpClient(c => c.BaseAddress = config.Get<SpotifyOptions>().ApiBaseUrl);
 
             services
-                .AddRefitClient<ISpotifyAuthorizationApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = config.Get<SpotifyOptions>().AuthorizationUrl);
+                .AddRefitClient<ISpotifyAccountsApi>()
+                .ConfigureHttpClient(c => c.BaseAddress = config.Get<SpotifyOptions>().AccountsUrl);
 
             return services;
         }
