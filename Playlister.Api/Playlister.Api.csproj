@@ -19,7 +19,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove="appsettings.Development.json" />
         <Content Remove="out\**" />
         <None Remove="Folder.DotSettings" />
     </ItemGroup>
