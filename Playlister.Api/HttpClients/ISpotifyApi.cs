@@ -1,4 +1,4 @@
-namespace Playlister.HttpClients
+namespace Playlister.Api.HttpClients
 {
     public interface ISpotifyApi
     {

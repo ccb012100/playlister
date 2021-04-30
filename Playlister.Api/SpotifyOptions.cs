@@ -1,7 +1,9 @@
 using System;
 using System.Diagnostics.CodeAnalysis;
 
-namespace Playlister
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+#pragma warning disable 8618
+namespace Playlister.Api
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
@@ -9,8 +11,9 @@ namespace Playlister
     {
         public const string Spotify = "Spotify";
 
-        public string ClientId { get; } = null!;
-        public Uri ApiBaseUrl { get; } = null!;
-        public Uri AccountsUrl { get; } = null!;
+        public string ClientId { get; init; }
+        public Uri ApiBaseAddress { get; init; }
+        public Uri AccountsApiBaseAddress { get; init; }
+        public Uri CallbackUrl { get; init; }
     }
 }

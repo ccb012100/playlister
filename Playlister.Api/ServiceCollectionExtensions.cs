@@ -1,9 +1,10 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Playlister.HttpClients;
+using Microsoft.Extensions.Options;
+using Playlister.Api.HttpClients;
 using Refit;
 
-namespace Playlister
+namespace Playlister.Api
 {
     public static class ServiceCollectionExtensions
     {
@@ -15,11 +16,17 @@ namespace Playlister
         {
             services
                 .AddRefitClient<ISpotifyApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = config.Get<SpotifyOptions>().ApiBaseUrl);
+                .ConfigureHttpClient((svc, c) =>
+                {
+                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
+                });
 
             services
                 .AddRefitClient<ISpotifyAccountsApi>()
-                .ConfigureHttpClient(c => c.BaseAddress = config.Get<SpotifyOptions>().AccountsUrl);
+                .ConfigureHttpClient((svc, c) =>
+                {
+                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
+                });
 
             return services;
         }

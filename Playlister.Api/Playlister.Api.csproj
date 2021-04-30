@@ -3,7 +3,6 @@
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
         <UserSecretsId>bbcd9d14-59ef-4b54-87c8-107365b06f67</UserSecretsId>
-        <RootNamespace>Playlister</RootNamespace>
         <Nullable>enable</Nullable>
     </PropertyGroup>
 

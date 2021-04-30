@@ -1,8 +1,8 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Playlister.Services;
+using Playlister.Api.Services;
 
-namespace Playlister.Controllers
+namespace Playlister.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

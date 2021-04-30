@@ -1,28 +1,28 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
-using Playlister.HttpClients;
+using Playlister.Api.HttpClients;
 
-namespace Playlister.Services
+namespace Playlister.Api.Services
 {
     public class SpotifyAccountsService : ISpotifyAccountsService
     {
         private readonly ISpotifyAccountsApi _accountsApi;
-        private readonly string _clientId;
+        private readonly SpotifyOptions _options;
 
-        public SpotifyAccountsService(ISpotifyAccountsApi authApi, IOptions<SpotifyOptions> spotifyOptions)
+        public SpotifyAccountsService(ISpotifyAccountsApi accountsApi, IOptions<SpotifyOptions> options)
         {
-            _accountsApi = authApi;
-            _clientId = spotifyOptions.Value.ClientId;
+            _accountsApi = accountsApi;
+            _options = options.Value;
         }
 
         public async Task<object> Authorize()
         {
             return await _accountsApi.Authorize(
-                _clientId,
-                new Uri("https://localhost:8001"),
+                _options.ClientId,
+                _options.CallbackUrl,
                 Guid.NewGuid().ToString(),
-                string.Empty,
+                null,
                 false
             );
         }

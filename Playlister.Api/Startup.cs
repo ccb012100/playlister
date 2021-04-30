@@ -8,10 +8,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Playlister.HttpClients;
-using Playlister.Services;
+using Playlister.Api.Services;
 
-namespace Playlister
+namespace Playlister.Api
 {
     public class Startup
     {

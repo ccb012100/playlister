@@ -1,6 +1,6 @@
 using System.Threading.Tasks;
 
-namespace Playlister.Services
+namespace Playlister.Api.Services
 {
     public interface ISpotifyAccountsService
     {
