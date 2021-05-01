@@ -1,26 +1,22 @@
+using System;
 using System.Threading.Tasks;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Playlister.Api.Services;
 
 namespace Playlister.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class StartController : Controller
+    public class StartController : BaseController
     {
-        private readonly ISpotifyAccountsService _spotifyAccountsService;
-
-        public StartController(ISpotifyAccountsService spotifyAccountsService)
+        public StartController(IMediator mediator) : base(mediator)
         {
-            _spotifyAccountsService = spotifyAccountsService;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            object? result = await _spotifyAccountsService.Authorize();
-
-            return Ok(result);
+            throw new NotImplementedException();
         }
     }
 }

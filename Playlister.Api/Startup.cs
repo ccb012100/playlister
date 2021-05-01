@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -25,7 +26,7 @@ namespace Playlister.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMediatR(typeof(Startup))
+                .AddMediatR(Assembly.GetExecutingAssembly())
                 .AddConfigOptions(Configuration)
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
                 .AddHttpClients(Configuration)
