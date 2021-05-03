@@ -19,11 +19,14 @@ namespace Playlister.Api.Services
         public async Task<object> Authorize()
         {
             return await _accountsApi.Authorize(
-                _options.ClientId,
-                _options.CallbackUrl,
-                Guid.NewGuid().ToString(),
-                null,
-                false
+                new AuthQueryParams
+                {
+                    ClientId = _options.ClientId,
+                    RedirectUri = _options.CallbackUrl,
+                    State = Guid.NewGuid().ToString(),
+                    Scope = null,
+                    ShowDialog = false
+                }
             );
         }
     }

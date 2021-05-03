@@ -1,10 +1,12 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using Playlister.Api.HttpClients;
 using Refit;
 
-namespace Playlister.Api
+namespace Playlister.Api.Extensions
 {
     public static class ServiceCollectionExtensions
     {
@@ -22,7 +24,18 @@ namespace Playlister.Api
                 });
 
             services
-                .AddRefitClient<ISpotifyAccountsApi>()
+                .AddRefitClient<ISpotifyAccountsApi>(new RefitSettings
+                {
+                    ContentSerializer = new NewtonsoftJsonContentSerializer(
+                        new JsonSerializerSettings
+                        {
+                            ContractResolver =
+                                new DefaultContractResolver
+                                {
+                                    NamingStrategy = new SnakeCaseNamingStrategy()
+                                }
+                        })
+                })
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;

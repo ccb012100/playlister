@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Playlister.Api.Extensions;
 using Playlister.Api.Services;
 
 namespace Playlister.Api
@@ -26,7 +27,7 @@ namespace Playlister.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddMediatR(Assembly.GetExecutingAssembly())
+                .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
                 .AddHttpClients(Configuration)
