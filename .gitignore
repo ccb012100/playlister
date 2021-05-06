@@ -3,6 +3,8 @@ Folder.DotSettings.user
 
 .DS_Store
 
-/bin/
-/obj/
-/out/
+bin/
+obj/
+out/
+
+ClientApp/node_modules/
