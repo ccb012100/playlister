@@ -1,6 +1,6 @@
 using Newtonsoft.Json;
 
-namespace Playlister.Api.Extensions
+namespace Playlister.Extensions
 {
     public static class GenericExtensions
     {

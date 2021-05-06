@@ -3,7 +3,7 @@ using System;
 #pragma warning disable 8618
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Playlister.Api.Handlers
+namespace Playlister.Handlers
 {
     public record AuthQueryParams
     {

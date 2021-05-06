@@ -3,7 +3,7 @@ using System.IO;
 using System.Reflection;
 
 // ReSharper disable UnusedMember.Global
-namespace Playlister.Api
+namespace Playlister
 {
     public class AppInfo
     {

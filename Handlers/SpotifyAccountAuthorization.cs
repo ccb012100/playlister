@@ -3,9 +3,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
-using Playlister.Api.HttpClients;
+using Playlister.HttpClients;
 
-namespace Playlister.Api.Handlers
+namespace Playlister.Handlers
 {
     // ReSharper disable once UnusedType.Global
     public class SpotifyAccountAuthorization : IRequestHandler<AuthorizationRequest, string>

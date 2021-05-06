@@ -4,15 +4,15 @@ using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
-using Playlister.Api.Extensions;
-using Playlister.Api.Handlers;
+using Playlister.Extensions;
 
-namespace Playlister.Api
+namespace Playlister
 {
     public class Startup
     {
@@ -23,11 +23,12 @@ namespace Playlister.Api
 
         private IConfiguration Configuration { get; }
 
+        private const string CorsPolicyName = "CorsPolicy";
+
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services
-                .AddCors(o => o.AddPolicy("CorsPolicy", corsBuilder =>
+            services.AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
                 {
                     corsBuilder.WithOrigins("*")
                         .AllowAnyMethod()
@@ -37,9 +38,12 @@ namespace Playlister.Api
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
-                .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
-                .AddHttpClients(Configuration)
-                .AddControllers();
+                .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
+                .AddHttpClients(Configuration);
+
+            services.AddControllersWithViews();
+            // In production, the Angular files will be served from this directory
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp/dist"; });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -50,30 +54,38 @@ namespace Playlister.Api
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
-                    .UseSwagger().UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister.Api v1"));
+                    .UseSwagger()
+                    .UseSwaggerUI(c =>
+                    {
+                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister v1");
+                        c.RoutePrefix = string.Empty; // serve on ~/
+                    });
+            }
+            else
+            {
+                // The default HSTS value is 30 days.
+                // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseExceptionHandler("/Error")
+                    .UseHsts()
+                    .UseSpaStaticFiles();
             }
 
-            // The default HSTS value is 30 days.
-            // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            app.UseHsts().UseHttpsRedirection().UseRouting()
-                .UseCors("CorsPolicy")
+            app.UseHttpsRedirection()
+                .UseRouting()
+                .UseStaticFiles()
+                .UseCors(CorsPolicyName)
                 .UseAuthorization()
-                .UseEndpoints(endpoints =>
+                .AddEndpoints(Configuration, env)
+                .UseSpa(spa =>
                 {
+                    // To learn more about options for serving an Angular SPA from ASP.NET Core,
+                    // see https://go.microsoft.com/fwlink/?linkid=864501
+                    spa.Options.SourcePath = "ClientApp";
+
                     if (env.IsDevelopment())
                     {
-                        // view app settings at ~/debug
-                        endpoints.MapGet("/debug", async context
-                            => await context.Response.WriteAsync((Configuration as IConfigurationRoot).GetDebugView()));
-                        endpoints.MapGet("/", async context
-                            => await context.Response.WriteAsync($"{GetType().Namespace}\n{DateTime.Now}")
-                        );
+                        spa.UseAngularCliServer("start");
                     }
-
-                    endpoints.MapGet("/info", async context
-                        => await context.Response.WriteAsJsonAsync(new AppInfo()));
-
-                    endpoints.MapControllers();
                 });
 
             ILogger<Startup> logger = loggerFactory.CreateLogger<Startup>();

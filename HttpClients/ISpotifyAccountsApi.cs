@@ -1,9 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Playlister.Api.Handlers;
+using Playlister.Handlers;
 using Refit;
 
-namespace Playlister.Api.HttpClients
+namespace Playlister.HttpClients
 {
     public interface ISpotifyAccountsApi
     {

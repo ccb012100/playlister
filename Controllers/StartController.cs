@@ -2,9 +2,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
-using Playlister.Api.Handlers;
+using Playlister.Handlers;
 
-namespace Playlister.Api.Controllers
+namespace Playlister.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]

@@ -1,7 +1,7 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Playlister.Api.Controllers
+namespace Playlister.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
