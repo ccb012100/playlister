@@ -1,6 +1,9 @@
 using System;
 
-namespace Playlister.Api.Services
+#pragma warning disable 8618
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+namespace Playlister.Api.Handlers
 {
     public record AuthQueryParams
     {
@@ -9,6 +12,8 @@ namespace Playlister.Api.Services
         public string State { get; init; }
         public string? Scope { get; init; }
         public bool ShowDialog { get; init; }
+
+        // ReSharper disable once UnusedMember.Global
         public string ResponseType { get; init; } = "code";
     }
 }

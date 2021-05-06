@@ -1,7 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
+using Playlister.Api.Handlers;
 
 namespace Playlister.Api.Controllers
 {
@@ -14,9 +15,12 @@ namespace Playlister.Api.Controllers
         }
 
         [HttpGet]
+        [DisableCors]
         public async Task<IActionResult> Get()
         {
-            throw new NotImplementedException();
+            object result = await Mediator.Send(new AuthorizationRequest());
+
+            return Ok(result);
         }
     }
 }

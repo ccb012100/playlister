@@ -10,7 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Api.Extensions;
-using Playlister.Api.Services;
+using Playlister.Api.Handlers;
 
 namespace Playlister.Api
 {
@@ -27,11 +27,18 @@ namespace Playlister.Api
         public void ConfigureServices(IServiceCollection services)
         {
             services
+                .AddCors(o => o.AddPolicy("CorsPolicy", corsBuilder =>
+                {
+                    corsBuilder.WithOrigins("*")
+                        .AllowAnyMethod()
+                        .AllowAnyHeader();
+                    // .AllowCredentials();
+                }))
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
+                .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister.Api", Version = "v1"}); })
                 .AddHttpClients(Configuration)
-                .AddScoped<ISpotifyAccountsService, SpotifyAccountsService>()
                 .AddControllers();
         }
 
@@ -48,7 +55,9 @@ namespace Playlister.Api
 
             // The default HSTS value is 30 days.
             // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-            app.UseHsts().UseHttpsRedirection().UseRouting().UseAuthorization()
+            app.UseHsts().UseHttpsRedirection().UseRouting()
+                .UseCors("CorsPolicy")
+                .UseAuthorization()
                 .UseEndpoints(endpoints =>
                 {
                     if (env.IsDevelopment())

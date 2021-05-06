@@ -3,11 +3,13 @@ WORKDIR /app
 EXPOSE 80
 EXPOSE 443
 
-COPY . ./
+# Copy csproj and restore as distinct layers
+COPY *.csproj ./
 RUN dotnet restore
 
-COPY . ./
-RUN dotnet publish Playlister.Api -c Debug -o out
+# Copy everything else and build
+COPY ../engine/examples ./
+RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app

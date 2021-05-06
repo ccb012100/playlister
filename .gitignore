@@ -1,11 +1,8 @@
 .idea/
-/Folder.DotSettings.user
+Folder.DotSettings.user
 
 .DS_Store
 
 /bin/
 /obj/
 /out/
-/Playlister.Api/bin/
-/Playlister.Api/obj/
-/Playlister.sln.DotSettings.user
