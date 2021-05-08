@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Cors;
@@ -15,12 +16,18 @@ namespace Playlister.Controllers
         }
 
         [HttpGet]
-        [DisableCors]
         public async Task<IActionResult> Get()
         {
             object result = await Mediator.Send(new AuthorizationRequest());
 
             return Ok(result);
+        }
+
+        [HttpGet("auth")]
+        public async Task<ActionResult<Uri>> GetAuthUrl()
+        {
+            Uri authUrl = await Mediator.Send(new AuthUrlRequest());
+            return Ok(authUrl);
         }
     }
 }
