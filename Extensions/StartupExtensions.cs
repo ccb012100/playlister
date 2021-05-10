@@ -15,8 +15,10 @@ namespace Playlister.Extensions
     public static class StartupExtensions
     {
         public static IServiceCollection
-            AddConfigOptions(this IServiceCollection services, IConfiguration config) =>
-            services.Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify));
+            AddConfigOptions(this IServiceCollection services, IConfiguration config)
+        {
+            return services.Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify));
+        }
 
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddHttpClients(this IServiceCollection services, IConfiguration config)
@@ -53,11 +55,9 @@ namespace Playlister.Extensions
             return builder.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())
-                {
                     // view app settings at ~/debug
                     endpoints.MapGet("/debug", async context
                         => await context.Response.WriteAsync((config as IConfigurationRoot).GetDebugView()));
-                }
 
                 endpoints.MapGet("/info", async context
                     => await context.Response.WriteAsJsonAsync(new AppInfo()));

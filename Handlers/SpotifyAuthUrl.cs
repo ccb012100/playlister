@@ -10,8 +10,8 @@ namespace Playlister.Handlers
     // ReSharper disable once UnusedType.Global
     public class SpotifyAuthUrl : IRequestHandler<AuthUrlRequest, Uri>
     {
-        private readonly SpotifyOptions _options;
         private const string Scope = "user-read-private";
+        private readonly SpotifyOptions _options;
 
         public SpotifyAuthUrl(IOptions<SpotifyOptions> options)
         {
@@ -26,7 +26,7 @@ namespace Playlister.Handlers
             // &redirect_uri=https%3A%2F%2Fexample.com%2Fcallback
             // &scope=user-read-private%20user-read-email
             // &state=34fFs29kd09
-            var builder = new StringBuilder(_options.AccountsApiBaseAddress.OriginalString)
+            StringBuilder? builder = new StringBuilder(_options.AccountsApiBaseAddress.OriginalString)
                 .Append("/authorize?")
                 .Append("response_type=code")
                 .Append($"&client_id={_options.ClientId}")

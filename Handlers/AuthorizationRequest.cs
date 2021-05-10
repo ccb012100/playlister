@@ -2,7 +2,7 @@ using MediatR;
 
 namespace Playlister.Handlers
 {
-    public record AuthorizationRequest: IRequest<string>
+    public record AuthorizationRequest : IRequest<string>
     {
     }
 }

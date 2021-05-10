@@ -15,19 +15,22 @@ namespace Playlister
         }
 
         // ReSharper disable once MemberCanBePrivate.Global
-        internal static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        internal static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
                 .UseKestrel(LogDevelopmentConfiguration)
                 .UseStartup<Startup>();
+        }
 
         private static void LogDevelopmentConfiguration(WebHostBuilderContext context, KestrelServerOptions options)
         {
-            if (context.HostingEnvironment.IsDevelopment())
-            {
-                ShowConfig(context.Configuration);
-            }
+            if (context.HostingEnvironment.IsDevelopment()) ShowConfig(context.Configuration);
         }
 
+        /// <summary>
+        ///     Write App Configuration to Console
+        /// </summary>
+        /// <param name="configuration"></param>
         private static void ShowConfig(IConfiguration configuration)
         {
             foreach (IConfigurationSection pair in configuration.GetChildren())
