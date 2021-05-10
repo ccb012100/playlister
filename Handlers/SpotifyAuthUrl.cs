@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace Playlister.Handlers
 {
+    // ReSharper disable once UnusedType.Global
     public class SpotifyAuthUrl : IRequestHandler<AuthUrlRequest, Uri>
     {
         private readonly SpotifyOptions _options;
@@ -25,13 +26,15 @@ namespace Playlister.Handlers
             // &redirect_uri=https%3A%2F%2Fexample.com%2Fcallback
             // &scope=user-read-private%20user-read-email
             // &state=34fFs29kd09
-            var builder = new StringBuilder(_options.AccountsApiBaseAddress.OriginalString);
-            builder.Append("/authorize?")
-                .Append($"client_id={_options.ClientId}")
+            var builder = new StringBuilder(_options.AccountsApiBaseAddress.OriginalString)
+                .Append("/authorize?")
+                .Append("response_type=code")
+                .Append($"&client_id={_options.ClientId}")
                 .Append($"&redirect_uri={_options.CallbackUrl}")
                 .Append($"&scope={Scope}")
                 .Append($"&state={Guid.NewGuid()}");
-            throw new NotImplementedException();
+
+            return Task.FromResult(new Uri(builder.ToString()));
         }
     }
 }

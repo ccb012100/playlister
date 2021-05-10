@@ -1,7 +1,6 @@
 using System;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Handlers;
 
