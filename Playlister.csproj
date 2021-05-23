@@ -25,4 +25,9 @@
         <Compile Remove="out\**" />
         <EmbeddedResource Remove="out\**" />
     </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
+      <_ContentIncludedByDefault Remove="wwwroot\.DS_Store" />
+    </ItemGroup>
 </Project>

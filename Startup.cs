@@ -1,9 +1,11 @@
+using System.IO;
 using System.Reflection;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
@@ -36,9 +38,8 @@ namespace Playlister
                 .AddConfigOptions(Configuration)
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
-                .AddHttpClients(Configuration);
-
-            services.AddControllersWithViews();
+                .AddHttpClients(Configuration)
+                .AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -62,7 +63,12 @@ namespace Playlister
 
             app.UseHttpsRedirection()
                 .UseRouting()
-                .UseStaticFiles()
+                .UseStaticFiles(new StaticFileOptions
+                {
+                    // host Pages/* at ~/app/*
+                    FileProvider = new PhysicalFileProvider(Path.Combine(env.ContentRootPath, "Pages")),
+                    RequestPath = "/app"
+                })
                 .UseCors(CorsPolicyName)
                 .UseAuthorization()
                 .AddEndpoints(Configuration, env);
