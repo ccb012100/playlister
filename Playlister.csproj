@@ -12,6 +12,7 @@
         <PackageReference Include="FluentValidator" Version="2.0.4" />
         <PackageReference Include="Mediatr" Version="9.0.0" />
         <PackageReference Include="Mediatr.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
         <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
         <PackageReference Include="Polly" Version="7.2.2" />
         <PackageReference Include="Refit" Version="6.0.38" />
@@ -21,13 +22,10 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Content Remove="out\**" />
-        <Compile Remove="out\**" />
-        <EmbeddedResource Remove="out\**" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <_ContentIncludedByDefault Remove="Pages\Shared\_Layout.cshtml" />
-      <_ContentIncludedByDefault Remove="wwwroot\.DS_Store" />
+      <Content Include="ClientApp\index.html">
+        <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+        <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
     </ItemGroup>
 </Project>
