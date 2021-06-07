@@ -14,14 +14,13 @@ namespace Playlister.Extensions
 {
     public static class StartupExtensions
     {
-        public static IServiceCollection
-            AddConfigOptions(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config)
         {
             return services.Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify));
         }
 
         // ReSharper disable once UnusedMethodReturnValue.Global
-        public static IServiceCollection AddHttpClients(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddHttpClients(this IServiceCollection services)
         {
             services.AddRefitClient<ISpotifyApi>()
                 .ConfigureHttpClient((svc, c) =>
@@ -29,18 +28,19 @@ namespace Playlister.Extensions
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                 });
 
-            services.AddRefitClient<ISpotifyAccountsApi>(new RefitSettings
-                {
-                    ContentSerializer = new NewtonsoftJsonContentSerializer(
-                        new JsonSerializerSettings
-                        {
-                            ContractResolver =
-                                new DefaultContractResolver
-                                {
-                                    NamingStrategy = new SnakeCaseNamingStrategy()
-                                }
-                        })
-                })
+            services.AddRefitClient<ISpotifyAccountsApi>(
+                    new RefitSettings
+                    {
+                        ContentSerializer = new NewtonsoftJsonContentSerializer(
+                            new JsonSerializerSettings
+                            {
+                                ContractResolver =
+                                    new DefaultContractResolver
+                                    {
+                                        NamingStrategy = new SnakeCaseNamingStrategy()
+                                    }
+                            })
+                    })
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;

@@ -20,9 +20,10 @@ namespace Playlister
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
-            _logger.LogDebug($"REQUEST:{Environment.NewLine}{request.ToPrettyPrintJson()}");
+            _logger.LogDebug($"{typeof(TRequest).Name} => REQUEST:{Environment.NewLine}{request.ToPrettyPrintJson()}");
             TResponse response = await next();
-            _logger.LogDebug($"RESPONSE:{Environment.NewLine}{response.ToPrettyPrintJson()}");
+            _logger.LogDebug(
+                $"{typeof(TRequest).Name} => RESPONSE:{Environment.NewLine}{response.ToPrettyPrintJson()}");
 
             return response;
         }

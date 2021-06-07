@@ -39,7 +39,7 @@ namespace Playlister
                 .AddConfigOptions(Configuration)
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
-                .AddHttpClients(Configuration);
+                .AddHttpClients();
 
             services.AddControllers();
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });

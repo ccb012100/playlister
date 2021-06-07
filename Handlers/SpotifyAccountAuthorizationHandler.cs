@@ -4,16 +4,17 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
+using Playlister.Requests;
 
 namespace Playlister.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class SpotifyAccountAuthorization : IRequestHandler<AuthorizationRequest, string>
+    public class SpotifyAccountAuthorizationHandler : IRequestHandler<AuthorizationRequest, string>
     {
         private readonly ISpotifyAccountsApi _accountsApi;
         private readonly SpotifyOptions _options;
 
-        public SpotifyAccountAuthorization(ISpotifyAccountsApi accountsApi, IOptions<SpotifyOptions> options)
+        public SpotifyAccountAuthorizationHandler(ISpotifyAccountsApi accountsApi, IOptions<SpotifyOptions> options)
         {
             _accountsApi = accountsApi;
             _options = options.Value;

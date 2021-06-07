@@ -12,6 +12,7 @@ namespace Playlister
         public const string Spotify = "Spotify";
 
         public string ClientId { get; init; }
+        public string ClientSecret { get; init; }
         public Uri ApiBaseAddress { get; init; }
         public Uri AccountsApiBaseAddress { get; init; }
         public Uri CallbackUrl { get; init; }

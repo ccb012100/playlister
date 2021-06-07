@@ -56,19 +56,19 @@
           self.message = 'Signing in...';
           axios
             // Get Spotify auth URL from API
-            .get('start/auth')
+            .get('auth')
             .then(function (response) {
               try {
                 // redirect to Spotify to sign in
                 window.location.href = response.data;
                 // redirect returns to https://localhost:5001/app/login?code=$AUTH_CODE
+                // or https://localhost:5001/app/login?error=access_denied&state=STATE
               } catch (e) {
                 console.log(e);
                 self.message = e;
               }
             })
             .catch(function (error) {
-              console.log(self.message);
               console.log(error);
               self.message = error.message;
             });
@@ -79,7 +79,7 @@
           <pre>{{ dateLoaded }}</pre>
           <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Sign in</h5>
+            <h5 class="card-title">Home</h5>
             <p v-if="message" class="card-text">
               {{ message }}
             </p>
@@ -98,13 +98,66 @@
           <p>Sorry, there's not a page at {{ this.$route.path }}</p>
           </div>
         `,
-      props: ['urls'],
+    };
+
+    const LoginComponent = {
+      methods: {
+        getAccessToken(code, state) {
+          console.log(code);
+          console.log(state);
+          this.authMessage = 'Getting authorization code...';
+          let self = this;
+          axios
+            .post('auth/token', {
+              code: code,
+              state: state,
+            })
+            .then(function (response) {
+              try {
+                self.authMessage = 'Logged in successfully!';
+              } catch (e) {
+                console.log(e);
+                self.errorMessage = e;
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+              self.errorMessage = error.message;
+            });
+        },
+        showErrorMessage(error) {
+          this.errorMessage = 'Login failed: ' + error;
+        },
+      },
+      data() {
+        return {
+          authMessage: null,
+          errorMessage: null,
+        };
+      },
+      template: `
+        <div v-if='authMessage' class='alert alert-primary'>{{authMessage}}</div>
+        <div v-if='errorMessage' class='alert alert-danger'>{{errorMessage}}</div>
+        `,
+      props: ['authCode', 'error', 'state'],
+      mounted() {
+        if (this.error) {
+          this.showErrorMessage(this.error);
+        } else if (this.authCode) {
+          this.getAccessToken(this.authCode, this.state);
+        }
+      },
     };
 
     const routes = [
-      { path: '/Users/cbocardo/ccb012100/playlister/ClientApp/index.html', component: RootComponent },
       { path: '/app/home', name: 'homepage', component: RootComponent },
       { path: '/app', redirect: { name: 'homepage' } },
+      {
+        path: '/app/login',
+        name: 'login',
+        component: LoginComponent,
+        props: (route) => ({ authCode: route.query.code, error: route.query.error, state: route.query.state }),
+      },
       { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
     ];
     const router = VueRouter.createRouter({
