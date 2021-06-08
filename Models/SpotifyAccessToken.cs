@@ -1,15 +1,24 @@
 using System;
+using System.ComponentModel.DataAnnotations;
 
-namespace Playlister
+// ReSharper disable UnusedMember.Global
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+
+#pragma warning disable 8618
+
+namespace Playlister.Models
 {
-    public struct SpotifyAccessToken
+    // ReSharper disable once ClassNeverInstantiated.Global
+    public record SpotifyAccessToken
     {
         private const string BearerType = "Bearer";
         private string _tokenType;
 
-        public string AccessToken { get; set; }
+        [Required]
+        public string AccessToken { get; init; }
 
         // How the access token may be used: always “Bearer”.
+        [Required]
         public string TokenType
         {
             get => _tokenType;
@@ -25,10 +34,12 @@ namespace Playlister
         }
 
         // A space-separated list of scopes which have been granted for this `access_token`
-        public string Scope { get; set; }
+        [Required]
+        public string Scope { get; init; }
 
         // The time period (in seconds) for which the access token is valid.
-        public int ExpiresIn { get; set; }
+        [Required]
+        public int ExpiresIn { get; init; }
 
         /*
          * A token that can be sent to the Spotify Accounts service in place of an authorization code.
@@ -36,6 +47,7 @@ namespace Playlister
          * but use this code in place of an authorization code. A new access token will be returned.
          * A new refresh token might be returned too.)
          */
-        public string RefreshToken { get; set; }
+        [Required]
+        public string RefreshToken { get; init; }
     }
 }

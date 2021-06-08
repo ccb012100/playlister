@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
+using Playlister.Models;
 using Playlister.Requests;
 
 namespace Playlister.Handlers
@@ -33,6 +34,21 @@ namespace Playlister.Handlers
                 },
                 cancellationToken
             );
+        }
+    }
+
+    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, string>
+    {
+        private readonly ISpotifyApi _spotifyApi;
+
+        public SpotifyUserHandler(ISpotifyApi spotifyApi)
+        {
+            _spotifyApi = spotifyApi;
+        }
+
+        public async Task<string> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
+        {
+            return await _spotifyApi.GetUser(request.AccessToken, cancellationToken);
         }
     }
 }

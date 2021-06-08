@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
+using Playlister.Models;
 using Playlister.Requests;
 
 namespace Playlister.Handlers

@@ -2,16 +2,16 @@ using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Playlister.Handlers;
+using Playlister.Models;
 using Playlister.Requests;
 
 namespace Playlister.Controllers
 {
     [ApiController]
     [Route("api/auth")]
-    public class AuthorizationController : BaseController
+    public class SpotifyAuthorizationController : BaseController
     {
-        public AuthorizationController(IMediator mediator) : base(mediator)
+        public SpotifyAuthorizationController(IMediator mediator) : base(mediator)
         {
         }
 
@@ -26,9 +26,9 @@ namespace Playlister.Controllers
         [HttpPost("token")]
         public async Task<IActionResult> AccessToken([FromBody] AccessTokenRequest tokenRequest)
         {
-            await Mediator.Send(tokenRequest);
+            UserAccessToken userToken = await Mediator.Send(tokenRequest);
 
-            return Ok();
+            return Ok(userToken);
         }
     }
 }

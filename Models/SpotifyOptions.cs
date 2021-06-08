@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 #pragma warning disable 8618
-namespace Playlister
+namespace Playlister.Models
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]

@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Playlister.Models;
 using Playlister.Requests;
 using Refit;
 
@@ -11,9 +12,7 @@ namespace Playlister.HttpClients
         Task<string> Authorize(AuthQueryParams queryParams, CancellationToken cancellationToken);
 
         [Post("/api/token")]
-        Task<IApiResponse<SpotifyAccessToken>> AccessToken(
-            [Body(BodySerializationMethod.UrlEncoded)]
-            AccessTokenRequestParams tokenParams,
-            CancellationToken cancellationToken);
+        Task<IApiResponse<SpotifyAccessToken>> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
+            AccessTokenRequestParams tokenParams, CancellationToken cancellationToken);
     }
 }

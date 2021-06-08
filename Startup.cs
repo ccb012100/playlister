@@ -1,10 +1,7 @@
-using System;
-using System.IO;
 using System.Reflection;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -72,7 +69,7 @@ namespace Playlister
                 .UseRouting()
                 .UseStaticFiles()
                 .UseCors(CorsPolicyName)
-                .UseAuthorization()
+                .UseMiddleware<TokenValidationMiddleware>()
                 .AddEndpoints(Configuration, env);
 
             // ~/app/* URLs will serve up the SPA default page (index.html)
