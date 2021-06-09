@@ -1,9 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using MediatR;
+using Playlister.Models;
 
 namespace Playlister.Requests
 {
-    public record SpotifyUserRequest : IRequest<string>
+    public record SpotifyUserRequest : IRequest<SpotifyUserProfile>
     {
         public SpotifyUserRequest(string accessToken)
         {

@@ -1,5 +1,4 @@
 using System;
-using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -9,7 +8,6 @@ using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Requests;
-using Refit;
 
 namespace Playlister.Handlers
 {
@@ -32,7 +30,7 @@ namespace Playlister.Handlers
 
         public async Task<UserAccessToken> Handle(AccessTokenRequest request, CancellationToken cancellationToken)
         {
-            IApiResponse<SpotifyAccessToken> apiResponse = await _accountsApi.AccessToken(
+            SpotifyAccessToken spotifyToken = await _accountsApi.AccessToken(
                 new AccessTokenRequestParams
                 {
                     Code = request.Code,
@@ -40,17 +38,6 @@ namespace Playlister.Handlers
                     ClientId = _options.ClientId,
                     ClientSecret = _options.ClientSecret
                 }, cancellationToken);
-
-            if (!apiResponse.IsSuccessStatusCode)
-            {
-                // All failures result in Spotify returning a 400 Bad Request
-                _logger.LogError(
-                    $"Call to get Access Token failed: `{apiResponse.Error?.ReasonPhrase} {apiResponse.Error?.Content}`");
-
-                throw apiResponse.Error!;
-            }
-
-            SpotifyAccessToken spotifyToken = apiResponse.Content!;
 
             var userToken = new UserAccessToken
             {
@@ -62,6 +49,7 @@ namespace Playlister.Handlers
 
             // use AccessToken as cache key
             _cache.Set(spotifyToken.AccessToken, userToken, TimeSpan.FromSeconds(spotifyToken.ExpiresIn));
+            _logger.LogDebug($"Added access token key={spotifyToken.AccessToken} to cache.");
 
             return userToken;
         }

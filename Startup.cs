@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
+using Playlister.Middleware;
 
 namespace Playlister
 {
@@ -25,7 +26,8 @@ namespace Playlister
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
+            services.AddMemoryCache()
+                .AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
                 {
                     corsBuilder.WithOrigins("*")
                         .AllowAnyMethod()
@@ -69,6 +71,7 @@ namespace Playlister
                 .UseRouting()
                 .UseStaticFiles()
                 .UseCors(CorsPolicyName)
+                .UseMiddleware<GlobalErrorHandlerMiddleware>()
                 .UseMiddleware<TokenValidationMiddleware>()
                 .AddEndpoints(Configuration, env);
 

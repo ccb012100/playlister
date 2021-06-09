@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Playlister.Models;
 using Refit;
 
 namespace Playlister.HttpClients
@@ -7,6 +8,6 @@ namespace Playlister.HttpClients
     public interface ISpotifyApi
     {
         [Get("/me")]
-        Task<string> GetUser([Authorize("Bearer")] string token, CancellationToken cancellationToken);
+        Task<SpotifyUserProfile> GetUser([Authorize("Bearer")] string token, CancellationToken cancellationToken);
     }
 }

@@ -33,16 +33,23 @@
     <div id="app">
       <nav class="navbar bg-dark">
         <div class="container-fluid">
-          <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home</router-link>
+          <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home </router-link>
+          <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Data </router-link>
         </div>
       </nav>
       <router-view></router-view>
     </div>
   </body>
   <script type="module">
+    /*
+     * Configure Axios
+     */
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'https://localhost:5001/api/';
 
+    /*
+     * Define Components
+     */
     const RootComponent = {
       data() {
         return {
@@ -86,6 +93,7 @@
               <button v-on:click="signIn" class="btn btn-primary">
                 Sign in
               </button>
+              <router-view></router-view>
             </div>
           </div>
         `,
@@ -103,8 +111,6 @@
     const LoginComponent = {
       methods: {
         getAccessToken(code, state) {
-          console.log(code);
-          console.log(state);
           this.authMessage = 'Getting authorization code...';
           let self = this;
           axios
@@ -114,11 +120,8 @@
             })
             .then(function (response) {
               try {
-                self.userToken = response.data;
-                console.log(self.userToken);
                 self.authMessage = 'Logged in successfully!';
-                axios.defaults.headers.common['Authorization'] = AUTH_TOKEN;
-                router.push({ name: 'data-page' });
+                router.push({ name: 'data-page', params: { stringifiedUserToken: JSON.stringify(response.data) } });
               } catch (e) {
                 console.log(e);
                 self.errorMessage = e;
@@ -137,12 +140,6 @@
         return {
           authMessage: null,
           errorMessage: null,
-          userToken: {
-            AccessToken: null,
-            RefreshToken: null,
-            Expiration: null,
-            Scopes: null,
-          },
         };
       },
       template: `
@@ -160,36 +157,110 @@
     };
 
     const SpotifyDataComponent = {
+      data() {
+        return {
+          userToken: {
+            accessToken: String,
+            refreshToken: String,
+            expiration: Date,
+            scopes: Array,
+          },
+        };
+      },
       template: `
-          <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Data page</h5>
-              <p class="card-text">
-                Nothing here yet
-              </p>
-            </div>
-          </div>
+      <div>
+        <h5 class="card-title">Data page</h5>
+      </div>
+      <user-data></user-data>
       `,
+      props: ['stringifiedUserToken'],
+      mounted() {
+        this.userToken = JSON.parse(this.stringifiedUserToken);
+        axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
+      },
     };
 
+    const UserDataComponent = {
+      data() {
+        return {
+          userProfile: null,
+          errorMessage: null,
+        };
+      },
+      template: `
+      <div>
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              User Profile
+            </h5>
+            <p v-if="userProfile">{{userProfile}}</p>
+            <div v-if="errorMessage" class='alert alert-danger'>{{errorMessage}}</div>
+            <button v-on:click="getUserProfile" class="btn btn-primary">
+              Get User Profile
+            </button>
+          </div>
+        </div>
+      </div>
+      `,
+      methods: {
+        getUserProfile() {
+          let self = this;
+          axios
+            .get('user')
+            .then(function (response) {
+              try {
+                self.userProfile = response.data;
+              } catch (e) {
+                console.log(e);
+                self.errorMessage = e.message;
+              }
+            })
+            .catch(function (error) {
+              console.log(error);
+              self.errorMessage = error.message;
+            });
+        },
+      },
+    };
+
+    /*
+     * Create Routes and Router
+     */
     const routes = [
-      { path: '/app/home', name: 'homepage', component: RootComponent },
+      {
+        path: '/app/home',
+        name: 'homepage',
+        component: RootComponent,
+        children: [
+          {
+            path: 'login',
+            name: 'login',
+            component: LoginComponent,
+            props: (route) => ({ authCode: route.query.code, error: route.query.error, state: route.query.state }),
+          },
+        ],
+      },
       { path: '/app', redirect: { name: 'homepage' } },
       {
-        path: '/app/login',
-        name: 'login',
-        component: LoginComponent,
-        props: (route) => ({ authCode: route.query.code, error: route.query.error, state: route.query.state }),
+        path: '/app/data',
+        name: 'data-page',
+        component: SpotifyDataComponent,
+        props: true,
       },
-      { path: '/data', name: 'data-page' },
       { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
     ];
+
     const router = VueRouter.createRouter({
       history: VueRouter.createWebHistory(),
       routes,
     });
 
+    /*
+     * Create and mount App
+     */
     const app = Vue.createApp({});
+    app.component('user-data', UserDataComponent);
     app.use(router);
     app.mount('#app');
   </script>

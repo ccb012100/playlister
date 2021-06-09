@@ -36,19 +36,4 @@ namespace Playlister.Handlers
             );
         }
     }
-
-    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, string>
-    {
-        private readonly ISpotifyApi _spotifyApi;
-
-        public SpotifyUserHandler(ISpotifyApi spotifyApi)
-        {
-            _spotifyApi = spotifyApi;
-        }
-
-        public async Task<string> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
-        {
-            return await _spotifyApi.GetUser(request.AccessToken, cancellationToken);
-        }
-    }
 }

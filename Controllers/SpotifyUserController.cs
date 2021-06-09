@@ -1,10 +1,12 @@
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Playlister.Models;
 using Playlister.Requests;
 
 namespace Playlister.Controllers
 {
+    [ValidateToken]
     [ApiController]
     [Route("api/user")]
     public class SpotifyUserController : BaseController
@@ -13,11 +15,10 @@ namespace Playlister.Controllers
         {
         }
 
-        [ValidateToken]
         [HttpGet]
         public async Task<IActionResult> Get([FromHeader] string authorization)
         {
-            string user = await Mediator.Send(new SpotifyUserRequest(authorization.Substring("Bearer ".Length)));
+            SpotifyUserProfile user = await Mediator.Send(new SpotifyUserRequest(authorization));
 
             return Ok(user);
         }
