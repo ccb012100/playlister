@@ -56,10 +56,12 @@ namespace Playlister.Middleware
                         if (cacheEntry.Expiration > DateTime.Now)
                         {
                             valid = true;
+                            _logger.LogDebug("Token is valid");
                         }
                         else
                         {
                             _logger.LogWarning($"Cache entry expiration {cacheEntry.Expiration} has passed.");
+                            // TODO: use refresh token to get new access token
                         }
                     }
                     else

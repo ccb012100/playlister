@@ -30,5 +30,14 @@ namespace Playlister.Controllers
 
             return Ok(userToken);
         }
+
+        [ValidateToken]
+        [HttpPost("token/refresh")]
+        public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest tokenRefreshRequest)
+        {
+            UserAccessToken userAccessToken = await Mediator.Send(tokenRefreshRequest);
+
+            return Ok(userAccessToken);
+        }
     }
 }

@@ -13,6 +13,11 @@ namespace Playlister.HttpClients
 
         [Post("/api/token")]
         Task<SpotifyAccessToken> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
-            AccessTokenRequestParams tokenParams, CancellationToken cancellationToken);
+            AccessTokenRequestParams requestParams, CancellationToken cancellationToken);
+
+        [Post("/api/token")]
+        Task<SpotifyAccessToken> RefreshToken([Authorize("Basic")] string authHeaderParam,
+            [Body(BodySerializationMethod.UrlEncoded)]
+            TokenRefreshRequestParams requestParams, CancellationToken cancellationToken);
     }
 }
