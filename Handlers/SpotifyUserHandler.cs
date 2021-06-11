@@ -2,7 +2,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.HttpClients;
-using Playlister.Models;
 using Playlister.Models.Spotify;
 using Playlister.Requests;
 
@@ -10,7 +9,7 @@ using Playlister.Requests;
 
 namespace Playlister.Handlers
 {
-    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, UserProfile>
+    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, PublicUserObject>
     {
         private readonly ISpotifyApi _spotifyApi;
 
@@ -19,7 +18,7 @@ namespace Playlister.Handlers
             _spotifyApi = spotifyApi;
         }
 
-        public async Task<UserProfile> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
+        public async Task<PublicUserObject> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
         {
             return await _spotifyApi.GetUser(request.AccessToken, cancellationToken);
         }

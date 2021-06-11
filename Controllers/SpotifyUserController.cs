@@ -2,7 +2,6 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
-using Playlister.Models;
 using Playlister.Models.Spotify;
 using Playlister.Requests;
 
@@ -20,7 +19,7 @@ namespace Playlister.Controllers
         [HttpGet]
         public async Task<IActionResult> Get([FromHeader] string authorization)
         {
-            UserProfile user = await Mediator.Send(new SpotifyUserRequest(authorization));
+            PublicUserObject user = await Mediator.Send(new SpotifyUserRequest(authorization));
 
             return Ok(user);
         }

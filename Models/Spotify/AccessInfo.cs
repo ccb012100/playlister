@@ -12,7 +12,7 @@ namespace Playlister.Models.Spotify
     public record AccessInfo
     {
         private const string BearerType = "Bearer";
-        private string _tokenType;
+        private readonly string _tokenType;
 
         [Required]
         public string AccessToken { get; init; }
@@ -22,11 +22,11 @@ namespace Playlister.Models.Spotify
         public string TokenType
         {
             get => _tokenType;
-            set
+            init
             {
                 if (value != BearerType)
                 {
-                    throw new ArgumentException($"Found `{value}`. This should always be type `{BearerType}`");
+                    throw new ArgumentException($"Found TokenType `{value}`. This should always be `{BearerType}`");
                 }
 
                 _tokenType = value;
