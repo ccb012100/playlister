@@ -2,6 +2,7 @@ using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Playlister.Models;
+using Playlister.Models.Spotify;
 
 namespace Playlister.Utilities
 {
@@ -10,24 +11,24 @@ namespace Playlister.Utilities
         /// <summary>
         /// Create and cache a new User Access Token
         /// </summary>
-        /// <param name="spotifyToken"></param>
+        /// <param name="info"></param>
         /// <param name="cache"></param>
         /// <param name="logger"></param>
         /// <returns></returns>
-        public static UserAccessToken CreateUserAccessToken(SpotifyAccessToken spotifyToken, IMemoryCache cache,
+        public static UserAccessInfo CreateUserAccessToken(AccessInfo info, IMemoryCache cache,
             ILogger logger)
         {
-            var userToken = new UserAccessToken
+            var userToken = new UserAccessInfo
             {
-                AccessToken = spotifyToken.AccessToken,
-                Expiration = DateTime.Now.AddSeconds(spotifyToken.ExpiresIn),
-                RefreshToken = spotifyToken.RefreshToken,
-                Scopes = spotifyToken.Scope.Split(' ')
+                AccessToken = info.AccessToken,
+                Expiration = DateTime.Now.AddSeconds(info.ExpiresIn),
+                RefreshToken = info.RefreshToken,
+                Scopes = info.Scope.Split(' ')
             };
 
             // use AccessToken as cache key
-            cache.Set(spotifyToken.AccessToken, userToken, TimeSpan.FromSeconds(spotifyToken.ExpiresIn));
-            logger.LogDebug($"Added access token key={spotifyToken.AccessToken} to cache.");
+            cache.Set(info.AccessToken, userToken, TimeSpan.FromSeconds(info.ExpiresIn));
+            logger.LogDebug($"Added access token key={info.AccessToken} to cache.");
 
             return userToken;
         }

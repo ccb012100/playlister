@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Playlister.Attributes;
 using Playlister.Models;
 using Playlister.Requests;
 
@@ -26,18 +27,18 @@ namespace Playlister.Controllers
         [HttpPost("token")]
         public async Task<IActionResult> AccessToken([FromBody] AccessTokenRequest tokenRequest)
         {
-            UserAccessToken userToken = await Mediator.Send(tokenRequest);
+            UserAccessInfo userInfo = await Mediator.Send(tokenRequest);
 
-            return Ok(userToken);
+            return Ok(userInfo);
         }
 
         [ValidateToken]
         [HttpPost("token/refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest tokenRefreshRequest)
         {
-            UserAccessToken userAccessToken = await Mediator.Send(tokenRefreshRequest);
+            UserAccessInfo userAccessInfo = await Mediator.Send(tokenRefreshRequest);
 
-            return Ok(userAccessToken);
+            return Ok(userAccessInfo);
         }
     }
 }

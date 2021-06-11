@@ -8,7 +8,7 @@ using Playlister.Models;
 
 namespace Playlister.Requests
 {
-    public record AccessTokenRequest : IRequest<UserAccessToken>
+    public record AccessTokenRequest : IRequest<UserAccessInfo>
     {
         [Required]
         // The authorization code returned from the initial request to the Spotify Account /authorize endpoint.

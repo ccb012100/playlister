@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Playlister.Models
 {
-    public record UserAccessToken
+    public record UserAccessInfo
     {
         [Required]
         public string AccessToken { get; init; }

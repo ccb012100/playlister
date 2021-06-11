@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using MediatR;
 using Playlister.HttpClients;
 using Playlister.Models;
+using Playlister.Models.Spotify;
 using Playlister.Requests;
 
 // ReSharper disable UnusedType.Global
 
 namespace Playlister.Handlers
 {
-    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, SpotifyUserProfile>
+    public class SpotifyUserHandler : IRequestHandler<SpotifyUserRequest, UserProfile>
     {
         private readonly ISpotifyApi _spotifyApi;
 
@@ -18,7 +19,7 @@ namespace Playlister.Handlers
             _spotifyApi = spotifyApi;
         }
 
-        public async Task<SpotifyUserProfile> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
+        public async Task<UserProfile> Handle(SpotifyUserRequest request, CancellationToken cancellationToken)
         {
             return await _spotifyApi.GetUser(request.AccessToken, cancellationToken);
         }

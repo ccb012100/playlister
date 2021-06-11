@@ -6,9 +6,9 @@ using System;
 // ReSharper disable UnusedMember.Global
 // ReSharper disable ClassNeverInstantiated.Global
 
-namespace Playlister.Models
+namespace Playlister.Models.Spotify
 {
-    public record SpotifyUserProfile
+    public record UserProfile
     {
         public string Country { get; init; }
         public string DisplayName { get; init; }

@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
+using Playlister.Attributes;
 using Playlister.Models;
 
 namespace Playlister.Middleware
@@ -51,7 +52,7 @@ namespace Playlister.Middleware
                     string authToken = authHeader.Scheme;
                     _logger.LogDebug($"auth token = {authToken}");
 
-                    if (_cache.TryGetValue(authToken, out UserAccessToken cacheEntry))
+                    if (_cache.TryGetValue(authToken, out UserAccessInfo cacheEntry))
                     {
                         if (cacheEntry.Expiration > DateTime.Now)
                         {

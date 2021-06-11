@@ -6,10 +6,10 @@ using System.ComponentModel.DataAnnotations;
 
 #pragma warning disable 8618
 
-namespace Playlister.Models
+namespace Playlister.Models.Spotify
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public record SpotifyAccessToken
+    public record AccessInfo
     {
         private const string BearerType = "Bearer";
         private string _tokenType;

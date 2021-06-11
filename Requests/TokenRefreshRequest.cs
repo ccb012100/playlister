@@ -4,7 +4,7 @@ using Playlister.Models;
 
 namespace Playlister.Requests
 {
-    public record TokenRefreshRequest : IRequest<UserAccessToken>
+    public record TokenRefreshRequest : IRequest<UserAccessInfo>
     {
         // ReSharper disable once UnusedMember.Global
         public TokenRefreshRequest(string refreshToken)

@@ -1,6 +1,6 @@
 using System;
 
-namespace Playlister
+namespace Playlister.Attributes
 {
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method)]
     // ReSharper disable once ClassNeverInstantiated.Global
