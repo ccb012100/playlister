@@ -1,24 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <!-- Required meta tags for Bootstrap-->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png"/>
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png"/>
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png"/>
     <!-- Bootstrap CSS -->
     <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-      integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
-      crossorigin="anonymous"
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x"
+            crossorigin="anonymous"
     />
     <!-- JS -->
     <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
-      integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
-      crossorigin="anonymous"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/js/bootstrap.min.js"
+            integrity="sha384-Atwg2Pkwv9vp0ygtn1JAojH0nYbwNJLPhwyoVbhoPwBhjQPR5VtM2+xf0Uwh9KtT"
+            crossorigin="anonymous"
     ></script>
     <!-- Vue.js -->
     <!-- development version, includes helpful console warnings -->
@@ -26,19 +26,19 @@
     <script src="https://unpkg.com/vue-router@next"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <title>Home</title>
-  </head>
-  <body class="container">
-    <div id="app">
-      <nav class="navbar bg-light">
+</head>
+<body class="container">
+<div id="app">
+    <nav class="navbar bg-light">
         <div class="container-fluid">
-          <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home </router-link>
-          <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Data </router-link>
+            <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home</router-link>
+            <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Data</router-link>
         </div>
-      </nav>
-      <router-view></router-view>
-    </div>
-  </body>
-  <script type="module">
+    </nav>
+    <router-view></router-view>
+</div>
+</body>
+<script type="module">
     /*
      * Configure Axios
      */
@@ -49,54 +49,54 @@
      * Define Components
      */
     const RootComponent = {
-      data() {
-        return {
-          dateLoaded: Date(),
-          message: null,
-        };
-      },
-      methods: {
-        signIn() {
-          let self = this;
-          self.message = 'Signing in...';
-          axios
-            // Get Spotify auth URL from API
-            .get('auth')
-            .then(function (response) {
-              try {
-                // redirect to Spotify to sign in
-                window.location.href = response.data;
-                // redirect returns to https://localhost:5001/app/home/login?code=$AUTH_CODE
-                // or https://localhost:5001/app/home/login?error=access_denied&state=STATE
-              } catch (e) {
-                self.message = e;
-              }
-            })
-            .catch(function (error) {
-              self.message = error.message;
-            });
+        data() {
+            return {
+                dateLoaded: Date(),
+                message: null,
+            };
         },
-      },
-      template: `
+        methods: {
+            signIn() {
+                let self = this;
+                self.message = 'Signing in...';
+                axios
+                    // Get Spotify auth URL from API
+                    .get('auth')
+                    .then(function (response) {
+                        try {
+                            // redirect to Spotify to sign in
+                            window.location.href = response.data;
+                            // redirect returns to https://localhost:5001/app/home/login?code=$AUTH_CODE
+                            // or https://localhost:5001/app/home/login?error=access_denied&state=STATE
+                        } catch (e) {
+                            self.message = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.message = error.message;
+                    });
+            },
+        },
+        template: `
           <h3>Page loaded at:</h3>
           <pre>{{ dateLoaded }}</pre>
           <div class="card">
-            <div class="card-body">
-              <h5 class="card-title">Home</h5>
-              <p v-if="message" class="card-text">
-                {{ message }}
-              </p>
-              <button v-on:click="signIn" class="btn btn-primary">
-                Sign in
-              </button>
-              <router-view></router-view>
-            </div>
+          <div class="card-body">
+            <h5 class="card-title">Home</h5>
+            <p v-if="message" class="card-text">
+              {{ message }}
+            </p>
+            <button v-on:click="signIn" class="btn btn-primary">
+              Sign in
+            </button>
+            <router-view></router-view>
+          </div>
           </div>
         `,
     };
 
     const PageNotFoundComponent = {
-      template: `
+        template: `
           <div class="alert alert-warning" role="alert">
           <h4 class="alert-heading">404 Page Not Found</h4>
           <p>Sorry, there's not a page at {{ this.$route.path }}</p>
@@ -105,174 +105,182 @@
     };
 
     const LoginComponent = {
-      methods: {
-        getAccessToken(code, state) {
-          this.authMessage = 'Getting authorization code...';
-          let self = this;
-          axios
-            .post('auth/token', {
-              code: code,
-              state: state,
-            })
-            .then(function (response) {
-              try {
-                self.authMessage = 'Logged in successfully!';
-                router.push({ name: 'data-page', params: { stringifiedUserToken: JSON.stringify(response.data) } });
-              } catch (e) {
-                self.errorMessage = e;
-              }
-            })
-            .catch(function (error) {
-              self.errorMessage = error.message;
-            });
+        methods: {
+            getAccessToken(code, state) {
+                this.authMessage = 'Getting authorization code...';
+                let self = this;
+                axios
+                    .post('auth/token', {
+                        code: code,
+                        state: state,
+                    })
+                    .then(function (response) {
+                        try {
+                            self.authMessage = 'Logged in successfully!';
+                            router.push({
+                                name: 'data-page',
+                                params: {stringifiedUserToken: JSON.stringify(response.data)}
+                            });
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+            showErrorMessage(error) {
+                this.errorMessage = 'Login failed: ' + error;
+            },
         },
-        showErrorMessage(error) {
-          this.errorMessage = 'Login failed: ' + error;
+        data() {
+            return {
+                authMessage: null,
+                errorMessage: null,
+            };
         },
-      },
-      data() {
-        return {
-          authMessage: null,
-          errorMessage: null,
-        };
-      },
-      template: `
-        <div v-if='authMessage' class='alert alert-primary'>{{authMessage}}</div>
-        <div v-if='errorMessage' class='alert alert-danger'>{{errorMessage}}</div>
-      `,
-      props: ['authCode', 'error', 'state'],
-      mounted() {
-        if (this.error) {
-          this.showErrorMessage(this.error);
-        } else if (this.authCode) {
-          this.getAccessToken(this.authCode, this.state);
-        }
-      },
+        template: `
+          <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
+          <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
+        `,
+        props: ['authCode', 'error', 'state'],
+        mounted() {
+            if (this.error) {
+                this.showErrorMessage(this.error);
+            } else if (this.authCode) {
+                this.getAccessToken(this.authCode, this.state);
+            }
+        },
     };
 
     const SpotifyDataComponent = {
-      data() {
-        return {
-          errorMessage: null,
-          userToken: {
-            accessToken: String,
-            refreshToken: String,
-            expiration: Date,
-            scopes: Array,
-          },
-        };
-      },
-      template: `
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">Data page</h5>
-          <obj-properties-list v-bind:obj="userToken"></obj-properties-list>
-          <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh token</button>
-          <div v-if='errorMessage' class='alert alert-danger'>{{errorMessage}}</div>
-        </div>
-      </div>
-      <user-data></user-data>
-      `,
-      props: ['stringifiedUserToken'],
-      mounted() {
-        if (this.stringifiedUserToken == undefined) {
-          console.log('User does not have a token. Going back to homepage.');
-          this.$router.push({ name: 'homepage' });
-        } else {
-          this.userToken = JSON.parse(this.stringifiedUserToken);
-          axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
-        }
-      },
-      methods: {
-        refreshToken() {
-          let self = this;
-          axios
-            .post('auth/token/refresh', {
-              refreshToken: this.userToken.refreshToken,
-            })
-            .then(function (response) {
-              try {
-                self.userToken = response.data;
-              } catch (e) {
-                self.errorMessage = e;
-              }
-            })
-            .catch(function (error) {
-              self.errorMessage = error.message;
-            });
+        data() {
+            return {
+                errorMessage: null,
+                userToken: {
+                    accessToken: String,
+                    refreshToken: String,
+                    expiration: Date,
+                    scopes: Array,
+                },
+            };
         },
-      },
+        template: `
+          <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Data page</h5>
+            <obj-properties-list v-bind:obj="userToken"></obj-properties-list>
+            <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh token</button>
+            <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
+          </div>
+          </div>
+          <user-data></user-data>
+        `,
+        props: ['stringifiedUserToken'],
+        mounted() {
+            if (this.stringifiedUserToken == undefined) {
+                console.log('User does not have a token. Going back to homepage.');
+                this.$router.push({name: 'homepage'});
+            } else {
+                this.userToken = JSON.parse(this.stringifiedUserToken);
+                axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
+            }
+        },
+        methods: {
+            refreshToken() {
+                let self = this;
+                axios
+                    .post('auth/token/refresh', {
+                        refreshToken: this.userToken.refreshToken,
+                    })
+                    .then(function (response) {
+                        try {
+                            self.userToken = response.data;
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+        },
     };
 
     const UserDataComponent = {
-      data() {
-        return {
-          userProfile: null,
-          errorMessage: null,
-        };
-      },
-      template: `
-      <div class="card">
-        <div class="card-body">
-          <h5 class="card-title">
-            <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic" class="img-thumbnail" >
-            User Profile
-          </h5>
-          <obj-properties-list v-if="userProfile" v-bind:obj="userProfile"></obj-properties-list>
-          <div v-if="errorMessage" class='alert alert-danger'>{{errorMessage}}</div>
-          <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile</button>
-        </div>
-      </div>
-      `,
-      methods: {
-        getUserProfile() {
-          let self = this;
-          axios
-            .get('user')
-            .then(function (response) {
-              try {
-                self.userProfile = response.data;
-              } catch (e) {
-                self.errorMessage = e.message;
-              }
-            })
-            .catch(function (error) {
-              self.errorMessage = error.message;
-            });
+        data() {
+            return {
+                userProfile: null,
+                errorMessage: null,
+            };
         },
-      },
+        template: `
+          <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic"
+                   class="img-thumbnail">
+              User Profile
+            </h5>
+            <obj-properties-list v-if="userProfile" v-bind:obj="userProfile"></obj-properties-list>
+            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+            <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile</button>
+          </div>
+          </div>
+        `,
+        methods: {
+            getUserProfile() {
+                let self = this;
+                axios
+                    .get('user')
+                    .then(function (response) {
+                        try {
+                            self.userProfile = response.data;
+                        } catch (e) {
+                            self.errorMessage = e.message;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+        },
     };
 
     /*
      * Create Routes and Router
      */
     const routes = [
-      {
-        path: '/app/home',
-        name: 'homepage',
-        component: RootComponent,
-        children: [
-          {
-            path: 'login',
-            name: 'login',
-            component: LoginComponent,
-            props: (route) => ({ authCode: route.query.code, error: route.query.error, state: route.query.state }),
-          },
-        ],
-      },
-      { path: '/app', redirect: { name: 'homepage' } },
-      {
-        path: '/app/data',
-        name: 'data-page',
-        component: SpotifyDataComponent,
-        props: true,
-      },
-      { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
+        {
+            path: '/app/home',
+            name: 'homepage',
+            component: RootComponent,
+            children: [
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: LoginComponent,
+                    props: (route) => ({
+                        authCode: route.query.code,
+                        error: route.query.error,
+                        state: route.query.state
+                    }),
+                },
+            ],
+        },
+        {path: '/app', redirect: {name: 'homepage'}},
+        {
+            path: '/app/data',
+            name: 'data-page',
+            component: SpotifyDataComponent,
+            props: true,
+        },
+        {path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent},
     ];
 
     const router = VueRouter.createRouter({
-      history: VueRouter.createWebHistory(),
-      routes,
+        history: VueRouter.createWebHistory(),
+        routes,
     });
 
     /*
@@ -281,19 +289,19 @@
     const app = Vue.createApp({});
     app.component('user-data', UserDataComponent);
     app.component('obj-properties-list', {
-      template: `
-      <table class="table table-success table-striped table-bordered">
-        <tbody>
+        template: `
+          <table class="table table-success table-striped table-bordered">
+          <tbody>
           <tr v-for="(value,name) in obj">
-              <td>{{name}}</td>
-              <td style="width:85%">{{value}}</td>
+            <td>{{ name }}</td>
+            <td style="width:85%">{{ value }}</td>
           </tr>
-        </tbody>
-      </table>
-      `,
-      props: ['obj'],
+          </tbody>
+          </table>
+        `,
+        props: ['obj'],
     });
     app.use(router);
     app.mount('#app');
-  </script>
+</script>
 </html>
