@@ -49,6 +49,22 @@
      * Define Components
      */
     const RootComponent = {
+        template: `
+          <h3>Page loaded at:</h3>
+          <pre>{{ dateLoaded }}</pre>
+          <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Home</h5>
+            <p v-if="message" class="card-text">
+              {{ message }}
+            </p>
+            <button v-on:click="signIn" class="btn btn-primary">
+              Sign in
+            </button>
+            <router-view></router-view>
+          </div>
+          </div>
+        `,
         data() {
             return {
                 dateLoaded: Date(),
@@ -76,23 +92,7 @@
                         self.message = error.message;
                     });
             },
-        },
-        template: `
-          <h3>Page loaded at:</h3>
-          <pre>{{ dateLoaded }}</pre>
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Home</h5>
-            <p v-if="message" class="card-text">
-              {{ message }}
-            </p>
-            <button v-on:click="signIn" class="btn btn-primary">
-              Sign in
-            </button>
-            <router-view></router-view>
-          </div>
-          </div>
-        `,
+        }
     };
 
     const PageNotFoundComponent = {
@@ -105,6 +105,24 @@
     };
 
     const LoginComponent = {
+        props: ['authCode', 'error', 'state'],
+        template: `
+          <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
+          <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
+        `,
+        mounted() {
+            if (this.error) {
+                this.showErrorMessage(this.error);
+            } else if (this.authCode) {
+                this.getAccessToken(this.authCode, this.state);
+            }
+        },
+        data() {
+            return {
+                authMessage: null,
+                errorMessage: null,
+            };
+        },
         methods: {
             getAccessToken(code, state) {
                 this.authMessage = 'Getting authorization code...';
@@ -131,24 +149,6 @@
                 this.errorMessage = 'Login failed: ' + error;
             },
         },
-        data() {
-            return {
-                authMessage: null,
-                errorMessage: null,
-            };
-        },
-        template: `
-          <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
-          <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
-        `,
-        props: ['authCode', 'error', 'state'],
-        mounted() {
-            if (this.error) {
-                this.showErrorMessage(this.error);
-            } else if (this.authCode) {
-                this.getAccessToken(this.authCode, this.state);
-            }
-        },
     };
 
     const SpotifyDataComponent = {
@@ -163,6 +163,15 @@
           </div>
           <user-data></user-data>
         `,
+        mounted() {
+            if (localStorage.userToken === undefined) {
+                console.log('User does not have a token. Going back to homepage.');
+                this.$router.push({name: 'homepage'});
+            } else {
+                this.userToken = JSON.parse(localStorage.getItem('userToken'));
+                axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
+            }
+        },
         data() {
             return {
                 errorMessage: null,
@@ -177,15 +186,6 @@
         watch: {
             userToken: function (val) {
                 axios.defaults.headers.common['Authorization'] = val.accessToken;
-            }
-        },
-        mounted() {
-            if (localStorage.userToken === undefined) {
-                console.log('User does not have a token. Going back to homepage.');
-                this.$router.push({name: 'homepage'});
-            } else {
-                this.userToken = JSON.parse(localStorage.getItem('userToken'));
-                axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
             }
         },
         methods: {
@@ -211,12 +211,6 @@
     };
 
     const UserDataComponent = {
-        data() {
-            return {
-                userProfile: null,
-                errorMessage: null,
-            };
-        },
         template: `
           <div class="card">
           <div class="card-body">
@@ -231,6 +225,12 @@
           </div>
           </div>
         `,
+        data() {
+            return {
+                userProfile: null,
+                errorMessage: null,
+            };
+        },
         methods: {
             getUserProfile() {
                 let self = this;
@@ -248,6 +248,24 @@
                     });
             },
         },
+    };
+
+    const ObjectPropertiesListComponent = {
+        props: ['obj'],
+        template: `
+          <table class="table table-success table-striped table-bordered">
+          <tbody>
+          <tr v-for="(value,name) in obj">
+            <td>
+              <b>{{ name }}</b>
+            </td>
+            <td style="width:85%">
+              {{ value }}
+            </td>
+          </tr>
+          </tbody>
+          </table>
+        `,
     };
 
     /*
@@ -281,33 +299,14 @@
         {path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent},
     ];
 
-    const router = VueRouter.createRouter({
-        history: VueRouter.createWebHistory(),
-        routes,
-    });
+    const router = VueRouter.createRouter({history: VueRouter.createWebHistory(), routes});
 
     /*
      * Create and mount App
      */
     const app = Vue.createApp({});
     app.component('user-data', UserDataComponent);
-    app.component('obj-properties-list', {
-        template: `
-          <table class="table table-success table-striped table-bordered">
-          <tbody>
-          <tr v-for="(value,name) in obj">
-            <td>
-              <b>{{ name }}</b>
-            </td>
-            <td style="width:85%">
-              {{ value }}
-            </td>
-          </tr>
-          </tbody>
-          </table>
-        `,
-        props: ['obj'],
-    });
+    app.component('obj-properties-list', ObjectPropertiesListComponent);
     app.use(router);
     app.mount('#app');
 </script>
