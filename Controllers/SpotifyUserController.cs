@@ -16,10 +16,15 @@ namespace Playlister.Controllers
         {
         }
 
+        /// <summary>
+        /// Get the User who was assigned the Access Token in the Authorization Header.
+        /// </summary>
+        /// <param name="authorization"></param>
+        /// <returns></returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromHeader] string authorization)
+        public async Task<ActionResult<PrivateUserObject>> Get([FromHeader] string authorization)
         {
-            PublicUserObject user = await Mediator.Send(new SpotifyUserRequest(authorization));
+            PrivateUserObject user = await Mediator.Send(new CurrentSpotifyUserRequest(authorization));
 
             return Ok(user);
         }

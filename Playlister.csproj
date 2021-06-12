@@ -33,4 +33,8 @@
     <ItemGroup>
         <Folder Include="Data" />
     </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="wwwroot\js\components.js" />
+    </ItemGroup>
 </Project>

@@ -16,6 +16,10 @@ namespace Playlister.Controllers
         {
         }
 
+        /// <summary>
+        /// Get the Spotify Accounts URL to direct user
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> Get()
         {
@@ -24,6 +28,11 @@ namespace Playlister.Controllers
             return Ok(authUrl);
         }
 
+        /// <summary>
+        /// Get an Access Token for User.
+        /// </summary>
+        /// <param name="tokenRequest"></param>
+        /// <returns></returns>
         [HttpPost("token")]
         public async Task<IActionResult> AccessToken([FromBody] AccessTokenRequest tokenRequest)
         {

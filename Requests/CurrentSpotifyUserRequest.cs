@@ -4,9 +4,9 @@ using Playlister.Models.Spotify;
 
 namespace Playlister.Requests
 {
-    public record SpotifyUserRequest : IRequest<PublicUserObject>
+    public record CurrentSpotifyUserRequest : IRequest<PrivateUserObject>
     {
-        public SpotifyUserRequest(string accessToken)
+        public CurrentSpotifyUserRequest(string accessToken)
         {
             AccessToken = accessToken;
         }

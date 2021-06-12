@@ -4,6 +4,8 @@ namespace Playlister.Models.Spotify
 {
     public record PlaylistObject
     {
+        private readonly string _type;
+
         /// <summary>
         /// `true` if the owner allows other users to modify the playlist.
         /// </summary>
@@ -69,11 +71,22 @@ namespace Playlister.Models.Spotify
         /// </summary>
         public PlaylistTrackObject?[] Tracks { get; init; }
 
-        // TODO: set validation on value
         /// <summary>
         /// The object type: “playlist”.
         /// </summary>
-        public string Type { get; init; }
+        public string Type
+        {
+            get => _type;
+            init
+            {
+                if (value != "playlist")
+                {
+                    throw new ArgumentException($"Invalid value `{value}`. Expected `playlist`");
+                }
+
+                _type = value;
+            }
+        }
 
         /// <summary>
         /// The Spotify URI for the playlist.

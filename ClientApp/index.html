@@ -32,7 +32,7 @@
     <nav class="navbar bg-light">
         <div class="container-fluid">
             <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home</router-link>
-            <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Data</router-link>
+            <router-link :to="{ name: 'data-page' }" class="btn btn-secondary"> Data</router-link>
         </div>
     </nav>
     <router-view></router-view>
@@ -117,10 +117,8 @@
                     .then(function (response) {
                         try {
                             self.authMessage = 'Logged in successfully!';
-                            router.push({
-                                name: 'data-page',
-                                params: {stringifiedUserToken: JSON.stringify(response.data)}
-                            });
+                            localStorage.setItem('userToken', JSON.stringify(response.data));
+                            router.push({name: 'data-page'});
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -154,17 +152,6 @@
     };
 
     const SpotifyDataComponent = {
-        data() {
-            return {
-                errorMessage: null,
-                userToken: {
-                    accessToken: String,
-                    refreshToken: String,
-                    expiration: Date,
-                    scopes: Array,
-                },
-            };
-        },
         template: `
           <div class="card">
           <div class="card-body">
@@ -176,13 +163,28 @@
           </div>
           <user-data></user-data>
         `,
-        props: ['stringifiedUserToken'],
+        data() {
+            return {
+                errorMessage: null,
+                userToken: {
+                    accessToken: String,
+                    refreshToken: String,
+                    expiration: Date,
+                    scopes: Array,
+                },
+            };
+        },
+        watch: {
+            userToken: function (val) {
+                axios.defaults.headers.common['Authorization'] = val.accessToken;
+            }
+        },
         mounted() {
-            if (this.stringifiedUserToken == undefined) {
+            if (localStorage.userToken === undefined) {
                 console.log('User does not have a token. Going back to homepage.');
                 this.$router.push({name: 'homepage'});
             } else {
-                this.userToken = JSON.parse(this.stringifiedUserToken);
+                this.userToken = JSON.parse(localStorage.getItem('userToken'));
                 axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
             }
         },
@@ -196,6 +198,7 @@
                     .then(function (response) {
                         try {
                             self.userToken = response.data;
+                            localStorage.setItem('userToken', JSON.stringify(response.data));
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -293,8 +296,12 @@
           <table class="table table-success table-striped table-bordered">
           <tbody>
           <tr v-for="(value,name) in obj">
-            <td>{{ name }}</td>
-            <td style="width:85%">{{ value }}</td>
+            <td>
+              <b>{{ name }}</b>
+            </td>
+            <td style="width:85%">
+              {{ value }}
+            </td>
           </tr>
           </tbody>
           </table>

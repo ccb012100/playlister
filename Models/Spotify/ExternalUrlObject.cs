@@ -1,7 +1,12 @@
+using System;
+
 namespace Playlister.Models.Spotify
 {
     public record ExternalUrlObject
     {
-        // TODO: implement
+        /// <summary>
+        /// The Spotify URL for the object.
+        /// </summary>
+        public Uri Spotify { get; init; }
     }
 }
