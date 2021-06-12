@@ -14,11 +14,13 @@ namespace Playlister
 {
     public class Startup
     {
+        private readonly IWebHostEnvironment _environment;
         private const string CorsPolicyName = "CorsPolicy";
 
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
+            _environment = environment;
         }
 
         private IConfiguration Configuration { get; }
@@ -29,14 +31,15 @@ namespace Playlister
             services.AddMemoryCache()
                 .AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
                 {
-                    corsBuilder.WithOrigins("*")
-                        .AllowAnyMethod()
-                        .AllowAnyHeader();
-                    // .AllowCredentials();
+                    corsBuilder.WithOrigins("https://localhost:5001")
+                        .WithMethods("GET", "POST")
+                        .AllowAnyHeader()
+                        .AllowCredentials();
                 }))
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
+                .AddTransient<HttpLoggingHandler>()
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
                 .AddHttpClients();
 
@@ -46,10 +49,10 @@ namespace Playlister
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory,
+        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory,
             IHostApplicationLifetime appLifetime)
         {
-            if (env.IsDevelopment())
+            if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
                     .UseSwagger()
@@ -73,7 +76,7 @@ namespace Playlister
                 .UseCors(CorsPolicyName)
                 .UseMiddleware<GlobalErrorHandlerMiddleware>()
                 .UseMiddleware<TokenValidationMiddleware>()
-                .AddEndpoints(Configuration, env);
+                .AddEndpoints(Configuration, _environment);
 
             // ~/app/* URLs will serve up the SPA default page (index.html)
             app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });

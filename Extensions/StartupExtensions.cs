@@ -8,6 +8,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Playlister.HttpClients;
+using Playlister.Middleware;
 using Playlister.Models;
 using Refit;
 
@@ -27,7 +28,8 @@ namespace Playlister.Extensions
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
-                });
+                })
+                .AddHttpMessageHandler<HttpLoggingHandler>();
 
             services.AddRefitClient<ISpotifyAccountsApi>(
                     new RefitSettings
@@ -45,7 +47,8 @@ namespace Playlister.Extensions
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
-                });
+                })
+                .AddHttpMessageHandler<HttpLoggingHandler>();
 
             return services;
         }

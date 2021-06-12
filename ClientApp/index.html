@@ -30,9 +30,13 @@
 <body class="container">
 <div id="app">
     <nav class="navbar bg-light">
-        <div class="container-fluid">
-            <router-link :to="{ name: 'homepage' }" class="btn btn-secondary"> Home</router-link>
-            <router-link :to="{ name: 'data-page' }" class="btn btn-secondary"> Data</router-link>
+        <div class="container-fluid d-flex justify-content-start">
+            <div class="navbar-nav p-1">
+                <router-link :to="{ name: 'homepage' }" class="btn btn-info"> Home</router-link>
+            </div>
+            <div class="navbar-nav p-1">
+                <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
+            </div>
         </div>
     </nav>
     <router-view></router-view>
@@ -44,6 +48,8 @@
      */
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'https://localhost:5001/api/';
+    const userTokenItemName = 'userToken';
+
     // TODO: check expiration on access token
     // TODO: centralize get/set logic for access token in local storage
     /*
@@ -62,15 +68,16 @@
             <button v-if="!authenticated" v-on:click="signIn" class="btn btn-primary">
               Sign in
             </button>
-            <div v-if="authenticated" class="alert alert-primary">
-              You're signed in!
+            <div v-if="authenticated">
+              <p>You're signed in!</p>
+              <button v-on:click="clearToken" class="btn btn-info">Clear token</button>
             </div>
             <router-view></router-view>
           </div>
           </div>
         `,
         mounted() {
-            this.authenticated = !!localStorage.getItem('userToken');
+            this.authenticated = !!localStorage.getItem(userTokenItemName);
         },
         data() {
             return {
@@ -100,6 +107,10 @@
                         self.message = error.message;
                     });
             },
+            clearToken() {
+                localStorage.removeItem(userTokenItemName);
+                this.authenticated = false;
+            }
         }
     };
 
@@ -119,7 +130,7 @@
           <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
         `,
         mounted() {
-            if (localStorage.getItem('userToken') !== undefined) {
+            if (!!localStorage.getItem(userTokenItemName)) {
                 this.$router.push({name: 'data-page'});
             } else if (this.error) {
                 this.showErrorMessage(this.error);
@@ -147,7 +158,7 @@
                     .then(function (response) {
                         try {
                             self.authMessage = 'Logged in successfully!';
-                            localStorage.setItem('userToken', JSON.stringify(response.data));
+                            localStorage.setItem(userTokenItemName, JSON.stringify(response.data));
                             router.push({name: 'data-page'});
                         } catch (e) {
                             self.errorMessage = e;
@@ -176,11 +187,11 @@
           <user-data></user-data>
         `,
         mounted() {
-            if (localStorage.userToken === undefined) {
+            if (!localStorage.getItem(userTokenItemName)) {
                 console.log('User does not have a token. Going back to homepage.');
                 this.$router.push({name: 'homepage'});
             } else {
-                this.userToken = JSON.parse(localStorage.getItem('userToken'));
+                this.userToken = JSON.parse(localStorage.getItem(userTokenItemName));
                 axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
             }
         },
@@ -210,7 +221,7 @@
                     .then(function (response) {
                         try {
                             self.userToken = response.data;
-                            localStorage.setItem('userToken', JSON.stringify(response.data));
+                            localStorage.setItem(userTokenItemName, JSON.stringify(response.data));
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -222,7 +233,7 @@
         },
     };
 
-    const UserDataComponent = {
+    const CurrentUserComponent = {
         template: `
           <div class="card">
           <div class="card-body">
@@ -317,7 +328,7 @@
      * Create and mount App
      */
     const app = Vue.createApp({});
-    app.component('user-data', UserDataComponent);
+    app.component('user-data', CurrentUserComponent);
     app.component('obj-properties-list', ObjectPropertiesListComponent);
     app.use(router);
     app.mount('#app');
