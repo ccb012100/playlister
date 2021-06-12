@@ -44,7 +44,8 @@
      */
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'https://localhost:5001/api/';
-
+    // TODO: check expiration on access token
+    // TODO: centralize get/set logic for access token in local storage
     /*
      * Define Components
      */
@@ -58,17 +59,24 @@
             <p v-if="message" class="card-text">
               {{ message }}
             </p>
-            <button v-on:click="signIn" class="btn btn-primary">
+            <button v-if="!authenticated" v-on:click="signIn" class="btn btn-primary">
               Sign in
             </button>
+            <div v-if="authenticated" class="alert alert-primary">
+              You're signed in!
+            </div>
             <router-view></router-view>
           </div>
           </div>
         `,
+        mounted() {
+            this.authenticated = !!localStorage.getItem('userToken');
+        },
         data() {
             return {
                 dateLoaded: Date(),
                 message: null,
+                authenticated: Boolean
             };
         },
         methods: {
@@ -111,10 +119,14 @@
           <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
         `,
         mounted() {
-            if (this.error) {
+            if (localStorage.getItem('userToken') !== undefined) {
+                this.$router.push({name: 'data-page'});
+            } else if (this.error) {
                 this.showErrorMessage(this.error);
             } else if (this.authCode) {
                 this.getAccessToken(this.authCode, this.state);
+            } else {
+
             }
         },
         data() {
