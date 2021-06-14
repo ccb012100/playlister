@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -16,11 +15,11 @@ namespace Playlister.Middleware
     /// Adapted from https://github.com/reactiveui/refit/issues/258#issuecomment-243394076
     /// </summary>
     // ReSharper disable once ClassNeverInstantiated.Global
-    public class HttpLoggingHandler : DelegatingHandler
+    public class HttpLoggingMiddleware : DelegatingHandler
     {
-        private readonly ILogger<HttpLoggingHandler> _logger;
+        private readonly ILogger<HttpLoggingMiddleware> _logger;
 
-        public HttpLoggingHandler(ILogger<HttpLoggingHandler> logger)
+        public HttpLoggingMiddleware(ILogger<HttpLoggingMiddleware> logger)
         {
             _logger = logger;
         }
@@ -59,7 +58,7 @@ namespace Playlister.Middleware
                         string? result = await req.Content.ReadAsStringAsync(cancellationToken);
 
                         _logger.LogDebug($"{msg} Content:");
-                        _logger.LogDebug($"{msg} {result}...");
+                        _logger.LogDebug($"{msg} {result}");
                     }
                 }
 

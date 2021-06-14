@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations;
 
 #pragma warning disable 8618
 
-namespace Playlister.Models.Spotify
+namespace Playlister.Models.SpotifyAccounts
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public record AccessInfo

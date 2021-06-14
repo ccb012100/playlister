@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 
-namespace Playlister.Models.Spotify
+#pragma warning disable 8618
+
+namespace Playlister.Models.SpotifyApi
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public record PagingObject<T>
     {
         /// <summary>
@@ -12,7 +16,7 @@ namespace Playlister.Models.Spotify
         /// <summary>
         /// The requested data.
         /// </summary>
-        public T[] Items { get; init; }
+        public ICollection<T> Items { get; init; }
 
         /// <summary>
         /// The maximum number of items in the response (as set in the query or by default).

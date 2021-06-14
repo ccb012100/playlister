@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
 using Playlister.Models;
-using Playlister.Models.Spotify;
+using Playlister.Models.SpotifyAccounts;
 using Playlister.Requests;
 using Playlister.Utilities;
 
@@ -17,15 +17,15 @@ namespace Playlister.Handlers
     // ReSharper disable once UnusedType.Global
     public class SpotifyTokenRefreshHandler : IRequestHandler<TokenRefreshRequest, UserAccessInfo>
     {
-        private readonly ISpotifyAccountsApi _accountsApi;
+        private readonly ISpotifyAccountsApi _api;
         private readonly ILogger<SpotifyTokenRefreshHandler> _logger;
         private readonly SpotifyOptions _options;
         private readonly IMemoryCache _cache;
 
-        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi accountsApi, ILogger<SpotifyTokenRefreshHandler> logger,
+        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, ILogger<SpotifyTokenRefreshHandler> logger,
             IOptions<SpotifyOptions> options, IMemoryCache cache)
         {
-            _accountsApi = accountsApi;
+            _api = api;
             _logger = logger;
             _options = options.Value;
             _cache = cache;
@@ -36,7 +36,7 @@ namespace Playlister.Handlers
             string authParam =
                 Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
-            AccessInfo info = await _accountsApi.RefreshToken(authParam,
+            AccessInfo info = await _api.RefreshToken(authParam,
                 new TokenRefreshRequestParams(request.RefreshToken), cancellationToken);
 
             return TokenUtility.CreateUserAccessToken(info, _cache, _logger);

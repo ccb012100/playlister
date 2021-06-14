@@ -1,7 +1,11 @@
 using System;
+using System.Collections.Generic;
 
-namespace Playlister.Models.Spotify
+#pragma warning disable 8618
+
+namespace Playlister.Models.SpotifyApi
 {
+    // ReSharper disable once ClassNeverInstantiated.Global
     public record PlaylistObject
     {
         private readonly string _type;
@@ -41,7 +45,7 @@ namespace Playlister.Models.Spotify
         /// The images are returned by size in descending order.
         /// Note: If returned, the source URL for the image (url) is temporary and will expire in less than a day.
         /// </summary>
-        public ImageObject[] Images { get; init; }
+        public ICollection<ImageObject> Images { get; init; }
 
         /// <summary>
         /// The name of the playlist.
@@ -69,7 +73,7 @@ namespace Playlister.Models.Spotify
         /// <summary>
         /// Information about the tracks of the playlist. Note, a track object may be `null`. This can happen if a track is no longer available.
         /// </summary>
-        public PlaylistTrackObject?[] Tracks { get; init; }
+        public PlaylistTrackObject? Tracks { get; init; }
 
         /// <summary>
         /// The object type: “playlist”.

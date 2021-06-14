@@ -6,7 +6,6 @@ using Refit;
 
 namespace Playlister.Requests
 {
-    // TODO: figure out why snake_casing isn't working and I have to explicitly set [AliasAs] on properties
     public record AccessTokenRequestParams
     {
         // As defined in the OAuth 2.0 specification, this field must contain the value

@@ -1,4 +1,4 @@
-namespace Playlister.Models.Spotify
+namespace Playlister.Models.SpotifyApi
 {
     public record ExplicitContentSettingsObject
     {

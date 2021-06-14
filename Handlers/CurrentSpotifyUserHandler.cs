@@ -2,25 +2,28 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.HttpClients;
-using Playlister.Models.Spotify;
+using Playlister.Models.SpotifyApi;
 using Playlister.Requests;
+
+// ReSharper disable UnusedMember.Global
 
 // ReSharper disable UnusedType.Global
 
 namespace Playlister.Handlers
 {
-    public class CurrentSpotifyUserHandler : IRequestHandler<CurrentSpotifyUserRequest, PrivateUserObject>
+    public class CurrentSpotifyUserHandler : IRequestHandler<CurrentUserRequest, PrivateUserObject>
     {
-        private readonly ISpotifyApi _spotifyApi;
+        private readonly ISpotifyApi _api;
 
-        public CurrentSpotifyUserHandler(ISpotifyApi spotifyApi)
+        public CurrentSpotifyUserHandler(ISpotifyApi api)
         {
-            _spotifyApi = spotifyApi;
+            _api = api;
         }
 
-        public async Task<PrivateUserObject> Handle(CurrentSpotifyUserRequest request, CancellationToken cancellationToken)
+        public async Task<PrivateUserObject> Handle(CurrentUserRequest request,
+            CancellationToken cancellationToken)
         {
-            return await _spotifyApi.GetCurrentUser(request.AccessToken, cancellationToken);
+            return await _api.GetCurrentUser(cancellationToken);
         }
     }
 }

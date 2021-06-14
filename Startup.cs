@@ -38,8 +38,11 @@ namespace Playlister
                 }))
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
+                .AddHttpContextAccessor()
                 .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
-                .AddTransient<HttpLoggingHandler>()
+                .AddTransient<HttpLoggingMiddleware>()
+                .AddTransient<SpotifyAuthHeaderMiddleware>()
+                .AddTransient<HttpQueryStringConversionMiddleware>()
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
                 .AddHttpClients();
 

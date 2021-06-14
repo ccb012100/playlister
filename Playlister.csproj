@@ -9,6 +9,7 @@
 
     <ItemGroup>
         <PackageReference Include="AutoMapper" Version="10.1.1" />
+        <PackageReference Include="EFCore.NamingConventions" Version="5.0.2" />
         <PackageReference Include="FluentValidator" Version="2.0.4" />
         <PackageReference Include="Mediatr" Version="9.0.0" />
         <PackageReference Include="Mediatr.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />

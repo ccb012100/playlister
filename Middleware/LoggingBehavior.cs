@@ -7,6 +7,11 @@ using Playlister.Extensions;
 
 namespace Playlister.Middleware
 {
+    /// <summary>
+    /// Log Request/Response bodies from Mediatr Handlers.
+    /// </summary>
+    /// <typeparam name="TRequest"></typeparam>
+    /// <typeparam name="TResponse"></typeparam>
     public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : notnull
     {

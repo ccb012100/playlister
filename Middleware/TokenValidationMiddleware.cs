@@ -15,13 +15,15 @@ namespace Playlister.Middleware
         private readonly RequestDelegate _next;
         private readonly IMemoryCache _cache;
         private readonly ILogger<TokenValidationMiddleware> _logger;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
         public TokenValidationMiddleware(RequestDelegate next, IMemoryCache cache,
-            ILogger<TokenValidationMiddleware> logger)
+            ILogger<TokenValidationMiddleware> logger, IHttpContextAccessor httpContextAccessor)
         {
             _next = next;
             _cache = cache;
             _logger = logger;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task Invoke(HttpContext context)
@@ -57,6 +59,7 @@ namespace Playlister.Middleware
                         if (cacheEntry.Expiration > DateTime.Now)
                         {
                             valid = true;
+                            _httpContextAccessor.HttpContext!.Items["AccessToken"] = authToken;
                             _logger.LogDebug("Token is valid");
                         }
                         else

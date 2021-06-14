@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.HttpClients;
 using Playlister.Models;
-using Playlister.Models.Spotify;
+using Playlister.Models.SpotifyAccounts;
 using Playlister.Requests;
 using Playlister.Utilities;
 
@@ -15,15 +15,15 @@ namespace Playlister.Handlers
     // ReSharper disable once UnusedType.Global
     public class SpotifyAccessTokenHandler : IRequestHandler<AccessTokenRequest, UserAccessInfo>
     {
-        private readonly ISpotifyAccountsApi _accountsApi;
+        private readonly ISpotifyAccountsApi _api;
         private readonly ILogger<SpotifyAccessTokenHandler> _logger;
         private readonly SpotifyOptions _options;
         private readonly IMemoryCache _cache;
 
-        public SpotifyAccessTokenHandler(ISpotifyAccountsApi accountsApi, IOptions<SpotifyOptions> options,
+        public SpotifyAccessTokenHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options,
             ILogger<SpotifyAccessTokenHandler> logger, IMemoryCache cache)
         {
-            _accountsApi = accountsApi;
+            _api = api;
             _logger = logger;
             _cache = cache;
             _options = options.Value;
@@ -31,8 +31,9 @@ namespace Playlister.Handlers
 
         public async Task<UserAccessInfo> Handle(AccessTokenRequest request, CancellationToken cancellationToken)
         {
-            // TODO: validate `state` value matches original value sent to user
-            AccessInfo info = await _accountsApi.AccessToken(
+            // TODO: validate that the `state` value matches the original value sent to user
+            // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+            AccessInfo info = await _api.AccessToken(
                 new AccessTokenRequestParams
                 {
                     Code = request.Code,

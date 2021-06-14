@@ -2,7 +2,7 @@ using System;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Playlister.Models;
-using Playlister.Models.Spotify;
+using Playlister.Models.SpotifyAccounts;
 
 namespace Playlister.Utilities
 {

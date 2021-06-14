@@ -1,3 +1,5 @@
+using System.Globalization;
+using EFCore.NamingConventions.Internal;
 using Newtonsoft.Json;
 
 namespace Playlister.Extensions
@@ -11,5 +13,13 @@ namespace Playlister.Extensions
         /// <typeparam name="T">Type of <paramref name="t"/></typeparam>
         /// <returns>String representation of the object as pretty-printed JSON</returns>
         public static string ToPrettyPrintJson<T>(this T t) => JsonConvert.SerializeObject(t, Formatting.Indented);
+
+        /// <summary>
+        /// Convert string to snake_cased string using EFCore's SnakeCaseNameRewriter
+        /// </summary>
+        /// <param name="s">input string</param>
+        /// <returns>input string converted to snake_case</returns>
+        public static string ToSnakeCase(this string s) =>
+            new SnakeCaseNameRewriter(CultureInfo.InvariantCulture).RewriteName(s);
     }
 }

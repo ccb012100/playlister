@@ -238,19 +238,24 @@
           <div class="card">
           <div class="card-body">
             <h5 class="card-title">
-              <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic"
-                   class="img-thumbnail">
               User Profile
             </h5>
+            <div class="row">
+              <button v-on:click="getUserProfile" class="btn btn-primary col p-2">Get User Profile</button>
+              <button v-on:click="getUserPlaylists" class="btn btn-secondary col p-2">Get Playlists</button>
+            </div>
             <obj-properties-list v-if="userProfile" v-bind:obj="userProfile"></obj-properties-list>
+            <obj-properties-list v-if="userPlaylists" v-bind:obj="userPlaylists"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-            <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile</button>
+            <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic"
+                 class="img-thumbnail">
           </div>
           </div>
         `,
         data() {
             return {
                 userProfile: null,
+                userPlaylists: null,
                 errorMessage: null,
             };
         },
@@ -270,6 +275,21 @@
                         self.errorMessage = error.message;
                     });
             },
+            getUserPlaylists() {
+                let self = this;
+                axios
+                    .get('user/playlists')
+                    .then(function (response) {
+                        try {
+                            self.userPlaylists = response.data;
+                        } catch (e) {
+                            self.errorMessage = e.message;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            }
         },
     };
 

@@ -1,6 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
-using Playlister.Models.Spotify;
+using Playlister.Models.SpotifyAccounts;
 using Playlister.Requests;
 using Refit;
 
@@ -8,9 +8,6 @@ namespace Playlister.HttpClients
 {
     public interface ISpotifyAccountsApi
     {
-        [Get("/authorize")]
-        Task<string> Authorize(AuthQueryParams queryParams, CancellationToken cancellationToken);
-
         /// <summary>
         /// Request Access Token for the authenticated User who was granted the provided code from Spotify.
         /// </summary>
@@ -19,7 +16,8 @@ namespace Playlister.HttpClients
         /// <returns></returns>
         [Post("/api/token")]
         Task<AccessInfo> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
-            AccessTokenRequestParams requestParams, CancellationToken cancellationToken);
+            AccessTokenRequestParams requestParams,
+            CancellationToken cancellationToken);
 
         /// <summary>
         /// Get a Refresh Token for User from Spotify.

@@ -1,6 +1,7 @@
 using System;
+using System.Collections.Generic;
 
-namespace Playlister.Models.Spotify
+namespace Playlister.Models.SpotifyApi
 {
     public record PrivateUserObject
     {
@@ -48,7 +49,7 @@ namespace Playlister.Models.Spotify
         /// <summary>
         /// The user’s profile image.
         /// </summary>
-        public ImageObject[] Images { get; init; }
+        public IEnumerable<ImageObject> Images { get; init; }
 
         /// <summary>
         /// The user’s Spotify subscription level: “premium”, “free”, etc.

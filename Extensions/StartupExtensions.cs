@@ -24,35 +24,46 @@ namespace Playlister.Extensions
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddHttpClients(this IServiceCollection services)
         {
-            services.AddRefitClient<ISpotifyApi>()
-                .ConfigureHttpClient((svc, c) =>
-                {
-                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
-                })
-                .AddHttpMessageHandler<HttpLoggingHandler>();
-
-            services.AddRefitClient<ISpotifyAccountsApi>(
-                    new RefitSettings
+            /*
+             * WARNING:
+             * Refit settings aren't used on body params that are marked with
+             * [Body(BodySerializationMethod.UrlEncoded)], so those models have to be set with [AliasAs] to get the
+             * properties snake_cased
+             */
+            var snakeCaseSettings = new RefitSettings
+            {
+                ContentSerializer = new NewtonsoftJsonContentSerializer(
+                    new JsonSerializerSettings
                     {
-                        ContentSerializer = new NewtonsoftJsonContentSerializer(
-                            new JsonSerializerSettings
+                        ContractResolver =
+                            new DefaultContractResolver
                             {
-                                ContractResolver =
-                                    new DefaultContractResolver
-                                    {
-                                        NamingStrategy = new SnakeCaseNamingStrategy()
-                                    }
-                            })
+                                NamingStrategy = new SnakeCaseNamingStrategy()
+                            }
                     })
+            };
+
+            services.AddRefitClient<ISpotifyAccountsApi>(snakeCaseSettings)
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
                 })
-                .AddHttpMessageHandler<HttpLoggingHandler>();
+                .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
+
+            services.AddRefitClient<ISpotifyApi>(snakeCaseSettings)
+                .ConfigureHttpClient((svc, c) =>
+                {
+                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
+                })
+                .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>()
+                .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 
             return services;
         }
 
+        // ReSharper disable once UnusedMethodReturnValue.Global
         public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config,
             IWebHostEnvironment env)
         {

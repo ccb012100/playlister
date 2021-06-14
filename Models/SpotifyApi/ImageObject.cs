@@ -1,6 +1,6 @@
 using System;
 
-namespace Playlister.Models.Spotify
+namespace Playlister.Models.SpotifyApi
 {
     public record ImageObject
     {
