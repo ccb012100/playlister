@@ -50,8 +50,28 @@
     axios.defaults.baseURL = 'https://localhost:5001/api/';
     const userTokenItemName = 'userToken';
 
+    function lsGetToken(key) {
+        const token = localStorage.getItem(userTokenItemName);
+        if (!token) {
+            console.log('No user token was found in local storage.')
+            return undefined;
+        }
+        return JSON.parse(token);
+    }
+
+    function lsSetToken(userToken) {
+        if (!userToken) {
+            throw new Error("Invalid userToken input.")
+        }
+        localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
+    }
+
+    function lsRemoveToken() {
+        localStorage.removeItem(userTokenItemName);
+    }
+
     // TODO: check expiration on access token
-    // TODO: centralize get/set logic for access token in local storage
+
     /*
      * Define Components
      */
@@ -77,7 +97,7 @@
           </div>
         `,
         mounted() {
-            this.authenticated = !!localStorage.getItem(userTokenItemName);
+            this.authenticated = !!lsGetToken();
         },
         data() {
             return {
@@ -88,7 +108,7 @@
         },
         methods: {
             signIn() {
-                let self = this;
+                const self = this;
                 self.message = 'Signing in...';
                 axios
                     // Get Spotify auth URL from API
@@ -108,7 +128,7 @@
                     });
             },
             clearToken() {
-                localStorage.removeItem(userTokenItemName);
+                lsRemoveToken();
                 this.authenticated = false;
             }
         }
@@ -130,14 +150,14 @@
           <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
         `,
         mounted() {
-            if (!!localStorage.getItem(userTokenItemName)) {
+            if (!!lsGetToken()) {
                 this.$router.push({name: 'data-page'});
             } else if (this.error) {
                 this.showErrorMessage(this.error);
             } else if (this.authCode) {
                 this.getAccessToken(this.authCode, this.state);
             } else {
-
+                throw new Error("Either `authCode` or `error` should be populated.")
             }
         },
         data() {
@@ -149,7 +169,7 @@
         methods: {
             getAccessToken(code, state) {
                 this.authMessage = 'Getting authorization code...';
-                let self = this;
+                const self = this;
                 axios
                     .post('auth/token', {
                         code: code,
@@ -158,7 +178,7 @@
                     .then(function (response) {
                         try {
                             self.authMessage = 'Logged in successfully!';
-                            localStorage.setItem(userTokenItemName, JSON.stringify(response.data));
+                            lsSetToken(response.data);
                             router.push({name: 'data-page'});
                         } catch (e) {
                             self.errorMessage = e;
@@ -187,11 +207,12 @@
           <user-data></user-data>
         `,
         mounted() {
-            if (!localStorage.getItem(userTokenItemName)) {
+            const token = lsGetToken();
+            if (!token) {
                 console.log('User does not have a token. Going back to homepage.');
                 this.$router.push({name: 'homepage'});
             } else {
-                this.userToken = JSON.parse(localStorage.getItem(userTokenItemName));
+                this.userToken = token;
                 axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
             }
         },
@@ -213,7 +234,7 @@
         },
         methods: {
             refreshToken() {
-                let self = this;
+                const self = this;
                 axios
                     .post('auth/token/refresh', {
                         refreshToken: this.userToken.refreshToken,
@@ -221,7 +242,7 @@
                     .then(function (response) {
                         try {
                             self.userToken = response.data;
-                            localStorage.setItem(userTokenItemName, JSON.stringify(response.data));
+                            lsSetToken(response.data);
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -244,8 +265,7 @@
               <button v-on:click="getUserProfile" class="btn btn-primary col p-2">Get User Profile</button>
               <button v-on:click="getUserPlaylists" class="btn btn-secondary col p-2">Get Playlists</button>
             </div>
-            <obj-properties-list v-if="userProfile" v-bind:obj="userProfile"></obj-properties-list>
-            <obj-properties-list v-if="userPlaylists" v-bind:obj="userPlaylists"></obj-properties-list>
+            <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic"
                  class="img-thumbnail">
@@ -257,16 +277,18 @@
                 userProfile: null,
                 userPlaylists: null,
                 errorMessage: null,
+                displayObject: null,
             };
         },
         methods: {
             getUserProfile() {
-                let self = this;
+                const self = this;
                 axios
                     .get('user')
                     .then(function (response) {
                         try {
                             self.userProfile = response.data;
+                            self.displayObject = self.userProfile;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -276,12 +298,13 @@
                     });
             },
             getUserPlaylists() {
-                let self = this;
+                const self = this;
                 axios
                     .get('user/playlists')
                     .then(function (response) {
                         try {
                             self.userPlaylists = response.data;
+                            self.displayObject = self.userPlaylists;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -296,7 +319,7 @@
     const ObjectPropertiesListComponent = {
         props: ['obj'],
         template: `
-          <table class="table table-success table-striped table-bordered">
+          <table class="table table-success table-striped table-bordered text-break">
           <tbody>
           <tr v-for="(value,name) in obj">
             <td>
