@@ -1,5 +1,8 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Playlister.Models.Enums;
 
 #pragma warning disable 8618
 
@@ -8,8 +11,6 @@ namespace Playlister.Models.SpotifyApi
     // ReSharper disable once ClassNeverInstantiated.Global
     public record PlaylistObject
     {
-        private readonly string _type;
-
         /// <summary>
         /// `true` if the owner allows other users to modify the playlist.
         /// </summary>
@@ -71,26 +72,16 @@ namespace Playlister.Models.SpotifyApi
         public string SnapshotId { get; init; }
 
         /// <summary>
-        /// Information about the tracks of the playlist. Note, a track object may be `null`. This can happen if a track is no longer available.
+        /// Information about the tracks of the playlist.
+        /// Note, a track object may be `null`. This can happen if a track is no longer available.
         /// </summary>
         public PlaylistTrackObject? Tracks { get; init; }
 
         /// <summary>
         /// The object type: “playlist”.
         /// </summary>
-        public string Type
-        {
-            get => _type;
-            init
-            {
-                if (value != "playlist")
-                {
-                    throw new ArgumentException($"Invalid value `{value}`. Expected `playlist`");
-                }
-
-                _type = value;
-            }
-        }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for the playlist.

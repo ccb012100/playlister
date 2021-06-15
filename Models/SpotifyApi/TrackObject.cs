@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {
     public record TrackObject
     {
-        private readonly string _type;
-
         /// <summary>
         /// The album on which the track appears. The album object includes a link in `href` to full information about the album.
         /// </summary>
@@ -107,19 +108,8 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: “track”.
         /// </summary>
-        public string Type
-        {
-            get => _type;
-            init
-            {
-                if (value != "track")
-                {
-                    throw new ArgumentException($"Value `{value}` was not expected value `track`.");
-                }
-
-                _type = value;
-            }
-        }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for the track.

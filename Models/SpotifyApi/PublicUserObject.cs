@@ -1,12 +1,13 @@
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {
     public record PublicUserObject
     {
-        private readonly string _type;
-
         /// <summary>
         /// The name displayed on the user’s profile. `null` if not available.
         /// </summary>
@@ -37,23 +38,11 @@ namespace Playlister.Models.SpotifyApi
         /// </summary>
         public IEnumerable<ImageObject> Images { get; init; }
 
-        // TODO: set validation on value
         /// <summary>
         /// The object type: “user”.
         /// </summary>
-        public string Type
-        {
-            get => _type;
-            init
-            {
-                if (value != "user")
-                {
-                    throw new ArgumentException($"Value `{value}` does not match expected value `user`.");
-                }
-
-                _type = value;
-            }
-        }
+        [JsonConverter(typeof(StringEnumConverter))]
+        public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for this user.

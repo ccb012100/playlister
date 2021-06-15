@@ -1,6 +1,6 @@
 namespace Playlister.Models.SpotifyApi
 {
-    public record TrackRestrictionObject : IRestrictionObject
+    public record AlbumRestrictionObject : IRestrictionObject
     {
         public string Reason { get; init; }
     }
