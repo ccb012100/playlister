@@ -22,7 +22,7 @@ namespace Playlister.HttpClients
         /// <param name="requestParams"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [Get("/me/playlists")]
+        [Get("/me/playlists?market=US")]
         Task<PagingObject<PlaylistObject>> GetCurrentUserPlaylists(CurrentUserPlaylistsRequest requestParams,
             CancellationToken cancellationToken);
     }

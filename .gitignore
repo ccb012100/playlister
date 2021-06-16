@@ -8,3 +8,6 @@ obj/
 out/
 
 ClientApp/node_modules/
+*/node_modules/
+
+playlister.sqlite

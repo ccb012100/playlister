@@ -1,6 +1,14 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using Dapper;
+using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.SqlClient;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -16,9 +24,27 @@ namespace Playlister.Extensions
 {
     public static class StartupExtensions
     {
-        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config)
+        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config) =>
+            services
+                .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
+                .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
+
+        public static void ConfigureFluentMigrator(this IServiceCollection serviceCollection)
         {
-            return services.Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify));
+            string dbName = serviceCollection.BuildServiceProvider()
+                .GetService<IOptions<DatabaseOptions>>()!.Value.DbName;
+
+            ServiceProvider? serviceProvider = serviceCollection
+                .AddFluentMigratorCore()
+                .ConfigureRunner(c => c
+                    .AddSQLite()
+                    .WithGlobalConnectionString($"DataSource={dbName}")
+                    .ScanIn(Assembly.GetExecutingAssembly()).For.All())
+                .AddLogging(c => c.AddFluentMigratorConsole())
+                .BuildServiceProvider(false);
+
+            using IServiceScope? scope = serviceProvider.CreateScope();
+            scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
         }
 
         // ReSharper disable once UnusedMethodReturnValue.Global

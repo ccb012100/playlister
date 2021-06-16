@@ -1,8 +1,10 @@
 using System.Reflection;
 using System.Text.Json.Serialization;
+using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
+using Playlister.Models;
 
 namespace Playlister
 {
@@ -49,6 +52,8 @@ namespace Playlister
 
             services.AddControllers().AddNewtonsoftJson();
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
+
+            services.ConfigureFluentMigrator();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +61,11 @@ namespace Playlister
         public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory,
             IHostApplicationLifetime appLifetime)
         {
+            ILogger<Startup> logger = loggerFactory.CreateLogger<Startup>();
+            appLifetime.ApplicationStarted.Register(() => OnStarted(logger));
+            appLifetime.ApplicationStopping.Register(() => OnStopping(logger));
+            appLifetime.ApplicationStopped.Register(() => OnStopped(logger));
+
             if (_environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage()
@@ -84,11 +94,6 @@ namespace Playlister
 
             // ~/app/* URLs will serve up the SPA default page (index.html)
             app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
-
-            ILogger<Startup> logger = loggerFactory.CreateLogger<Startup>();
-            appLifetime.ApplicationStarted.Register(() => OnStarted(logger));
-            appLifetime.ApplicationStopping.Register(() => OnStopping(logger));
-            appLifetime.ApplicationStopped.Register(() => OnStopped(logger));
         }
 
         private void OnStarted(ILogger logger)
