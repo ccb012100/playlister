@@ -37,15 +37,19 @@
             <div class="navbar-nav p-1">
                 <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
             </div>
+            <div class="navbar-nav p-1 ms-auto">
+                <router-link :to="{name: 'logout'}" class="btn btn-danger">Sign out</router-link>
+            </div>
         </div>
     </nav>
     <router-view></router-view>
 </div>
 </body>
-<script type="module">
+<script type=" module
+                ">
     /*
-     * Configure Axios
-     */
+    * Configure Axios
+    */
     axios.defaults.withCredentials = true;
     axios.defaults.baseURL = 'https://localhost:5001/api/';
     const userTokenItemName = 'userToken';
@@ -73,8 +77,8 @@
     // TODO: check expiration on access token
 
     /*
-     * Define Components
-     */
+    * Define Components
+    */
     const RootComponent = {
         template: `
           <h3>Page loaded at:</h3>
@@ -136,11 +140,25 @@
 
     const PageNotFoundComponent = {
         template: `
-          <div class="alert alert-warning" role="alert">
-          <h4 class="alert-heading">404 Page Not Found</h4>
-          <p>Sorry, there's not a page at {{ this.$route.path }}</p>
-          </div>
-        `,
+                <div class="alert alert-warning" role="alert">
+                    <h4 class="alert-heading">404 Page Not Found</h4>
+                    <p>Sorry, there's not a page at {{ this.$route.path }}</p>
+                </div>
+                `,
+    };
+
+    const LogoutComponent = {
+        template: `
+                <div class="alert alert-info" role="alert">
+                    <p>Logging out...</p>
+                </div>
+                `,
+        mounted() {
+            if (lsGetToken()) {
+                lsRemoveToken();
+            }
+            this.$router.push({name: 'homepage'});
+        }
     };
 
     const LoginComponent = {
@@ -200,7 +218,9 @@
           <div class="card-body">
             <h5 class="card-title">Data page</h5>
             <obj-properties-list v-bind:obj="userToken"></obj-properties-list>
-            <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh token</button>
+            <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh
+              token
+            </button>
             <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
           </div>
           </div>
@@ -262,12 +282,15 @@
               User Profile
             </h5>
             <div class="row">
-              <button v-on:click="getUserProfile" class="btn btn-primary col p-2">Get User Profile</button>
-              <button v-on:click="getUserPlaylists" class="btn btn-secondary col p-2">Get Playlists</button>
+              <button v-on:click="getUserProfile" class="btn btn-primary col p-2">Get User Profile
+              </button>
+              <button v-on:click="getUserPlaylists" class="btn btn-secondary col p-2">Get Playlists
+              </button>
             </div>
             <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-            <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100" alt="user profile pic"
+            <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100"
+                 alt="user profile pic"
                  class="img-thumbnail">
           </div>
           </div>
@@ -335,8 +358,8 @@
     };
 
     /*
-     * Create Routes and Router
-     */
+    * Create Routes and Router
+    */
     const routes = [
         {
             path: '/app/home',
@@ -362,14 +385,15 @@
             component: SpotifyDataComponent,
             props: true,
         },
+        {path: '/logout', name: "logout", component: LogoutComponent},
         {path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent},
     ];
 
     const router = VueRouter.createRouter({history: VueRouter.createWebHistory(), routes});
 
     /*
-     * Create and mount App
-     */
+    * Create and mount App
+    */
     const app = Vue.createApp({});
     app.component('user-data', CurrentUserComponent);
     app.component('obj-properties-list', ObjectPropertiesListComponent);
