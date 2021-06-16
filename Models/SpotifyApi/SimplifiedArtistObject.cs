@@ -1,5 +1,4 @@
 using System;
-using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
@@ -24,7 +23,6 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>artist</c>
         /// </summary>
-        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Artist)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 #pragma warning disable 8618
@@ -79,7 +78,6 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>playlist</c>
         /// </summary>
-        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Playlist)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

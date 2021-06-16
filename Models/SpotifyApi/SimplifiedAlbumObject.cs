@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
@@ -85,7 +84,6 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>album</c>
         /// </summary>
-        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Album)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
