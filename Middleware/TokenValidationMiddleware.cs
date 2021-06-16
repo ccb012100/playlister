@@ -39,45 +39,42 @@ namespace Playlister.Middleware
                 _logger.LogDebug($"There is no ValidateTokenAttribute on the endpoint {endpoint?.DisplayName}");
                 valid = true;
             }
-            else
+            // valid if there is an AccessToken header with a valid token
+            else if (AuthenticationHeaderValue.TryParse(context.Request.Headers["Authorization"],
+                out AuthenticationHeaderValue? authHeader))
             {
-                // valid if there is an AccessToken header with a valid token
-                if (AuthenticationHeaderValue.TryParse(context.Request.Headers["Authorization"],
-                    out AuthenticationHeaderValue? authHeader))
-                {
-                    _logger.LogDebug($"Validating access to endpoint {endpoint?.DisplayName}");
-                    /*
-                     * TODO: instead of "Bearer xyz", the Authorization Header is just "xyz", so instead of Parameter,
-                     * it's being set as Scheme. This seems wrong, so need to investigate what's going on.
-                     */
-                    // string authToken = authHeader.Parameter!;
-                    string authToken = authHeader.Scheme;
-                    _logger.LogDebug($"auth token = {authToken}");
+                _logger.LogDebug($"Validating access to endpoint {endpoint?.DisplayName}");
+                /*
+                 * TODO: instead of "Bearer xyz", the Authorization Header is just "xyz", so instead of Parameter,
+                 * it's being set as Scheme. This seems wrong, so need to investigate what's going on.
+                 */
+                // string authToken = authHeader.Parameter!;
+                string authToken = authHeader.Scheme;
+                _logger.LogDebug($"auth token = {authToken}");
 
-                    if (_cache.TryGetValue(authToken, out UserAccessInfo cacheEntry))
+                if (_cache.TryGetValue(authToken, out UserAccessInfo cacheEntry))
+                {
+                    if (cacheEntry.Expiration > DateTime.Now)
                     {
-                        if (cacheEntry.Expiration > DateTime.Now)
-                        {
-                            valid = true;
-                            _httpContextAccessor.HttpContext!.Items["AccessToken"] = authToken;
-                            _logger.LogDebug("Token is valid");
-                        }
-                        else
-                        {
-                            _logger.LogWarning($"Cache entry expiration {cacheEntry.Expiration} has passed.");
-                            // TODO: use refresh token to get new access token
-                        }
+                        valid = true;
+                        _httpContextAccessor.HttpContext!.Items["AccessToken"] = authToken;
+                        _logger.LogDebug("Token is valid");
                     }
                     else
                     {
-                        _logger.LogWarning("Auth token was not found in the cache");
+                        _logger.LogWarning($"Cache entry expiration {cacheEntry.Expiration} has passed.");
+                        // TODO: use refresh token to get new access token
                     }
                 }
                 else
                 {
-                    _logger.LogWarning(
-                        $"Was unable to parse an AuthenticationHeaderValue from `context.Request.Headers[\"Authorization\"]`");
+                    _logger.LogWarning("Auth token was not found in the cache");
                 }
+            }
+            else
+            {
+                _logger.LogWarning(
+                    $"Was unable to parse an AuthenticationHeaderValue from `context.Request.Headers[\"Authorization\"]`");
             }
 
             if (valid)

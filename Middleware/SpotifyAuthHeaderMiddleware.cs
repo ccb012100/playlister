@@ -21,11 +21,12 @@ namespace Playlister.Middleware
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            // TODO: refresh token here if it has expired etc.
+            var accessToken = (string?) _contextAccessor.HttpContext!.Items["AccessToken"];
 
-            request.Headers.Authorization =
-                new AuthenticationHeaderValue("Bearer",
-                    (string?) _contextAccessor.HttpContext!.Items["AccessToken"]);
+            if (!string.IsNullOrWhiteSpace(accessToken))
+            {
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+            }
 
             return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
         }

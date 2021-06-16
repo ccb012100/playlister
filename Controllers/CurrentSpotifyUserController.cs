@@ -21,7 +21,6 @@ namespace Playlister.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        [ValidateToken]
         public async Task<PrivateUserObject> Get()
         {
             PrivateUserObject user = await Mediator.Send(new CurrentUserRequest());
@@ -35,7 +34,6 @@ namespace Playlister.Controllers
         /// <param name="limit">The maximum number of playlists to return. Default: 20. Minimum: 1. Maximum: 50.</param>
         /// <returns></returns>
         [HttpGet("playlists")]
-        [ValidateToken]
         public async Task<ActionResult<PagingObject<PlaylistObject>>> GetPlaylists([FromQuery] int? offset,
             [FromQuery] int? limit)
         {
