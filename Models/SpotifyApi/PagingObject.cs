@@ -24,7 +24,7 @@ namespace Playlister.Models.SpotifyApi
         public int Limit { get; init; }
 
         /// <summary>
-        /// URL to the next page of items. (`null` if none)
+        /// URL to the next page of items. (<c>null</c> if none)
         /// </summary>
         public Uri? Next { get; init; }
 
@@ -34,7 +34,7 @@ namespace Playlister.Models.SpotifyApi
         public int Offset { get; init; }
 
         /// <summary>
-        /// URL to the previous page of items. (`null` if none)
+        /// URL to the previous page of items. (<c>null</c> if none)
         /// </summary>
         public Uri? Previous { get; init; }
 

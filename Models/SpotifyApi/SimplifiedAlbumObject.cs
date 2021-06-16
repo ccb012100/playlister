@@ -2,36 +2,35 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {
-    public record SimplifiedAlbumObject
+    public record SimplifiedAlbumObject : ISpotifyApiObject
     {
-        private SpotifyApiObjectType _type;
-
         /// <summary>
         /// The field is present when getting an artist’s albums.
-        /// Possible values are “album”, “single”, “compilation”, “appears_on”.
-        /// Compare to `album_type` this field represents relationship between the artist and the album.
+        /// Possible values are <c>album</c>, <c>single</c>, <c>compilation</c>, <c>appears_on</c>.
+        /// Compare to <c>album_type</c> this field represents relationship between the artist and the album.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public string? AlbumGroup { get; init; }
 
         /// <summary>
-        /// The type of the album: one of “album”, “single”, or “compilation”.
+        /// The type of the album: one of <c>album</c>, <c>single</c>, or <c>compilation</c>.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public string AlbumType { get; init; }
 
         /// <summary>
         /// The artists of the album.
-        /// Each artist object includes a link in `href` to more detailed information about the artist.
+        /// Each artist object includes a link in <c>href</c> to more detailed information about the artist.
         /// </summary>
         public ICollection<SimplifiedArtistObject> Artists { get; init; }
 
         /// <summary>
-        /// The markets in which the album is available: `ISO 3166-1 alpha-2` country codes.
+        /// The markets in which the album is available: <c>ISO 3166-1 alpha-2</c> country codes.
         /// Note that an album is considered available in a market when at least 1 of its tracks is available in that market.
         /// </summary>
         public ICollection<string> AvailableMarkets { get; init; }
@@ -62,13 +61,13 @@ namespace Playlister.Models.SpotifyApi
         public string Name { get; init; }
 
         /// <summary>
-        /// The date the album was first released, for example `1981`.
-        /// Depending on the precision, it might be shown as `1981-12` or `1981-12-15`.
+        /// The date the album was first released, for example <c>1981</c>.
+        /// Depending on the precision, it might be shown as <c>1981-12</c> or <c>1981-12-15</c>.
         /// </summary>
         public string ReleaseDate { get; init; }
 
         /// <summary>
-        /// The precision with which `release_date` value is known: `year` , `month` , or `day`.
+        /// The precision with which <c>release_date</c> value is known: <c>year</c>, <c>month</c>, or <c>day</c>.
         /// </summary>
         [JsonConverter(typeof(StringEnumConverter))]
         public ReleaseDatePrecision ReleaseDatePrecision { get; init; }
@@ -84,9 +83,9 @@ namespace Playlister.Models.SpotifyApi
         public int TotalTracks { get; init; }
 
         /// <summary>
-        /// The object type: “album"
+        /// The object type: <c>album</c>
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Album)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

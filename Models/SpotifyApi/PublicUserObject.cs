@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
@@ -9,7 +8,7 @@ namespace Playlister.Models.SpotifyApi
     public record PublicUserObject
     {
         /// <summary>
-        /// The name displayed on the user’s profile. `null` if not available.
+        /// The name displayed on the user’s profile. <c>null</c> if not available.
         /// </summary>
         public string? DisplayName { get; init; }
 
@@ -39,9 +38,9 @@ namespace Playlister.Models.SpotifyApi
         public IEnumerable<ImageObject> Images { get; init; }
 
         /// <summary>
-        /// The object type: “user”.
+        /// The object type: <c>user</c>.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.User)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

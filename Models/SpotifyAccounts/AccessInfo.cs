@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel.DataAnnotations;
 
 // ReSharper disable UnusedMember.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
@@ -14,11 +13,11 @@ namespace Playlister.Models.SpotifyAccounts
         private const string BearerType = "Bearer";
         private readonly string _tokenType;
 
-        [Required]
         public string AccessToken { get; init; }
 
-        // How the access token may be used: always “Bearer”.
-        [Required]
+        /// <summary>
+        /// How the access token may be used: always <c>Bearer</c>.
+        /// </summary>
         public string TokenType
         {
             get => _tokenType;
@@ -26,28 +25,27 @@ namespace Playlister.Models.SpotifyAccounts
             {
                 if (value != BearerType)
                 {
-                    throw new ArgumentException($"Found TokenType `{value}`. This should always be `{BearerType}`");
+                    throw new ArgumentException($"Invalid TokenType `{value}`. Value should always be `{BearerType}`");
                 }
 
                 _tokenType = value;
             }
         }
 
-        // A space-separated list of scopes which have been granted for this `access_token`
-        [Required]
+        /// <summary>
+        /// A space-separated list of scopes which have been granted for this <c>access_token</c>
+        /// </summary>
         public string Scope { get; init; }
 
-        // The time period (in seconds) for which the access token is valid.
-        [Required]
+        /// <summary>
+        /// The time period (in seconds) for which the access token is valid.
+        /// </summary>
         public int ExpiresIn { get; init; }
 
-        /*
-         * A token that can be sent to the Spotify Accounts service in place of an authorization code.
-         * (When the access code expires, send a POST request to the Accounts service /api/token endpoint,
-         * but use this code in place of an authorization code. A new access token will be returned.
-         * A new refresh token might be returned too.)
-         */
-        [Required]
+        /// <summary>
+        /// A token that can be sent to the Spotify Accounts service in place of an authorization code.
+        /// (When the access code expires, send a <c>POST</c> request to the Accounts service <c>/api/token</c> endpoint, but use this code in place of an authorization code. A new access token will be returned. A new refresh token might be returned too.)
+        /// </summary>
         public string RefreshToken { get; init; }
     }
 }

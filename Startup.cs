@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,7 +47,7 @@ namespace Playlister
                 .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
                 .AddHttpClients();
 
-            services.AddControllers();
+            services.AddControllers().AddNewtonsoftJson();
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
         }
 

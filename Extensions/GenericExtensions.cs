@@ -15,7 +15,7 @@ namespace Playlister.Extensions
         public static string ToPrettyPrintJson<T>(this T t) => JsonConvert.SerializeObject(t, Formatting.Indented);
 
         /// <summary>
-        /// Convert string to snake_cased string using EFCore's SnakeCaseNameRewriter
+        /// Convert string to snake_case using EFCore's <see cref="SnakeCaseNameRewriter"/>
         /// </summary>
         /// <param name="s">input string</param>
         /// <returns>input string converted to snake_case</returns>

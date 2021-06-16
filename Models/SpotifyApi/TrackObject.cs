@@ -1,30 +1,29 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {
-    public record TrackObject
+    public record TrackObject : ISpotifyApiObject
     {
         /// <summary>
-        /// The album on which the track appears. The album object includes a link in `href` to full information about the album.
+        /// The album on which the track appears. The album object includes a link in <c>href</c> to full information about the album.
         /// </summary>
         public SimplifiedAlbumObject Album { get; init; }
 
         /// <summary>
-        /// The artists who performed the track. Each artist object includes a link in `href` to more detailed information about the artist.
+        /// The artists who performed the track. Each artist object includes a link in <c>href</c> to more detailed information about the artist.
         /// </summary>
         public IEnumerable<ArtistObject> Artists { get; init; }
 
         /// <summary>
-        /// A list of the countries in which the track can be played, identified by their `ISO 3166-1 alpha-2` code
+        /// A list of the countries in which the track can be played, identified by their <c>ISO 3166-1 alpha-2</c> code
         /// </summary>
         public IEnumerable<string> AvailableMarkets { get; init; }
 
         /// <summary>
-        /// The disc number (usually `1` unless the album consists of more than one disc).
+        /// The disc number (usually <c>1</c> unless the album consists of more than one disc).
         /// </summary>
         public int DiscNumber { get; init; }
 
@@ -34,7 +33,7 @@ namespace Playlister.Models.SpotifyApi
         public int DurationMs { get; init; }
 
         /// <summary>
-        /// Whether or not the track has explicit lyrics (`true` = yes it does; `false` = no it does not OR unknown).
+        /// Whether or not the track has explicit lyrics (<c>true</c> = yes it does; <c>false</c> = no it does not OR unknown).
         /// </summary>
         public bool Explicit { get; init; }
 
@@ -51,7 +50,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// A link to the Web API endpoint providing full details of the track.
         /// </summary>
-        public string Href { get; init; }
+        public Uri Href { get; init; }
 
         /// <summary>
         /// The Spotify ID for the track.
@@ -65,13 +64,13 @@ namespace Playlister.Models.SpotifyApi
 
         /// <summary>
         /// Part of the response when Track Relinking is applied.
-        /// If `true`, the track is playable in the given market. Otherwise `false`.
+        /// If <c>true</c>, the track is playable in the given market. Otherwise <c>false</c>.
         /// </summary>
         public bool? IsPlayable { get; init; }
 
         /// <summary>
         /// Part of the response when Track Relinking is applied, and the requested track has been replaced with different track.
-        /// The track in the `linked_from` object contains information about the originally requested track.
+        /// The track in the <c>linked_from</c> object contains information about the originally requested track.
         /// </summary>
         public string? LinkedFrom { get; init; }
 
@@ -81,7 +80,7 @@ namespace Playlister.Models.SpotifyApi
         public string Name { get; init; }
 
         /// <summary>
-        /// The popularity of the track. The value will be between 0 and 100, with 100 being the most popular.
+        /// The popularity of the track. The value will be between <c>0</c> and <c>100</c>, with <c>100</c> being the most popular.
         /// The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.
         /// Generally speaking, songs that are being played a lot now will have a higher popularity than songs that were played a lot in the past.
         /// Duplicate tracks (e.g. the same track from a single and an album) are rated independently.
@@ -91,7 +90,7 @@ namespace Playlister.Models.SpotifyApi
         public int Popularity { get; init; }
 
         /// <summary>
-        /// A link to a 30 second preview (MP3 format) of the track. Can be `null`
+        /// A link to a 30 second preview (MP3 format) of the track. Can be <c>null</c>
         /// </summary>
         public Uri? PreviewUrl { get; init; }
 
@@ -106,9 +105,9 @@ namespace Playlister.Models.SpotifyApi
         public int TrackNumber { get; init; }
 
         /// <summary>
-        /// The object type: “track”.
+        /// The object type: <c>track</c>.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Track)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

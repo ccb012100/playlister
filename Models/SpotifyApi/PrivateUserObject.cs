@@ -1,22 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {
-    public record PrivateUserObject
+    public record PrivateUserObject : ISpotifyApiObject
     {
         /// <summary>
         /// The country of the user, as set in the user’s account profile.
-        /// An ISO 3166-1 alpha-2 country code.
+        /// An <c>ISO 3166-1 alpha-2</c> country code.
         /// This field is only available when the current user has granted access to the user-read-private scope.
         /// </summary>
         public string Country { get; init; }
 
         /// <summary>
-        /// The name displayed on the user’s profile. `null` if not available.
+        /// The name displayed on the user’s profile. <c>null</c> if not available.
         /// </summary>
         public string? DisplayName { get; init; }
 
@@ -60,14 +59,14 @@ namespace Playlister.Models.SpotifyApi
         public string? Product { get; init; }
 
         /// <summary>
-        /// The object type: “user”.
+        /// The object type: <c>user</c>.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.User)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for this user.
         /// </summary>
-        public Uri Uri { get; set; }
+        public Uri Uri { get; init; }
     }
 }

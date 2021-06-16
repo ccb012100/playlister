@@ -1,6 +1,5 @@
 using System;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 namespace Playlister.Models.SpotifyApi
@@ -23,9 +22,9 @@ namespace Playlister.Models.SpotifyApi
         public string Name { get; init; }
 
         /// <summary>
-        /// The object type: "artist"
+        /// The object type: <c>artist</c>
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Artist)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>

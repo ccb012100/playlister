@@ -16,7 +16,7 @@ namespace Playlister.Models.SpotifyApi
 
         /// <summary>
         /// The popularity of the artist.
-        /// The value will be between `0` and `100`, with `100` being the most popular.
+        /// The value will be between <c>0</c> and <c>100</c>, with <c>100</c> being the most popular.
         /// The artist’s popularity is calculated from the popularity of all the artist’s tracks.
         /// </summary>
         public int Popularity { get; init; }

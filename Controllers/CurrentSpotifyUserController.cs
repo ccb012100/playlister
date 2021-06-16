@@ -22,11 +22,10 @@ namespace Playlister.Controllers
         /// <returns></returns>
         [HttpGet]
         [ValidateToken]
-        public async Task<ActionResult<PrivateUserObject>> Get()
+        public async Task<PrivateUserObject> Get()
         {
             PrivateUserObject user = await Mediator.Send(new CurrentUserRequest());
-
-            return Ok(user);
+            return user;
         }
 
         /// <summary>
@@ -41,7 +40,6 @@ namespace Playlister.Controllers
             [FromQuery] int? limit)
         {
             PagingObject<PlaylistObject> user = await Mediator.Send(new CurrentUserPlaylistsRequest(offset, limit));
-
             return Ok(user);
         }
     }

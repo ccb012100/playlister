@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+using Playlister.Attributes;
 using Playlister.Models.Enums;
 
 #pragma warning disable 8618
@@ -9,15 +8,15 @@ using Playlister.Models.Enums;
 namespace Playlister.Models.SpotifyApi
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public record PlaylistObject
+    public record PlaylistObject : ISpotifyApiObject
     {
         /// <summary>
-        /// `true` if the owner allows other users to modify the playlist.
+        /// <c>true</c> if the owner allows other users to modify the playlist.
         /// </summary>
         public bool Collaborative { get; init; }
 
         /// <summary>
-        /// The playlist description. Only returned for modified, verified playlists, otherwise `null`.
+        /// The playlist description. Only returned for modified, verified playlists, otherwise <c>null</c>.
         /// </summary>
         public string? Description { get; init; }
 
@@ -60,9 +59,9 @@ namespace Playlister.Models.SpotifyApi
 
         /// <summary>
         /// The playlist’s public/private status:
-        /// `true` the playlist is public,
-        /// `false` the playlist is private,
-        /// `null` the playlist status is not relevant.
+        /// <c>true</c> the playlist is public,
+        /// <c>false</c> the playlist is private,
+        /// <c>null</c> the playlist status is not relevant.
         /// </summary>
         public bool? Public { get; init; }
 
@@ -73,14 +72,14 @@ namespace Playlister.Models.SpotifyApi
 
         /// <summary>
         /// Information about the tracks of the playlist.
-        /// Note, a track object may be `null`. This can happen if a track is no longer available.
+        /// Note, a track object may be <c>null</c>. This can happen if a track is no longer available.
         /// </summary>
         public PlaylistTrackObject? Tracks { get; init; }
 
         /// <summary>
-        /// The object type: “playlist”.
+        /// The object type: <c>playlist</c>
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
+        [ValidateSpotifyApiObjectType(SpotifyApiObjectType.Playlist)]
         public SpotifyApiObjectType Type { get; init; }
 
         /// <summary>
