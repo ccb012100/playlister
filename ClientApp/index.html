@@ -45,8 +45,7 @@
     <router-view></router-view>
 </div>
 </body>
-<script type=" module
-                ">
+<script type="module">
     /*
     * Configure Axios
     */
@@ -68,10 +67,12 @@
             throw new Error("Invalid userToken input.")
         }
         localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
+        axios.defaults.headers.common['Authorization'] = userToken;
     }
 
     function lsRemoveToken() {
         localStorage.removeItem(userTokenItemName);
+        axios.defaults.headers.common['Authorization'] = null;
     }
 
     // TODO: check expiration on access token
@@ -233,7 +234,6 @@
                 this.$router.push({name: 'homepage'});
             } else {
                 this.userToken = token;
-                axios.defaults.headers.common['Authorization'] = this.userToken.accessToken;
             }
         },
         data() {
