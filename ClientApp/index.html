@@ -286,6 +286,8 @@
               </button>
               <button v-on:click="getUserPlaylists" class="btn btn-warning col p-2">Get Playlists
               </button>
+              <button v-on:click="updatePlaylists" class="btn btn-info col p-2">Update Playlists
+              </button>
             </div>
             <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
@@ -304,6 +306,24 @@
             };
         },
         methods: {
+            updatePlaylists() {
+                const self = this;
+                axios
+                    .post('user/playlists/3I2gxZdBARSYKeQkLarX1D', {})
+                    .then(function (response) {
+                        try {
+                            self.displayObject =
+                                {
+                                    message: response.data
+                                };
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
             getUserProfile() {
                 const self = this;
                 axios

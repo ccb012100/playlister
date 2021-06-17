@@ -1,10 +1,7 @@
 using System.Reflection;
-using System.Text.Json.Serialization;
-using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
-using Playlister.Models;
 
 namespace Playlister
 {
@@ -43,7 +39,7 @@ namespace Playlister
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration)
                 .AddHttpContextAccessor()
-                .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
+                // .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()

@@ -1,14 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using Dapper;
 using FluentMigrator.Runner;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.SqlClient;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -74,7 +68,7 @@ namespace Playlister.Extensions
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
                 })
-                .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                // .AddHttpMessageHandler<HttpLoggingMiddleware>()
                 .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 
             services.AddRefitClient<ISpotifyApi>(snakeCaseSettings)

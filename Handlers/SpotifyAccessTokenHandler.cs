@@ -34,7 +34,7 @@ namespace Playlister.Handlers
             // TODO: validate that the `state` value matches the original value sent to user
             // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
             AccessInfo info = await _api.AccessToken(
-                new AccessTokenRequestParams
+                new AccessTokenRequest.BodyParams
                 {
                     Code = request.Code,
                     RedirectUri = _options.CallbackUrl.ToString(),

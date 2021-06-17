@@ -7,9 +7,7 @@ using Playlister.Requests;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken]
-    [ApiController]
-    [Route("api/user")]
+    [ValidateToken, ApiController, Route("api/user")]
     public class CurrentSpotifyUserController : BaseController
     {
         public CurrentSpotifyUserController(IMediator mediator) : base(mediator)
@@ -34,11 +32,20 @@ namespace Playlister.Controllers
         /// <param name="limit">The maximum number of playlists to return. Default: 20. Minimum: 1. Maximum: 50.</param>
         /// <returns></returns>
         [HttpGet("playlists")]
-        public async Task<ActionResult<PagingObject<PlaylistObject>>> GetPlaylists([FromQuery] int? offset,
+        public async Task<ActionResult<PagingObject<SimplifiedPlaylistObject>>> GetPlaylists([FromQuery] int? offset,
             [FromQuery] int? limit)
         {
-            PagingObject<PlaylistObject> user = await Mediator.Send(new CurrentUserPlaylistsRequest(offset, limit));
+            PagingObject<SimplifiedPlaylistObject> user =
+                await Mediator.Send(new CurrentUserPlaylistsRequest(offset, limit));
             return Ok(user);
+        }
+
+        [HttpPost("playlists/{playlistId}")]
+        public async Task<ActionResult> UpdatePlaylist(string playlistId)
+        {
+            await Mediator.Send(new UpdatePlaylistRequest(playlistId));
+
+            return Ok("Playlists have been updated!");
         }
     }
 }

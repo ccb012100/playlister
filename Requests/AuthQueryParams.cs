@@ -1,10 +1,13 @@
 using System;
 
+// ReSharper disable UnusedMember.Global
+
 #pragma warning disable 8618
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Playlister.Requests
 {
+    // ReSharper disable once UnusedType.Global
     public record AuthQueryParams
     {
         public string ClientId { get; init; }

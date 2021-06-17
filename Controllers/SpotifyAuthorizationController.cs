@@ -8,8 +8,7 @@ using Playlister.Requests;
 
 namespace Playlister.Controllers
 {
-    [ApiController]
-    [Route("api/auth")]
+    [ApiController, Route("api/auth")]
     public class SpotifyAuthorizationController : BaseController
     {
         public SpotifyAuthorizationController(IMediator mediator) : base(mediator)
@@ -41,8 +40,7 @@ namespace Playlister.Controllers
             return Ok(userInfo);
         }
 
-        [ValidateToken]
-        [HttpPost("token/refresh")]
+        [ValidateToken, HttpPost("token/refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshRequest tokenRefreshRequest)
         {
             UserAccessInfo userAccessInfo = await Mediator.Send(tokenRefreshRequest);

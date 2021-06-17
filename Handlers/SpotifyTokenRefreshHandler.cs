@@ -37,7 +37,7 @@ namespace Playlister.Handlers
                 Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
             AccessInfo info = await _api.RefreshToken(authParam,
-                new TokenRefreshRequestParams(request.RefreshToken), cancellationToken);
+                new TokenRefreshRequest.BodyParams(request.RefreshToken), cancellationToken);
 
             return TokenUtility.CreateUserAccessToken(info, _cache, _logger);
         }

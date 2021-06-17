@@ -61,7 +61,8 @@ namespace Playlister.Data
                 .WithColumn("added_at").AsDateTime().NotNullable()
                 .WithColumn("duration_ms").AsInt64().NotNullable()
                 .WithColumn("album_id").AsString().NotNullable()
-                .WithColumn("playlist_id").AsString().NotNullable();
+                .WithColumn("playlist_id").AsString().NotNullable()
+                .WithColumn("playlist_snapshot_id").AsString().NotNullable();
 
             Create.Table(AlbumArtist)
                 .WithColumn("album_id").AsString().NotNullable()
@@ -90,8 +91,13 @@ namespace Playlister.Data
                 .ToTable(Album).PrimaryColumn("id");
 
             Create.ForeignKey()
+                .FromTable(PlaylistTrack).ForeignColumn("playlist_snapshot_id")
+                .ToTable(PlaylistTrack).PrimaryColumn("snapshot_id");
+
+            Create.ForeignKey()
                 .FromTable(PlaylistTrack).ForeignColumn("playlist_id")
                 .ToTable(PlaylistTrack).PrimaryColumn("id");
+
 
             Create.ForeignKey()
                 .FromTable(AlbumArtist).ForeignColumn("album_id")
@@ -130,6 +136,11 @@ namespace Playlister.Data
             Create.Index()
                 .OnTable(PlaylistTrack)
                 .OnColumn("playlist_id").Ascending()
+                .WithOptions().Clustered();
+
+            Create.Index()
+                .OnTable(PlaylistTrack)
+                .OnColumn("playlist_snapshot_id").Ascending()
                 .WithOptions().Clustered();
         }
     }
