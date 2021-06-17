@@ -4,65 +4,94 @@ namespace Playlister.Data
 {
     [Migration(20210616)]
     // ReSharper disable once UnusedType.Global
-    public class AddPlaylistTable : Migration
+    public class AddPlaylistTable : AutoReversingMigration
     {
         private const string Playlist = "Playlist";
-        private const string Track = "Track";
-        private const string Album = "Album";
         private const string Artist = "Artist";
+        private const string Album = "Album";
+
+        /// <summary>
+        /// Tracks contained in a Playlist
+        /// </summary>
+        private const string PlaylistTrack = "PlaylistTrack";
+
+        /// <summary>
+        /// Album/Artist many-to-many relationship
+        /// </summary>
         private const string AlbumArtist = "AlbumArtist";
+
+        /// <summary>
+        /// PlaylistTrack/Artist many-to-many relationship
+        /// </summary>
         private const string TrackArtist = "TrackArtist";
 
         public override void Up()
         {
-            /* Playlist table */
+            CreateTables();
+            CreateIndexes();
+            CreatePrimaryKeys();
+            CreateForeignKeys();
+        }
+
+        private void CreateTables()
+        {
             Create.Table(Playlist)
-                .WithColumn("id").AsString().NotNullable().PrimaryKey() // size?
+                .WithSpotifyIdColumn()
                 .WithColumn("snapshot_id").AsString().Unique().NotNullable() // size?
                 .WithColumn("collaborative").AsBoolean().NotNullable()
                 .WithColumn("description").AsString().Nullable();
 
-            /* Track table */
-            Create.Table(Track)
-                .WithColumn("id").AsString().NotNullable().PrimaryKey() // size?
+            Create.Table(Artist)
+                .WithSpotifyIdColumn()
+                .WithColumn("name").AsString().NotNullable()
+                .WithColumn("url").AsString().NotNullable();
+
+            Create.Table(Album)
+                .WithSpotifyIdColumn()
+                .WithColumn("total_tracks").AsInt16().NotNullable()
+                .WithColumn("album_type").AsString()
+                .WithColumn("release_date").AsDateTime()
+                .WithColumn("url").AsString().NotNullable();
+
+            Create.Table(PlaylistTrack)
+                .WithSpotifyIdColumn()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("track_number").AsInt16().NotNullable()
                 .WithColumn("disc_number").AsInt16().NotNullable()
                 .WithColumn("added_at").AsDateTime().NotNullable()
-                .WithColumn("duration_ms").AsInt64().NotNullable();
+                .WithColumn("duration_ms").AsInt64().NotNullable()
+                .WithColumn("album_id").AsString().NotNullable()
+                .WithColumn("playlist_id").AsString().NotNullable();
 
-            Create.Index("ix_added_at")
-                .OnTable(Track)
-                .OnColumn("added_at").Descending()
-                .WithOptions().Clustered();
-
-            /* Artist table */
-            Create.Table(Artist)
-                .WithColumn("id").AsString().NotNullable().PrimaryKey() // size?
-                .WithColumn("name").AsString().NotNullable()
-                .WithColumn("url").AsString().NotNullable();
-
-            /* Album table */
-            Create.Table(Album)
-                .WithColumn("id").AsString().NotNullable().PrimaryKey() // size?
-                .WithColumn("total_tracks").AsInt16().NotNullable()
-                .WithColumn("album_type").AsString(50)
-                .WithColumn("release_date").AsDateTime()
-                .WithColumn("url").AsString().NotNullable();
-
-            Create.Index("ix_release_date")
-                .OnTable(Album)
-                .OnColumn("total_tracks").Ascending()
-                .WithOptions().Clustered();
-
-            /* AlbumArtist table for many-to-many Artist/Album relationship */
             Create.Table(AlbumArtist)
                 .WithColumn("album_id").AsString().NotNullable()
                 .WithColumn("artist_id").AsString().NotNullable();
 
-            Create.PrimaryKey("PK_AlbumArtist")
+            Create.Table(TrackArtist)
+                .WithColumn("track_id").AsString().NotNullable()
+                .WithColumn("artist_id").AsString().NotNullable();
+        }
+
+        private void CreatePrimaryKeys()
+        {
+            Create.PrimaryKey()
                 .OnTable(AlbumArtist)
                 .Columns("album_id", "artist_id");
+
+            Create.PrimaryKey()
+                .OnTable(TrackArtist)
+                .Columns("track_id", "artist_id");
+        }
+
+        private void CreateForeignKeys()
+        {
+            Create.ForeignKey()
+                .FromTable(PlaylistTrack).ForeignColumn("album_id")
+                .ToTable(Album).PrimaryColumn("id");
+
+            Create.ForeignKey()
+                .FromTable(PlaylistTrack).ForeignColumn("playlist_id")
+                .ToTable(PlaylistTrack).PrimaryColumn("id");
 
             Create.ForeignKey()
                 .FromTable(AlbumArtist).ForeignColumn("album_id")
@@ -72,30 +101,36 @@ namespace Playlister.Data
                 .FromTable(AlbumArtist).ForeignColumn("artist_id")
                 .ToTable(Artist).PrimaryColumn("id");
 
-            /* TrackArtist table for many-to-many Track/Artist relationship */
-            Create.Table(TrackArtist)
-                .WithColumn("track_id").AsString().NotNullable()
-                .WithColumn("artist_id").AsString().NotNullable();
-
-            Create.PrimaryKey("PK_TrackArtist")
-                .OnTable(TrackArtist)
-                .Columns("track_id", "artist_id");
-
             Create.ForeignKey()
                 .FromTable(TrackArtist).ForeignColumn("track_id")
-                .ToTable(Track).PrimaryColumn("id");
+                .ToTable(PlaylistTrack).PrimaryColumn("id");
 
             Create.ForeignKey()
                 .FromTable(TrackArtist).ForeignColumn("artist_id")
                 .ToTable(Artist).PrimaryColumn("id");
         }
 
-        public override void Down()
+        private void CreateIndexes()
         {
-            Delete.Table(Artist);
-            Delete.Table(Album);
-            Delete.Table(Track);
-            Delete.Table(Playlist);
+            Create.Index()
+                .OnTable(Album)
+                .OnColumn("release_date").Ascending()
+                .WithOptions().Clustered();
+
+            Create.Index()
+                .OnTable(PlaylistTrack)
+                .OnColumn("added_at").Descending()
+                .WithOptions().Clustered();
+
+            Create.Index()
+                .OnTable(PlaylistTrack)
+                .OnColumn("album_id").Ascending()
+                .WithOptions().Clustered();
+
+            Create.Index()
+                .OnTable(PlaylistTrack)
+                .OnColumn("playlist_id").Ascending()
+                .WithOptions().Clustered();
         }
     }
 }
