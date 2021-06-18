@@ -20,10 +20,9 @@ namespace Playlister.Handlers
             _api = api;
         }
 
-        public async Task<PrivateUserObject> Handle(CurrentUserRequest request,
-            CancellationToken cancellationToken)
+        public async Task<PrivateUserObject> Handle(CurrentUserRequest request, CancellationToken ct)
         {
-            return await _api.GetCurrentUser(cancellationToken);
+            return await _api.GetCurrentUser(ct);
         }
     }
 }

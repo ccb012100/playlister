@@ -1,7 +1,7 @@
 #pragma warning disable 8618
-namespace Playlister.Models
+namespace Playlister.Configuration
 {
-    public class DatabaseOptions
+    public record DatabaseOptions
     {
         public const string Database = "Database";
 

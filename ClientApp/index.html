@@ -286,8 +286,17 @@
               </button>
               <button v-on:click="getUserPlaylists" class="btn btn-warning col p-2">Get Playlists
               </button>
-              <button v-on:click="updatePlaylist" class="btn btn-info col p-2">Update Playlist
-              </button>
+              <div class="col p-2">
+                <input id="offset-input" type="number" v-model="offset" class="m-2" placeholder="offset"/>
+                <label for="offset-input">Offset</label>
+                <input id="limit-input" type="number" v-model="limit" class="m-2" placeholder="limit"/>
+                <label for="limit-input">Limit</label>
+                <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2" placeholder="playlist id"/>
+                <label for="playlist-id-input">Playlist Id</label>
+                <button v-on:click="updatePlaylist" :disabled="!playlistId" class="btn btn-info p-2 align-center">Update
+                  Playlist
+                </button>
+              </div>
             </div>
             <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
@@ -303,14 +312,20 @@
                 userPlaylists: null,
                 errorMessage: null,
                 displayObject: null,
+                offset: Number,
+                limit: Number,
+                playlistId: null
             };
         },
         methods: {
-            // TODO: add textbox to put playlistId
             updatePlaylist() {
                 const self = this;
                 axios
-                    .post('user/playlists/6uRl2hCmp9DB9c1bhRI7ZE', {})
+                    .post('user/playlists', {
+                        offset: this.offset,
+                        limit: this.limit,
+                        playlistId: this.playlistId
+                    })
                     .then(function (response) {
                         try {
                             self.displayObject =

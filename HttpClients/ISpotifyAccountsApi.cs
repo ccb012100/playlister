@@ -12,23 +12,22 @@ namespace Playlister.HttpClients
         /// Request Access Token for the authenticated User who was granted the provided code from Spotify.
         /// </summary>
         /// <param name="bodyParams"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
         Task<AccessInfo> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
-            AccessTokenRequest.BodyParams bodyParams,
-            CancellationToken cancellationToken);
+            AccessTokenRequest.BodyParams bodyParams, CancellationToken ct);
 
         /// <summary>
         /// Get a Refresh Token for User from Spotify.
         /// </summary>
         /// <param name="authHeaderParam"></param>
         /// <param name="bodyParams"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
         Task<AccessInfo> RefreshToken([Authorize("Basic")] string authHeaderParam,
             [Body(BodySerializationMethod.UrlEncoded)]
-            TokenRefreshRequest.BodyParams bodyParams, CancellationToken cancellationToken);
+            TokenRefreshRequest.BodyParams bodyParams, CancellationToken ct);
     }
 }

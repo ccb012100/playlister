@@ -1,13 +1,11 @@
 using System;
-using System.Diagnostics.CodeAnalysis;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 #pragma warning disable 8618
-namespace Playlister.Models
+
+namespace Playlister.Configuration
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    [SuppressMessage("ReSharper", "UnassignedGetOnlyAutoProperty")]
-    public class SpotifyOptions
+    public record SpotifyOptions
     {
         public const string Spotify = "Spotify";
 

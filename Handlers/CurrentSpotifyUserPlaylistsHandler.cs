@@ -19,9 +19,9 @@ namespace Playlister.Handlers
         }
 
         public async Task<PagingObject<SimplifiedPlaylistObject>> Handle(CurrentUserPlaylistsRequest request,
-            CancellationToken cancellationToken)
+            CancellationToken ct)
         {
-            return await _api.GetCurrentUserPlaylists(request, cancellationToken);
+            return await _api.GetCurrentUserPlaylists(request, ct);
         }
     }
 }

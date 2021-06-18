@@ -40,10 +40,10 @@ namespace Playlister.Controllers
             return Ok(user);
         }
 
-        [HttpPost("playlists/{playlistId}")]
-        public async Task<ActionResult> UpdatePlaylist(string playlistId)
+        [HttpPost("playlists")]
+        public async Task<ActionResult> UpdatePlaylist(UpdatePlaylistRequest request)
         {
-            await Mediator.Send(new UpdatePlaylistRequest(playlistId));
+            await Mediator.Send(request);
 
             return Ok("Playlists have been updated!");
         }

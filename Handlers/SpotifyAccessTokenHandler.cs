@@ -4,6 +4,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Playlister.Configuration;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
@@ -29,7 +30,7 @@ namespace Playlister.Handlers
             _options = options.Value;
         }
 
-        public async Task<UserAccessInfo> Handle(AccessTokenRequest request, CancellationToken cancellationToken)
+        public async Task<UserAccessInfo> Handle(AccessTokenRequest request, CancellationToken ct)
         {
             // TODO: validate that the `state` value matches the original value sent to user
             // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
@@ -40,7 +41,7 @@ namespace Playlister.Handlers
                     RedirectUri = _options.CallbackUrl.ToString(),
                     ClientId = _options.ClientId,
                     ClientSecret = _options.ClientSecret
-                }, cancellationToken);
+                }, ct);
 
             return TokenUtility.CreateUserAccessToken(info, _cache, _logger);
         }

@@ -3,7 +3,5 @@ using Playlister.Models.SpotifyApi;
 
 namespace Playlister.Requests
 {
-    public record CurrentUserRequest : IRequest<PrivateUserObject>
-    {
-    }
+    public record CurrentUserRequest : IRequest<PrivateUserObject>;
 }

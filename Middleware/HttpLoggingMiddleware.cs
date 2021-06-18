@@ -30,7 +30,7 @@ namespace Playlister.Middleware
             string? msg;
             HttpResponseMessage? response, resp;
 
-            using (HttpRequestMessage? req = request)
+            using (HttpRequestMessage req = request)
             {
                 var id = Guid.NewGuid().ToString();
                 msg = $"[{id} -  Request]";
@@ -55,7 +55,7 @@ namespace Playlister.Middleware
                     if (req.Content is StringContent || IsTextBasedContentType(req.Headers) ||
                         IsTextBasedContentType(req.Content.Headers))
                     {
-                        string? result = await req.Content.ReadAsStringAsync(cancellationToken);
+                        string result = await req.Content.ReadAsStringAsync(cancellationToken);
 
                         _logger.LogDebug($"{msg} Content:");
                         _logger.LogDebug($"{msg} {result}");
@@ -94,7 +94,7 @@ namespace Playlister.Middleware
                 IsTextBasedContentType(resp.Content.Headers))
             {
                 DateTime start = DateTime.Now;
-                string? result = await resp.Content.ReadAsStringAsync(cancellationToken);
+                string result = await resp.Content.ReadAsStringAsync(cancellationToken);
                 DateTime end = DateTime.Now;
 
                 _logger.LogDebug($"{msg} Content:");
@@ -115,7 +115,7 @@ namespace Playlister.Middleware
                 return false;
             }
 
-            string? header = string.Join(" ", values).ToLowerInvariant();
+            string header = string.Join(" ", values).ToLowerInvariant();
 
             return _types.Any(t => header.Contains(t));
         }

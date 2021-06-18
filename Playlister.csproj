@@ -14,12 +14,14 @@
         <PackageReference Include="FluentMigrator" Version="3.2.16" />
         <PackageReference Include="FluentMigrator.Runner" Version="3.2.16" />
         <PackageReference Include="FluentValidator" Version="2.0.4" />
+        <PackageReference Include="Flurl" Version="3.0.2" />
         <PackageReference Include="Mediatr" Version="9.0.0" />
         <PackageReference Include="Mediatr.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.7" />
         <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.6" />
         <PackageReference Include="Microsoft.Data.Sqlite" Version="5.0.7" />
         <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="5.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="Polly" Version="7.2.2" />
         <PackageReference Include="Refit" Version="6.0.38" />

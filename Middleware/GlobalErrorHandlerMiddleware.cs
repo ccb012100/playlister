@@ -24,7 +24,7 @@ namespace Playlister.Middleware
             }
             catch (Exception error)
             {
-                HttpResponse? response = context.Response;
+                HttpResponse response = context.Response;
                 response.ContentType = "application/json";
 
                 switch (error)

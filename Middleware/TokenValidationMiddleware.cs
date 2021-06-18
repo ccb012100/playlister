@@ -29,7 +29,7 @@ namespace Playlister.Middleware
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug($"Entered {nameof(TokenValidationMiddleware)}");
-            Endpoint? endpoint = context.Features.Get<IEndpointFeature>()?.Endpoint;
+            Endpoint? endpoint = context.Features.Get<IEndpointFeature>().Endpoint;
             var attribute = endpoint?.Metadata.GetMetadata<ValidateTokenAttribute>();
 
             bool valid = false;

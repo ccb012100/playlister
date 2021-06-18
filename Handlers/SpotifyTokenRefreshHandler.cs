@@ -6,6 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Playlister.Configuration;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
@@ -31,13 +32,13 @@ namespace Playlister.Handlers
             _cache = cache;
         }
 
-        public async Task<UserAccessInfo> Handle(TokenRefreshRequest request, CancellationToken cancellationToken)
+        public async Task<UserAccessInfo> Handle(TokenRefreshRequest request, CancellationToken ct)
         {
             string authParam =
                 Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
             AccessInfo info = await _api.RefreshToken(authParam,
-                new TokenRefreshRequest.BodyParams(request.RefreshToken), cancellationToken);
+                new TokenRefreshRequest.BodyParams(request.RefreshToken), ct);
 
             return TokenUtility.CreateUserAccessToken(info, _cache, _logger);
         }

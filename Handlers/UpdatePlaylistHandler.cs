@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
@@ -15,32 +14,37 @@ namespace Playlister.Handlers
     // ReSharper disable once UnusedType.Global
     public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistRequest, Unit>
     {
-        private readonly ISpotifyApi _api;
+        private readonly SpotifyApiService _spotifyApiService;
         private readonly ILogger<UpdatePlaylistHandler> _logger;
 
-        public UpdatePlaylistHandler(ISpotifyApi api, ILogger<UpdatePlaylistHandler> logger)
+        public UpdatePlaylistHandler(SpotifyApiService spotifyApiService, ILogger<UpdatePlaylistHandler> logger)
         {
-            _api = api;
+            _spotifyApiService = spotifyApiService;
             _logger = logger;
         }
 
-        public async Task<Unit> Handle(UpdatePlaylistRequest request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdatePlaylistRequest request, CancellationToken ct)
         {
+            int offset = request.Offset ?? 0, itemsProcessed = 0;
+            int limit = request.Limit ?? 20;
+
             var timer = new Stopwatch();
             timer.Start();
 
             // TODO: if playlist SnapshotId is the same as in the DB, skip
             // var playlist = get Playlist();
 
-            int offset = 0, itemsProcessed = 0;
-            const int limit = 20;
-
             // page through playlist tracks
             PagingObject<PlaylistItem> playlistItems =
-                await _api.GetPlaylistItems(request.PlaylistId, offset, limit, cancellationToken);
+                await _spotifyApiService.GetPlaylistItems(request.PlaylistId, offset, limit, ct);
 
             do
             {
+                if (itemsProcessed > 0)
+                {
+                    playlistItems = await _spotifyApiService.GetPlaylistItems(playlistItems.Next!, ct);
+                }
+
                 foreach (var playlistItem in playlistItems.Items)
                 {
                     /*
@@ -48,21 +52,13 @@ namespace Playlister.Handlers
                      * - if entry exists in DB with matching (track_id, playlist_id), update snapshot_id
                      * - else add to DB
                      */
-                    _logger.LogInformation(
-                        $"{playlistItem.Track.Name} by {string.Join(", ", playlistItem.Track.Artists.Select(a => a.Name))}");
                     itemsProcessed++;
-                }
 
-                if (playlistItems.Next == null)
-                {
-                    continue;
+                    _logger.LogInformation(
+                        $"{itemsProcessed} - {playlistItem.Track.Name} by {string.Join(", ", playlistItem.Track.Artists.Select(a => a.Name))}");
                 }
-
-                offset += playlistItems.Items.Count;
-                playlistItems = await _api.GetPlaylistItems(request.PlaylistId, offset, limit, cancellationToken);
             } while (playlistItems.Next != null);
 
-            // TODO: figure out why there seems to be an off-by-one error for each page of data
             timer.Stop();
             _logger.LogInformation($"Getting the {itemsProcessed} playlist items took {timer.Elapsed.TotalSeconds}");
             return new Unit();

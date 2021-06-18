@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
 using Playlister.Extensions;
 
@@ -16,12 +17,11 @@ namespace Playlister.Middleware
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
             CancellationToken cancellationToken)
         {
-            using HttpRequestMessage? req = request;
+            using HttpRequestMessage req = request;
 
             if (!string.IsNullOrWhiteSpace(req.RequestUri!.Query))
             {
-                Dictionary<string, StringValues>? queryDict =
-                    Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(req.RequestUri!.Query);
+                Dictionary<string, StringValues> queryDict = QueryHelpers.ParseQuery(req.RequestUri!.Query);
 
                 Dictionary<string, StringValues> snakeCaseQueryDict = new();
 
@@ -31,12 +31,11 @@ namespace Playlister.Middleware
                 }
 
                 string newUri =
-                    Microsoft.AspNetCore.WebUtilities.QueryHelpers.AddQueryString(
-                        req.RequestUri.GetLeftPart(UriPartial.Path), snakeCaseQueryDict);
+                    QueryHelpers.AddQueryString(req.RequestUri.GetLeftPart(UriPartial.Path), snakeCaseQueryDict);
                 req.RequestUri = new Uri(newUri);
             }
 
-            HttpResponseMessage? response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            HttpResponseMessage response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
 
             return response;
         }

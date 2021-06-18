@@ -1,5 +1,6 @@
 using System.Reflection;
 using FluentMigrator.Runner;
+using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -9,6 +10,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using Playlister.Configuration;
 using Playlister.HttpClients;
 using Playlister.Middleware;
 using Playlister.Models;
@@ -18,17 +20,25 @@ namespace Playlister.Extensions
 {
     public static class StartupExtensions
     {
-        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config) =>
-            services
+        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config,
+            IWebHostEnvironment env)
+        {
+            if (env.IsDevelopment())
+            {
+                services.Configure<DebuggingOptions>(config.GetSection(DebuggingOptions.Debugging));
+            }
+
+            return services
                 .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
                 .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
+        }
 
-        public static void ConfigureFluentMigrator(this IServiceCollection serviceCollection)
+        public static void ConfigureFluentMigrator(this IServiceCollection services)
         {
-            string dbName = serviceCollection.BuildServiceProvider()
+            string dbName = services.BuildServiceProvider()
                 .GetService<IOptions<DatabaseOptions>>()!.Value.DbName;
 
-            ServiceProvider? serviceProvider = serviceCollection
+            ServiceProvider? serviceProvider = services
                 .AddFluentMigratorCore()
                 .ConfigureRunner(c => c
                     .AddSQLite()
@@ -37,12 +47,12 @@ namespace Playlister.Extensions
                 .AddLogging(c => c.AddFluentMigratorConsole())
                 .BuildServiceProvider(false);
 
-            using IServiceScope? scope = serviceProvider.CreateScope();
+            using IServiceScope scope = serviceProvider.CreateScope();
             scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
         }
 
         // ReSharper disable once UnusedMethodReturnValue.Global
-        public static IServiceCollection AddHttpClients(this IServiceCollection services)
+        public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
             /*
              * WARNING:
@@ -81,6 +91,22 @@ namespace Playlister.Extensions
                 .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 
             return services;
+        }
+
+        public static void AddDebuggingOptions(this IServiceCollection services)
+        {
+            IOptions<DebuggingOptions>? debugOptions =
+                services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+
+            if (debugOptions == null)
+            {
+                return;
+            }
+
+            if (debugOptions.Value.UseLoggingBehavior)
+            {
+                services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            }
         }
 
         // ReSharper disable once UnusedMethodReturnValue.Global

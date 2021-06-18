@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
+using Playlister.HttpClients;
 using Playlister.Middleware;
 
 namespace Playlister
@@ -37,17 +38,23 @@ namespace Playlister
                         .AllowCredentials();
                 }))
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
-                .AddConfigOptions(Configuration)
+                .AddConfigOptions(Configuration, _environment)
                 .AddHttpContextAccessor()
-                // .AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>))
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
-                .AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}); })
-                .AddHttpClients();
+                .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
+                .AddHttpClient<SpotifyApiService>().AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
+
+            services.AddRefitClients();
 
             services.AddControllers().AddNewtonsoftJson();
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
+
+            if (_environment.IsDevelopment())
+            {
+                services.AddDebuggingOptions();
+            }
 
             services.ConfigureFluentMigrator();
         }
