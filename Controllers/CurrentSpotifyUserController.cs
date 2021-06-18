@@ -30,7 +30,7 @@ namespace Playlister.Controllers
         /// Get the current user's Playlists.
         /// </summary>
         /// <param name="offset">The index of the first playlist to return. Default: 0 (the first object). Maximum offset: 100.000. Use with limit to get the next set of playlists.</param>
-        /// <param name="limit">The maximum number of playlists to return. Default: 20. Minimum: 1. Maximum: 50.</param>
+        /// <param name="limit">The maximum number of playlists to return. Default: <c>50</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.</param>
         /// <returns></returns>
         [HttpGet("playlists")]
         public async Task<ActionResult<PagingObject<SimplifiedPlaylistObject>>> GetPlaylists([FromQuery] int? offset,

@@ -1,5 +1,7 @@
 using MediatR;
 
+#pragma warning disable 8618
+
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
 namespace Playlister.Requests
@@ -10,12 +12,8 @@ namespace Playlister.Requests
     // ReSharper disable once UnusedType.Global
     public record UpdatePlaylistRequest : IRequest<Unit>
     {
-        public UpdatePlaylistRequest(string playlistId)
-        {
-            PlaylistId = playlistId;
-        }
-
         // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string PlaylistId { get; init; }
 
         /// <summary>
@@ -27,7 +25,8 @@ namespace Playlister.Requests
 
         /// <summary>
         /// The maximum number of playlists to return.
-        /// Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
+        /// Default: <c>50</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
+        /// Note: the Default on Spotify API is 50.
         /// </summary>
         public int Limit { get; init; } = 50;
     }

@@ -21,7 +21,8 @@ namespace Playlister.Requests
 
         /// <summary>
         /// The maximum number of playlists to return.
-        /// Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
+        /// Default: <c>50</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
+        /// Note: Spotify API Default is <c>20</c>
         /// </summary>
         [Range(1, 50)]
         public int Limit { get; init; } = 50;
