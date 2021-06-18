@@ -22,6 +22,7 @@ namespace Playlister.Controllers
         public async Task<PrivateUserObject> Get()
         {
             PrivateUserObject user = await Mediator.Send(new CurrentUserRequest());
+
             return user;
         }
 
@@ -37,6 +38,7 @@ namespace Playlister.Controllers
         {
             PagingObject<SimplifiedPlaylistObject> user =
                 await Mediator.Send(new CurrentUserPlaylistsRequest(offset, limit));
+
             return Ok(user);
         }
 

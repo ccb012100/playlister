@@ -25,8 +25,8 @@ namespace Playlister.Handlers
 
         public async Task<Unit> Handle(UpdatePlaylistRequest request, CancellationToken ct)
         {
-            int offset = request.Offset ?? 0, itemsProcessed = 0;
-            int limit = request.Limit ?? 20;
+            int offset = request.Offset, itemsProcessed = 0;
+            int limit = request.Limit;
 
             var timer = new Stopwatch();
             timer.Start();
