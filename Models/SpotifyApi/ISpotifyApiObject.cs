@@ -1,5 +1,5 @@
 using System;
-using Playlister.Models.Enums;
+using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {

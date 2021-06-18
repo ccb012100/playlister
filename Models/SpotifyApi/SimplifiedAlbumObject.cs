@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
-using Playlister.Models.Enums;
+using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi
 {

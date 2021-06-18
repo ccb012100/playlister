@@ -76,7 +76,7 @@ namespace Playlister.Extensions
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                 })
-                .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                // .AddHttpMessageHandler<HttpLoggingMiddleware>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>()
                 .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 

@@ -1,5 +1,5 @@
 using System;
-using Playlister.Models.Enums;
+using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global

@@ -286,7 +286,7 @@
               </button>
               <button v-on:click="getUserPlaylists" class="btn btn-warning col p-2">Get Playlists
               </button>
-              <button v-on:click="updatePlaylists" class="btn btn-info col p-2">Update Playlists
+              <button v-on:click="updatePlaylist" class="btn btn-info col p-2">Update Playlist
               </button>
             </div>
             <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
@@ -306,10 +306,11 @@
             };
         },
         methods: {
-            updatePlaylists() {
+            // TODO: add textbox to put playlistId
+            updatePlaylist() {
                 const self = this;
                 axios
-                    .post('user/playlists/3I2gxZdBARSYKeQkLarX1D', {})
+                    .post('user/playlists/6uRl2hCmp9DB9c1bhRI7ZE', {})
                     .then(function (response) {
                         try {
                             self.displayObject =

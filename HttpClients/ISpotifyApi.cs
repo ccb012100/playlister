@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Requests;
 using Refit;
@@ -28,14 +29,18 @@ namespace Playlister.HttpClients
 
         /// <summary>
         /// Get full details of the items of a playlist owned by a Spotify user.
+        /// Applying the fields query
+        /// <c>fields=fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))</c>
         /// </summary>
         /// <param name="playlistId"></param>
         /// <param name="offset">The index of the first item to return. Default: <c>0</c> (the first object).</param>
         /// <param name="limit">The maximum number of items to return. Default: <c>100</c>. Minimum: <c>100</c>. Maximum: <c>100</c>.</param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        [Get("/playlists/{playlistId}/tracks?market=from_token")]
-        Task<PagingObject<PlaylistItemObject>> GetPlaylistItems(string playlistId, int? offset, int? limit,
+        [Get(
+            "/playlists/{playlistId}/tracks?market=from_token&" +
+            "fields=fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))")]
+        Task<PagingObject<PlaylistItem>> GetPlaylistItems(string playlistId, int? offset, int? limit,
             CancellationToken cancellationToken);
     }
 }

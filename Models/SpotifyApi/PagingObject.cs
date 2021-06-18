@@ -1,5 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Refit;
+
+// ReSharper disable UnusedMember.Global
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 8618
 
@@ -16,6 +21,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The requested data.
         /// </summary>
+        // ReSharper disable once CollectionNeverUpdated.Global
         public ICollection<T> Items { get; init; }
 
         /// <summary>

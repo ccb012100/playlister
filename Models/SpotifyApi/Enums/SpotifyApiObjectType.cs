@@ -1,7 +1,7 @@
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Converters;
 
-namespace Playlister.Models.Enums
+namespace Playlister.Models.SpotifyApi.Enums
 {
     [Newtonsoft.Json.JsonConverter(typeof(StringEnumConverter))]
     public enum SpotifyApiObjectType

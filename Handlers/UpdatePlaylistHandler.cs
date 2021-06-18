@@ -1,9 +1,12 @@
 using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Newtonsoft.Json;
 using Playlister.HttpClients;
+using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Requests;
 
@@ -29,11 +32,11 @@ namespace Playlister.Handlers
             // TODO: if playlist SnapshotId is the same as in the DB, skip
             // var playlist = get Playlist();
 
-            int offset = 0;
-            const int limit = 100;
+            int offset = 0, itemsProcessed = 0;
+            const int limit = 20;
 
             // page through playlist tracks
-            PagingObject<PlaylistItemObject>? playlistItems =
+            PagingObject<PlaylistItem> playlistItems =
                 await _api.GetPlaylistItems(request.PlaylistId, offset, limit, cancellationToken);
 
             do
@@ -45,7 +48,9 @@ namespace Playlister.Handlers
                      * - if entry exists in DB with matching (track_id, playlist_id), update snapshot_id
                      * - else add to DB
                      */
-                    _logger.LogInformation(playlistItem.Track.Name);
+                    _logger.LogInformation(
+                        $"{playlistItem.Track.Name} by {string.Join(", ", playlistItem.Track.Artists.Select(a => a.Name))}");
+                    itemsProcessed++;
                 }
 
                 if (playlistItems.Next == null)
@@ -53,12 +58,13 @@ namespace Playlister.Handlers
                     continue;
                 }
 
-                offset += limit;
+                offset += playlistItems.Items.Count;
                 playlistItems = await _api.GetPlaylistItems(request.PlaylistId, offset, limit, cancellationToken);
             } while (playlistItems.Next != null);
 
+            // TODO: figure out why there seems to be an off-by-one error for each page of data
             timer.Stop();
-            _logger.LogInformation($"Getting the playlist items took {timer.Elapsed.TotalSeconds}");
+            _logger.LogInformation($"Getting the {itemsProcessed} playlist items took {timer.Elapsed.TotalSeconds}");
             return new Unit();
         }
     }

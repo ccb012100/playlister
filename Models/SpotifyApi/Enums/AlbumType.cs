@@ -1,6 +1,6 @@
 using System.Runtime.Serialization;
 
-namespace Playlister.Models.Enums
+namespace Playlister.Models.SpotifyApi.Enums
 {
     public enum AlbumType
     {
