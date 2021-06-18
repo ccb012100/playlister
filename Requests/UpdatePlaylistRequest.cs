@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations;
 using MediatR;
 
 #pragma warning disable 8618
@@ -21,6 +22,7 @@ namespace Playlister.Requests
         /// Default: <c>0</c> (the first object). Maximum offset: <c>100.000</c>.
         /// Use with limit to get the next set of playlists.
         /// </summary>
+        [Range(0, 100_000)]
         public int Offset { get; init; } = 0;
 
         /// <summary>
@@ -28,6 +30,7 @@ namespace Playlister.Requests
         /// Default: <c>50</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
         /// Note: the Default on Spotify API is 50.
         /// </summary>
+        [Range(0, 50)]
         public int Limit { get; init; } = 50;
     }
 }
