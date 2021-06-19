@@ -11,6 +11,7 @@ using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Playlister.Configuration;
+using Playlister.CQRS;
 using Playlister.HttpClients;
 using Playlister.Middleware;
 using Playlister.Models;

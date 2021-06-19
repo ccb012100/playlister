@@ -3,7 +3,7 @@ using MediatR;
 using Playlister.Models;
 using Refit;
 
-namespace Playlister.Requests
+namespace Playlister.CQRS.Requests
 {
     /// <summary>
     /// Request to refresh Spotify Access Token

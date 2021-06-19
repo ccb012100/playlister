@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable UnusedMember.Global
 #pragma warning disable 8618

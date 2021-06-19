@@ -7,7 +7,7 @@ using Playlister.Models;
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
-namespace Playlister.Requests
+namespace Playlister.CQRS.Requests
 {
     // ReSharper disable once ClassNeverInstantiated.Global
     public record CurrentUserPlaylistsRequest : IRequest<IEnumerable<Playlist>>;

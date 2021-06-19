@@ -18,13 +18,11 @@ namespace Playlister.Models.SpotifyApi
         /// Possible values are <c>album</c>, <c>single</c>, <c>compilation</c>, <c>appears_on</c>.
         /// Compare to <c>album_type</c> this field represents relationship between the artist and the album.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public string? AlbumGroup { get; init; }
 
         /// <summary>
         /// The type of the album: one of <c>album</c>, <c>single</c>, or <c>compilation</c>.
         /// </summary>
-        [JsonConverter(typeof(StringEnumConverter))]
         public string AlbumType { get; init; }
 
         /// <summary>
@@ -89,6 +87,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>album</c>
         /// </summary>
+        [JsonConverter(typeof(StringEnumConverter))]
         public string Type { get; init; }
 
         /// <summary>

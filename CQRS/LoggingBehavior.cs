@@ -5,7 +5,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Playlister.Extensions;
 
-namespace Playlister.Middleware
+namespace Playlister.CQRS
 {
     /// <summary>
     /// Log Request/Response bodies from Mediatr Handlers.

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
+using Playlister.CQRS.Requests;
 using Playlister.Models.SpotifyAccounts;
-using Playlister.Requests;
 using Refit;
 
 namespace Playlister.HttpClients

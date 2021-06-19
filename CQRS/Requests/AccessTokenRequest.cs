@@ -7,7 +7,7 @@ using Refit;
 // ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
 
-namespace Playlister.Requests
+namespace Playlister.CQRS.Requests
 {
     /// <summary>
     /// Request to get an Access Token from Spotify

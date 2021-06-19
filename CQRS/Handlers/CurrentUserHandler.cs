@@ -1,15 +1,15 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Playlister.CQRS.Requests;
 using Playlister.HttpClients;
 using Playlister.Models.SpotifyApi;
-using Playlister.Requests;
 
 // ReSharper disable UnusedMember.Global
 
 // ReSharper disable UnusedType.Global
 
-namespace Playlister.Handlers
+namespace Playlister.CQRS.Handlers
 {
     public class CurrentUserHandler : IRequestHandler<CurrentUserRequest, PrivateUserObject>
     {

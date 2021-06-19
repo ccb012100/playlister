@@ -1,4 +1,7 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
+using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable UnusedMember.Global
 #pragma warning disable 8618

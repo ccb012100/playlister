@@ -5,13 +5,13 @@ using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
+using Playlister.CQRS.Requests;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
-using Playlister.Requests;
 using Playlister.Utilities;
 
-namespace Playlister.Handlers
+namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
     public class SpotifyAccessTokenHandler : IRequestHandler<AccessTokenRequest, UserAccessInfo>

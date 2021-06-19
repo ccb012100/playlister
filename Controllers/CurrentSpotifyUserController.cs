@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
+using Playlister.CQRS.Requests;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
-using Playlister.Requests;
 
 namespace Playlister.Controllers
 {

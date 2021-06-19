@@ -1,7 +1,7 @@
 using System;
 using MediatR;
 
-namespace Playlister.Requests
+namespace Playlister.CQRS.Requests
 {
     /// <summary>
     /// Request to get the URL for users to sign in to Spotify

@@ -2,10 +2,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Playlister.CQRS.Requests;
 using Playlister.Repositories;
-using Playlister.Requests;
 
-namespace Playlister.Handlers
+namespace Playlister.CQRS.Handlers
 {
     /// <summary>
     /// Add or Update the Playlists in request to the db.

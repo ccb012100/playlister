@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using MediatR;
 using Playlister.Models.SpotifyApi;
 
-namespace Playlister.Requests
+namespace Playlister.CQRS.Requests
 {
     public record UpsertPlaylistsRequest : IRequest<Unit>
     {

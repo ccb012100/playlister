@@ -2,11 +2,11 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Playlister.CQRS.Requests;
 using Playlister.HttpClients;
 using Playlister.Models.SpotifyApi;
-using Playlister.Requests;
 
-namespace Playlister.Handlers
+namespace Playlister.CQRS.Handlers
 {
     /// <summary>
     /// Add or Update the current user's playlists to the db.
