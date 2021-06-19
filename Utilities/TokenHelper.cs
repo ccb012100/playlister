@@ -9,7 +9,7 @@ namespace Playlister.Utilities
     public static class TokenUtility
     {
         /// <summary>
-        /// Create and cache a new User Access Token
+        /// Upsert and cache a new User Access Token
         /// </summary>
         /// <param name="info"></param>
         /// <param name="cache"></param>

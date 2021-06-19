@@ -10,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.HttpClients;
 using Playlister.Middleware;
+using Playlister.Repositories;
 
 namespace Playlister
 {
@@ -43,8 +44,10 @@ namespace Playlister
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
+                .AddScoped<IPlaylistRepository, PlaylistRepository>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
-                .AddHttpClient<SpotifyApiService>().AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
+                .AddHttpClient<SpotifyApiService>()
+                .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
 
             services.AddRefitClients();
 

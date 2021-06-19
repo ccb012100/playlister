@@ -1,3 +1,4 @@
+using FluentMigrator;
 using FluentMigrator.Builders.Create.Table;
 
 namespace Playlister.Data
@@ -20,7 +21,7 @@ namespace Playlister.Data
         }
 
         /// <summary>
-        /// Create <c>created_at</c> and <c>modified_at</c> columns on the table.
+        /// Upsert <c>created_at</c> and <c>modified_at</c> columns on the table.
         /// </summary>
         /// <param name="tableWithColumnSyntax">The table to add the columns to</param>
         /// <returns></returns>
@@ -28,8 +29,8 @@ namespace Playlister.Data
             this ICreateTableWithColumnSyntax tableWithColumnSyntax)
         {
             return tableWithColumnSyntax
-                .WithColumn("created_at").AsDateTime().NotNullable()
-                .WithColumn("modified_at").AsDateTime().NotNullable();
+                .WithColumn("created_at").AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentUTCDateTime)
+                .WithColumn("modified_at").AsDateTime().Nullable();
         }
     }
 }

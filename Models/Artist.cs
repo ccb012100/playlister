@@ -7,6 +7,7 @@ namespace Playlister.Models
     public record Artist
     {
         public string Id { get; init; }
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string Name { get; init; }
     }
 }

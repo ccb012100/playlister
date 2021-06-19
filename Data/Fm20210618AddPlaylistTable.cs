@@ -2,9 +2,9 @@ using FluentMigrator;
 
 namespace Playlister.Data
 {
-    [Migration(20210616)]
+    [Migration(20210618)]
     // ReSharper disable once UnusedType.Global
-    public class AddPlaylistTable : AutoReversingMigration
+    public class Fm20210618AddPlaylistTable : AutoReversingMigration
     {
         private const string Playlist = "Playlist";
         private const string Artist = "Artist";
@@ -37,17 +37,22 @@ namespace Playlister.Data
         {
             Create.Table(Playlist)
                 .WithSpotifyIdColumn()
-                .WithColumn("snapshot_id").AsString().Unique().NotNullable() // size?
+                .WithTimeStamps()
+                .WithColumn("snapshot_id").AsString().Unique().NotNullable()
+                .WithColumn("name").AsString().NotNullable()
                 .WithColumn("collaborative").AsBoolean().NotNullable()
-                .WithColumn("description").AsString().Nullable();
+                .WithColumn("description").AsString().Nullable()
+                .WithColumn("public").AsBoolean().Nullable();
 
             Create.Table(Artist)
                 .WithSpotifyIdColumn()
+                .WithTimeStamps()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("url").AsString().NotNullable();
 
             Create.Table(Album)
                 .WithSpotifyIdColumn()
+                .WithTimeStamps()
                 .WithColumn("total_tracks").AsInt16().NotNullable()
                 .WithColumn("album_type").AsString()
                 .WithColumn("release_date").AsDateTime()
@@ -55,6 +60,7 @@ namespace Playlister.Data
 
             Create.Table(PlaylistTrack)
                 .WithSpotifyIdColumn()
+                .WithTimeStamps()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("track_number").AsInt16().NotNullable()
                 .WithColumn("disc_number").AsInt16().NotNullable()
@@ -65,10 +71,12 @@ namespace Playlister.Data
                 .WithColumn("playlist_snapshot_id").AsString().NotNullable();
 
             Create.Table(AlbumArtist)
+                .WithTimeStamps()
                 .WithColumn("album_id").AsString().NotNullable()
                 .WithColumn("artist_id").AsString().NotNullable();
 
             Create.Table(TrackArtist)
+                .WithTimeStamps()
                 .WithColumn("track_id").AsString().NotNullable()
                 .WithColumn("artist_id").AsString().NotNullable();
         }

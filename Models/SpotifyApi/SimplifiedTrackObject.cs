@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
@@ -89,7 +88,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>track</c>.
         /// </summary>
-        public SpotifyApiObjectType Type { get; init; }
+        public string Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for the track.

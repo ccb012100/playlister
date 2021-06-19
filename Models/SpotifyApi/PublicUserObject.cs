@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global
@@ -43,7 +42,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>user</c>.
         /// </summary>
-        public SpotifyApiObjectType Type { get; init; }
+        public string Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for this user.

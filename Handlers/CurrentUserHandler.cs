@@ -11,11 +11,11 @@ using Playlister.Requests;
 
 namespace Playlister.Handlers
 {
-    public class CurrentSpotifyUserHandler : IRequestHandler<CurrentUserRequest, PrivateUserObject>
+    public class CurrentUserHandler : IRequestHandler<CurrentUserRequest, PrivateUserObject>
     {
         private readonly ISpotifyApi _api;
 
-        public CurrentSpotifyUserHandler(ISpotifyApi api)
+        public CurrentUserHandler(ISpotifyApi api)
         {
             _api = api;
         }

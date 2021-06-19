@@ -298,7 +298,9 @@
                 </button>
               </div>
             </div>
-            <obj-properties-list v-if="displayObject" v-bind:obj="displayObject"></obj-properties-list>
+            <obj-properties-list v-if="displayObject"
+                                 v-for="item in displayObject"
+                                 v-bind:obj="item"></obj-properties-list>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100"
                  alt="user profile pic"
@@ -347,7 +349,7 @@
                     .then(function (response) {
                         try {
                             self.userProfile = response.data;
-                            self.displayObject = self.userProfile;
+                            self.displayObject = [self.userProfile];
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -364,6 +366,7 @@
                         try {
                             self.userPlaylists = response.data;
                             self.displayObject = self.userPlaylists;
+                            console.log(`Playlists count = ${response.data.length}.`)
                         } catch (e) {
                             self.errorMessage = e.message;
                         }

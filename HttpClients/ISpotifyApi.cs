@@ -1,7 +1,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Playlister.Models.SpotifyApi;
-using Playlister.Requests;
 using Refit;
 
 namespace Playlister.HttpClients
@@ -19,11 +18,12 @@ namespace Playlister.HttpClients
         /// <summary>
         /// Get a list of the playlists owned or followed by the current Spotify user.
         /// </summary>
-        /// <param name="queryParams"></param>
         /// <param name="ct"></param>
+        /// <param name="limit">The maximum number of playlists to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c></param>
+        /// <param name="offset">‘The index of the first playlist to return. Default: <c>0</c> (the first object). Maximum offset: <c>100.000</c>. Use with limit to get the next set of playlists.’</param>
         /// <returns></returns>
         [Get("/me/playlists?market=from_token")]
-        Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylists(CurrentUserPlaylistsRequest queryParams,
-            CancellationToken ct);
+        Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylists(CancellationToken ct,
+            int? limit = 50, int? offset = null);
     }
 }

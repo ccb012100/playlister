@@ -11,7 +11,7 @@ namespace Playlister.Requests
     /// Request to Update the Playlist data stored in the database
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public record UpdatePlaylistRequest : IRequest<Unit>
+    public record UpdatePlaylistItemsRequest : IRequest<Unit>
     {
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once UnusedAutoPropertyAccessor.Global

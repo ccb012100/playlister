@@ -35,14 +35,14 @@ namespace Playlister.Extensions
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
         {
-            string dbName = services.BuildServiceProvider()
-                .GetService<IOptions<DatabaseOptions>>()!.Value.DbName;
+            string connectionString = services.BuildServiceProvider()
+                .GetService<IOptions<DatabaseOptions>>()!.Value.ConnectionString;
 
-            ServiceProvider? serviceProvider = services
+            ServiceProvider serviceProvider = services
                 .AddFluentMigratorCore()
                 .ConfigureRunner(c => c
                     .AddSQLite()
-                    .WithGlobalConnectionString($"DataSource={dbName}")
+                    .WithGlobalConnectionString(connectionString)
                     .ScanIn(Assembly.GetExecutingAssembly()).For.All())
                 .AddLogging(c => c.AddFluentMigratorConsole())
                 .BuildServiceProvider(false);

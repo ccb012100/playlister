@@ -12,7 +12,9 @@ namespace Playlister.Models
     public record Track
     {
         public Album Album { get; init; }
-        public ICollection<Artist> Artists { get; init; }
+
+        // ReSharper disable once CollectionNeverUpdated.Global
+        public IEnumerable<Artist> Artists { get; init; }
         public int DiscNumber { get; init; }
         public int DurationMs { get; init; }
         public string Id { get; init; }

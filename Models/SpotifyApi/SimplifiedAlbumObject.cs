@@ -89,7 +89,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The object type: <c>album</c>
         /// </summary>
-        public SpotifyApiObjectType Type { get; init; }
+        public string Type { get; init; }
 
         /// <summary>
         /// The Spotify URI for the album.
