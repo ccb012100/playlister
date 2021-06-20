@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -51,7 +52,10 @@ namespace Playlister
 
             services.AddRefitClients();
 
-            services.AddControllers().AddNewtonsoftJson();
+            // services.AddControllers().AddNewtonsoftJson();
+            services.AddControllers().AddJsonOptions(options =>
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 
             if (_environment.IsDevelopment())
