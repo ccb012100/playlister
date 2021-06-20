@@ -36,6 +36,7 @@ namespace Playlister.Repositories
                 "WHERE snapshot_id != excluded.snapshot_id;";
 
             await using var connection = new SqliteConnection(_connectionString);
+            await connection.OpenAsync(ct);
             DbTransaction txn = await connection.BeginTransactionAsync(ct);
             await connection.ExecuteAsync(sql, playlists, transaction: txn);
             await txn.CommitAsync(ct);
