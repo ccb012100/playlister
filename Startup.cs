@@ -52,7 +52,6 @@ namespace Playlister
 
             services.AddRefitClients();
 
-            // services.AddControllers().AddNewtonsoftJson();
             services.AddControllers().AddJsonOptions(options =>
                 options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
 

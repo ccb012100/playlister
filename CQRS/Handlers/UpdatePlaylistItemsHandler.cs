@@ -61,7 +61,7 @@ namespace Playlister.CQRS.Handlers
                     _logger.LogInformation(
                         $"{itemsProcessed} - {playlistItem.Track.Name} by {string.Join(", ", playlistItem.Track.Artists.Select(a => a.Name))}");
                 }
-            } while (playlistItems.Next != null);
+            } while (playlistItems.Next is not null);
 
             timer.Stop();
             _logger.LogInformation($"Getting the {itemsProcessed} playlist items took {timer.Elapsed.TotalSeconds}");

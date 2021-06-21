@@ -96,15 +96,9 @@ namespace Playlister.Extensions
 
         public static void AddDebuggingOptions(this IServiceCollection services)
         {
-            IOptions<DebuggingOptions>? debugOptions =
-                services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+            var debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
 
-            if (debugOptions == null)
-            {
-                return;
-            }
-
-            if (debugOptions.Value.UseLoggingBehavior)
+            if (debugOptions is not null && debugOptions.Value.UseLoggingBehavior)
             {
                 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             }

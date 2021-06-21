@@ -45,7 +45,7 @@ namespace Playlister.Middleware
                     _logger.LogDebug($"{msg} {key}: {string.Join(", ", value)}");
                 }
 
-                if (req.Content != null)
+                if (req.Content is not null)
                 {
                     foreach (var (key, value) in req.Content.Headers)
                     {

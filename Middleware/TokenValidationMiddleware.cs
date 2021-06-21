@@ -34,7 +34,7 @@ namespace Playlister.Middleware
 
             bool valid = false;
 
-            if (attribute == null)
+            if (attribute is null)
             {
                 _logger.LogDebug($"There is no ValidateTokenAttribute on the endpoint {endpoint?.DisplayName}");
                 valid = true;
