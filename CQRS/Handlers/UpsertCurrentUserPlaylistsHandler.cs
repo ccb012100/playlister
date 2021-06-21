@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -14,10 +15,10 @@ namespace Playlister.CQRS.Handlers
     public class UpsertCurrentUserPlaylistsHandler : IRequestHandler<CurrentUserUpsertPlaylistsRequest, Unit>
     {
         private readonly IMediator _mediator;
-        private readonly ISpotifyApi _api;
+        private readonly SpotifyApiService _api;
         private readonly ILogger<UpsertCurrentUserPlaylistsHandler> _logger;
 
-        public UpsertCurrentUserPlaylistsHandler(IMediator mediator, ISpotifyApi api,
+        public UpsertCurrentUserPlaylistsHandler(IMediator mediator, SpotifyApiService api,
             ILogger<UpsertCurrentUserPlaylistsHandler> logger)
         {
             _mediator = mediator;
@@ -31,7 +32,11 @@ namespace Playlister.CQRS.Handlers
 
             await _mediator.Send(new UpsertPlaylistsRequest(listPage.Items), ct);
 
-            // TODO: page through playlists add upsert all
+            while (listPage.Next is not null)
+            {
+                listPage = await _api.GetCurrentUserPlaylists(listPage.Next, ct);
+                await _mediator.Send(new UpsertPlaylistsRequest(listPage.Items), ct);
+            }
 
             return new Unit();
         }

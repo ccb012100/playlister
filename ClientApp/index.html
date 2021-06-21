@@ -293,7 +293,7 @@
                 <label for="limit-input">Limit</label>
                 <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2" placeholder="playlist id"/>
                 <label for="playlist-id-input">Playlist Id</label>
-                <button v-on:click="updatePlaylist" :disabled="!playlistId" class="btn btn-info p-2 align-center">Update
+                <button v-on:click="updatePlaylist" class="btn btn-info p-2 align-center">Update
                   Playlist
                 </button>
               </div>
@@ -322,12 +322,16 @@
         methods: {
             updatePlaylist() {
                 const self = this;
-                axios
-                    .post('user/playlists', {
-                        offset: this.offset,
+                let postBody = {};
+                if (this.playlistId) {
+                    postBody = {
                         limit: this.limit,
+                        offset: this.offset,
                         playlistId: this.playlistId
-                    })
+                    };
+                }
+                axios
+                    .post('user/playlists', postBody)
                     .then(function (response) {
                         try {
                             self.displayObject =
