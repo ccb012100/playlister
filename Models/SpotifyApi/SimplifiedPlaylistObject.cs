@@ -1,6 +1,9 @@
 using System;
 using System.Collections.Generic;
- using Playlister.Models.SpotifyApi.Enums;
+using Playlister.Models.SpotifyApi.Enums;
+
+// ReSharper disable UnusedAutoPropertyAccessor.Global
+// ReSharper disable MemberCanBePrivate.Global
 
 // ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
@@ -62,7 +65,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The version identifier for the current playlist. Can be supplied in other requests to target a specific playlist version.
         /// </summary>
-        public string SnapshotId { get; init; }
+        public string? SnapshotId { get; init; }
 
         /// <summary>
         /// A collection containing a link <c>href</c> to the Web API endpoint where full details of the playlist’s tracks can be retrieved, along with the total number of tracks in the playlist.
