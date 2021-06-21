@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
+using Playlister.CQRS.Requests;
 using Playlister.Models;
 
 namespace Playlister.Controllers
@@ -14,10 +15,18 @@ namespace Playlister.Controllers
         {
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("{playlistId}")]
         public async Task<Playlist> Get(string id)
         {
             throw new NotImplementedException();
+        }
+
+        [HttpPost("tracks")]
+        public async Task<ActionResult> UpdateTracks([FromBody] MinimalPlaylist minimalPlaylistIds)
+        {
+            await Mediator.Send(new UpdatePlaylistItemsRequest(minimalPlaylistIds));
+
+            return NoContent();
         }
     }
 }

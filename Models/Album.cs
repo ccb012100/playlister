@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -14,7 +13,8 @@ namespace Playlister.Models
 {
     public record Album
     {
-        public AlbumType AlbumType { get; init; }
+        // TODO: figure out why deserialization fails when this is set as Enum
+        public string AlbumType { get; init; }
         public IEnumerable<Artist> Artists { get; init; }
         public string Id { get; init; }
         public string Name { get; init; }
@@ -24,7 +24,8 @@ namespace Playlister.Models
         /// </summary>
         public string ReleaseDate { get; init; }
 
-        public ReleaseDatePrecision ReleaseDatePrecision { get; init; }
+        public string ReleaseDatePrecision { get; init; }
+
         public int TotalTracks { get; init; }
 
         public DateTime DateOfRelease

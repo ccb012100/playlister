@@ -40,7 +40,7 @@ namespace Playlister.Data
                 .WithColumn("url").AsString().NotNullable();
 
             Create.Table(DataTables.PlaylistTrack)
-                .WithSpotifyIdColumn()
+                .WithColumn("id").AsString().NotNullable()
                 .WithTimeStamps()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("track_number").AsInt16().NotNullable()
@@ -71,6 +71,11 @@ namespace Playlister.Data
             Create.PrimaryKey()
                 .OnTable(DataTables.TrackArtist)
                 .Columns("track_id", "artist_id");
+
+            // The same track could be on multiple playlists
+            Create.PrimaryKey()
+                .OnTable(DataTables.PlaylistTrack)
+                .Columns("id", "playlist_id");
         }
 
         private void CreateForeignKeys()

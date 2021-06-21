@@ -49,7 +49,7 @@ namespace Playlister.Controllers
         {
             await Mediator.Send(new CurrentUserUpsertPlaylistsRequest());
 
-            return Ok("Playlists have been updated!");
+            return NoContent();
         }
     }
 }

@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -46,6 +47,7 @@ namespace Playlister
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
                 .AddScoped<IPlaylistRepository, PlaylistRepository>()
+                .AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
@@ -53,7 +55,10 @@ namespace Playlister
             services.AddRefitClients();
 
             services.AddControllers().AddJsonOptions(options =>
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase);
+            {
+                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+            });
 
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 

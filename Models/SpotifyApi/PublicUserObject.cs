@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
-using Playlister.Models.SpotifyApi.Enums;
 
 // ReSharper disable ClassNeverInstantiated.Global
 // ReSharper disable UnusedMember.Global

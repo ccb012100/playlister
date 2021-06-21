@@ -55,10 +55,12 @@
 
     function lsGetToken(key) {
         const token = localStorage.getItem(userTokenItemName);
+
         if (!token) {
             console.log('No user token was found in local storage.')
             return undefined;
         }
+
         return JSON.parse(token);
     }
 
@@ -66,6 +68,7 @@
         if (!userToken) {
             throw new Error("Invalid userToken input.")
         }
+
         localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
         axios.defaults.headers.common['Authorization'] = userToken;
     }
@@ -115,6 +118,7 @@
             signIn() {
                 const self = this;
                 self.message = 'Signing in...';
+
                 axios
                     // Get Spotify auth URL from API
                     .get('auth')
@@ -189,6 +193,7 @@
             getAccessToken(code, state) {
                 this.authMessage = 'Getting authorization code...';
                 const self = this;
+
                 axios
                     .post('auth/token', {
                         code: code,
@@ -225,10 +230,12 @@
             <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
           </div>
           </div>
+          <playlist-data></playlist-data>
           <user-data></user-data>
         `,
         mounted() {
             const token = lsGetToken();
+
             if (!token) {
                 console.log('User does not have a token. Going back to homepage.');
                 this.$router.push({name: 'homepage'});
@@ -255,6 +262,7 @@
         methods: {
             refreshToken() {
                 const self = this;
+
                 axios
                     .post('auth/token/refresh', {
                         refreshToken: this.userToken.refreshToken,
@@ -287,13 +295,14 @@
               <button v-on:click="getUserPlaylists" class="btn btn-warning col p-2">Get Playlists
               </button>
               <div class="col p-2">
+                <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
                 <input id="offset-input" type="number" v-model="offset" class="m-2" placeholder="offset"/>
                 <label for="offset-input">Offset</label>
                 <input id="limit-input" type="number" v-model="limit" class="m-2" placeholder="limit"/>
                 <label for="limit-input">Limit</label>
                 <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2" placeholder="playlist id"/>
                 <label for="playlist-id-input">Playlist Id</label>
-                <button v-on:click="updatePlaylist" class="btn btn-info p-2 align-center">Update
+                <button v-on:click="updatePlaylists" class="btn btn-info p-2 align-center">Update
                   Playlist
                 </button>
               </div>
@@ -301,7 +310,6 @@
             <obj-properties-list v-if="displayObject"
                                  v-for="item in displayObject"
                                  v-bind:obj="item"></obj-properties-list>
-            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100"
                  alt="user profile pic"
                  class="img-thumbnail">
@@ -313,6 +321,7 @@
                 userProfile: null,
                 userPlaylists: null,
                 errorMessage: null,
+                successMessage: null,
                 displayObject: null,
                 offset: Number,
                 limit: Number,
@@ -320,9 +329,10 @@
             };
         },
         methods: {
-            updatePlaylist() {
+            updatePlaylists() {
                 const self = this;
                 let postBody = {};
+
                 if (this.playlistId) {
                     postBody = {
                         limit: this.limit,
@@ -330,14 +340,12 @@
                         playlistId: this.playlistId
                     };
                 }
+
                 axios
-                    .post('user/playlists', postBody)
+                    .post('user/playlists/', postBody)
                     .then(function (response) {
                         try {
-                            self.displayObject =
-                                {
-                                    message: [response.data]
-                                };
+                            self.displayObject = {};
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -348,6 +356,7 @@
             },
             getUserProfile() {
                 const self = this;
+
                 axios
                     .get('user')
                     .then(function (response) {
@@ -364,6 +373,7 @@
             },
             getUserPlaylists() {
                 const self = this;
+
                 axios
                     .get('user/playlists')
                     .then(function (response) {
@@ -379,7 +389,70 @@
                         self.errorMessage = error.message;
                     });
             }
+        }
+    };
+
+    const PlaylistDataComponent = {
+        template: `
+          <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">
+              Update Playlist
+            </h5>
+            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+            <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+            <div class="row">
+              <div class="col p-2">
+                <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2"
+                       placeholder="playlist id"/>
+                <label for="playlist-id-input">Playlist Id</label>
+              </div>
+              <div class="col p-2">
+                <input id="snapshot-id-input" type="text" v-model="snapshotId" class="m-2"
+                       placeholder="playlist snapshot id"/>
+                <label for="snapshot-id-input">Playlist Snapshot Id</label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col p-2">
+                <button v-on:click="updateTracks" v-bind:disabled="!playlistId || !snapshotId"
+                        class="btn btn-primary p-2 align-center">
+                  Update Playlist
+                </button>
+              </div>
+            </div>
+          </div>
+          </div>
+        `,
+        data() {
+            return {
+                playlistId: null,
+                snapshotId: null,
+                successMessage: null,
+                errorMessage: null
+            }
         },
+        methods: {
+            updateTracks() {
+                const self = this;
+
+                axios
+                    .post('playlists/tracks', {
+                        id: this.playlistId,
+                        snapshotId: this.snapshotId
+                    })
+                    .then(function (response) {
+                        try {
+                            self.successMessage = `Updated playlist ${self.playlistId}!`;
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+        }
     };
 
     const ObjectPropertiesListComponent = {
@@ -439,6 +512,7 @@
     */
     const app = Vue.createApp({});
     app.component('user-data', CurrentUserComponent);
+    app.component('playlist-data', PlaylistDataComponent);
     app.component('obj-properties-list', ObjectPropertiesListComponent);
     app.use(router);
     app.mount('#app');

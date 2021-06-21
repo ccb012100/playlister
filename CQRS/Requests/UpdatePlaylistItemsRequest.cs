@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MediatR;
+using Playlister.Models;
 
 #pragma warning disable 8618
 
@@ -13,9 +14,12 @@ namespace Playlister.CQRS.Requests
     // ReSharper disable once UnusedType.Global
     public record UpdatePlaylistItemsRequest : IRequest<Unit>
     {
-        // ReSharper disable once MemberCanBePrivate.Global
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
-        public string PlaylistId { get; init; }
+        public UpdatePlaylistItemsRequest(MinimalPlaylist playlist)
+        {
+            Playlist = playlist;
+        }
+
+        public MinimalPlaylist Playlist { get; }
 
         /// <summary>
         /// The index of the first playlist to return.

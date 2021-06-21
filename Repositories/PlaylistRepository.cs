@@ -45,7 +45,6 @@ namespace Playlister.Repositories
         /// <summary>
         /// Get all Playlists from the database.
         /// </summary>
-        /// <param name="ct"></param>
         /// <returns></returns>
         public async Task<IEnumerable<Playlist>> Get()
         {
@@ -55,6 +54,18 @@ namespace Playlister.Repositories
             IEnumerable<Playlist> playlists = await connection.QueryAsync<Playlist>(sql);
 
             return playlists;
+        }
+
+        public async Task<Playlist> Get(string id)
+        {
+            const string sql = "SELECT * FROM Playlist WHERE id = @id";
+            await using var conn = new SqliteConnection(_connectionString);
+
+            var playlist = await conn.QuerySingleOrDefaultAsync<Playlist?>(sql);
+
+            if (playlist is null) throw new DbRecordNotFoundException($"Playlist {nameof(id)} = `{id}` not found.");
+
+            return playlist;
         }
     }
 }

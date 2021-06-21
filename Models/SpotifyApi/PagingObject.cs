@@ -21,7 +21,7 @@ namespace Playlister.Models.SpotifyApi
         /// The requested data.
         /// </summary>
         // ReSharper disable once CollectionNeverUpdated.Global
-        public ICollection<T> Items { get; init; }
+        public IEnumerable<T> Items { get; init; }
 
         /// <summary>
         /// The maximum number of items in the response (as set in the query or by default).

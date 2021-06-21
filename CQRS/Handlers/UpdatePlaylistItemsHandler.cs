@@ -1,13 +1,12 @@
-using System.Diagnostics;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Requests;
 using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
+using Playlister.Repositories;
+using Playlister.Utilities;
 
 namespace Playlister.CQRS.Handlers
 {
@@ -17,54 +16,39 @@ namespace Playlister.CQRS.Handlers
     // ReSharper disable once UnusedType.Global
     public class UpdatePlaylistItemsHandler : IRequestHandler<UpdatePlaylistItemsRequest, Unit>
     {
-        private readonly SpotifyApiService _spotifyApiService;
-        private readonly ILogger<UpdatePlaylistItemsHandler> _logger;
+        private readonly IPlaylistTrackRepository _trackRepository;
+        private readonly SpotifyApiService _api;
 
-        public UpdatePlaylistItemsHandler(SpotifyApiService spotifyApiService,
-            ILogger<UpdatePlaylistItemsHandler> logger)
+        public UpdatePlaylistItemsHandler(SpotifyApiService api, IPlaylistTrackRepository trackRepository)
         {
-            _spotifyApiService = spotifyApiService;
-            _logger = logger;
+            _trackRepository = trackRepository;
+            _api = api;
         }
 
-        public async Task<Unit> Handle(UpdatePlaylistItemsRequest itemsRequest, CancellationToken ct)
+        public async Task<Unit> Handle(UpdatePlaylistItemsRequest request, CancellationToken ct)
         {
-            int offset = itemsRequest.Offset, itemsProcessed = 0;
-            int limit = itemsRequest.Limit;
+            // get first page
+            PagingObject<PlaylistItem> page =
+                await _api.GetPlaylistItems(request.Playlist.Id, request.Offset, request.Limit, ct);
 
-            var timer = new Stopwatch();
-            timer.Start();
+            await _trackRepository.Upsert(request.Playlist, page.Items, ct);
 
-            // TODO: get playlist entry from DB
-            // TODO: if playlist SnapshotId is the same as in the DB, skip
-
-            // page through playlist tracks
-            PagingObject<PlaylistItem> playlistItems =
-                await _spotifyApiService.GetPlaylistItems(itemsRequest.PlaylistId, offset, limit, ct);
-
-            do
+            // keep getting next page until Page.Next is null
+            while (page.Next is not null)
             {
-                if (itemsProcessed > 0)
-                {
-                    playlistItems = await _spotifyApiService.GetPlaylistItems(playlistItems.Next!, ct);
-                }
+                page = await _api.GetPlaylistItems(page.Next!, ct);
 
-                foreach (var playlistItem in playlistItems.Items)
-                {
-                    /*
-                     * TODO:
-                     * - if entry exists in DB with matching (track_id, playlist_id), update snapshot_id
-                     * - else add to DB (do through sqlite upsert)
-                     */
-                    itemsProcessed++;
+                await _trackRepository.Upsert(request.Playlist, page.Items, ct);
+            }
 
-                    _logger.LogInformation(
-                        $"{itemsProcessed} - {playlistItem.Track.Name} by {string.Join(", ", playlistItem.Track.Artists.Select(a => a.Name))}");
-                }
-            } while (playlistItems.Next is not null);
+            await PageObjectProcessor.ProcessPages(
+                async token =>
+                    await _api.GetPlaylistItems(request.Playlist.Id, request.Offset, request.Limit, token),
+                async (next, token) => await _api.GetPlaylistItems(next, token),
+                async (tracks, token) =>
+                    await _trackRepository.Upsert(request.Playlist, tracks, token),
+                ct);
 
-            timer.Stop();
-            _logger.LogInformation($"Getting the {itemsProcessed} playlist items took {timer.Elapsed.TotalSeconds}");
             return new Unit();
         }
     }

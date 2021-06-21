@@ -20,7 +20,6 @@ namespace Playlister.Models.SpotifyApi
         /// </summary>
         public new IEnumerable<ArtistObject> Artists { get; init; }
 
-
         /// <summary>
         /// Known external IDs for the track.
         /// </summary>
