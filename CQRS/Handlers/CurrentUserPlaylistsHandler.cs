@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Requests;
-using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
+using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers
 {

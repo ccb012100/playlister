@@ -4,7 +4,7 @@ using Playlister.CQRS.Requests;
 using Playlister.Models.SpotifyAccounts;
 using Refit;
 
-namespace Playlister.HttpClients
+namespace Playlister.RefitClients
 {
     public interface ISpotifyAccountsApi
     {
@@ -15,7 +15,7 @@ namespace Playlister.HttpClients
         /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
-        Task<AccessInfo> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
+        Task<SpotifyAccessToken> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
             AccessTokenRequest.BodyParams bodyParams, CancellationToken ct);
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Playlister.HttpClients
         /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
-        Task<AccessInfo> RefreshToken([Authorize("Basic")] string authHeaderParam,
+        Task<SpotifyAccessToken> RefreshToken([Authorize("Basic")] string authHeaderParam,
             [Body(BodySerializationMethod.UrlEncoded)]
             TokenRefreshRequest.BodyParams bodyParams, CancellationToken ct);
     }

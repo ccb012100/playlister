@@ -5,11 +5,10 @@ using System;
 
 namespace Playlister.Models
 {
-    public record UserAccessInfo
+    public record UserAccessToken
     {
         public string AccessToken { get; init; }
         public string RefreshToken { get; init; }
         public DateTime Expiration { get; init; }
-        public string[] Scopes { get; init; }
     }
 }

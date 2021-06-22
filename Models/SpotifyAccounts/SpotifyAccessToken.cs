@@ -8,7 +8,7 @@ using System;
 namespace Playlister.Models.SpotifyAccounts
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public record AccessInfo
+    public record SpotifyAccessToken
     {
         private const string BearerType = "Bearer";
         private readonly string _tokenType;
@@ -47,5 +47,13 @@ namespace Playlister.Models.SpotifyAccounts
         /// (When the access code expires, send a <c>POST</c> request to the Accounts service <c>/api/token</c> endpoint, but use this code in place of an authorization code. A new access token will be returned. A new refresh token might be returned too.)
         /// </summary>
         public string RefreshToken { get; init; }
+
+        public UserAccessToken ToUserAccessToken() =>
+            new()
+            {
+                AccessToken = AccessToken,
+                Expiration = DateTime.Now.AddSeconds(ExpiresIn),
+                RefreshToken = RefreshToken
+            };
     }
 }

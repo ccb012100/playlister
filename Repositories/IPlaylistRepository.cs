@@ -9,11 +9,11 @@ namespace Playlister.Repositories
     public interface IPlaylistRepository
     {
         /// <summary>
-        /// Upsert new Playlist entries in the DB.
+        /// Create playlist.
+        /// If playlist exists, update the entry IFF <c>snapshot_id</c> differs.
         /// </summary>
-        /// <param name="playlists">Playlists to write to DB.</param>
+        /// <param name="playlists"></param>
         /// <param name="ct"></param>
-        /// <returns></returns>
         Task Upsert(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct);
 
         /// <summary>
@@ -21,5 +21,7 @@ namespace Playlister.Repositories
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Playlist>> Get();
+
+        Task<Playlist> Get(string id);
     }
 }

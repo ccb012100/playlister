@@ -2,10 +2,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.CQRS.Requests;
-using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
+using Playlister.Services;
 using Playlister.Utilities;
 
 namespace Playlister.CQRS.Handlers

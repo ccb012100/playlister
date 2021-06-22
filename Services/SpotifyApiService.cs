@@ -10,7 +10,7 @@ using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 
-namespace Playlister.HttpClients
+namespace Playlister.Services
 {
     public class SpotifyApiService
     {

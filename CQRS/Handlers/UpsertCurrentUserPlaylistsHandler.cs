@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.CQRS.Requests;
-using Playlister.HttpClients;
+using Playlister.Services;
 using Playlister.Utilities;
 
 namespace Playlister.CQRS.Handlers

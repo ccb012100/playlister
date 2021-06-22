@@ -10,9 +10,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
-using Playlister.HttpClients;
 using Playlister.Middleware;
-using Playlister.Repositories;
+using Playlister.Services;
 
 namespace Playlister
 {
@@ -46,8 +45,8 @@ namespace Playlister
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
-                .AddScoped<IPlaylistRepository, PlaylistRepository>()
-                .AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>()
+                .AddTransient<ICacheService, CacheService>()
+                .AddRepositories()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
@@ -68,6 +67,10 @@ namespace Playlister
             }
 
             services.ConfigureFluentMigrator();
+
+            services
+                .BuildServiceProvider()
+                .GetRequiredService<ICacheService>()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

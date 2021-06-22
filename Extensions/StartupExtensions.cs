@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Text.Json;
 using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -12,9 +13,11 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using Playlister.Configuration;
 using Playlister.CQRS;
-using Playlister.HttpClients;
 using Playlister.Middleware;
 using Playlister.Models;
+using Playlister.RefitClients;
+using Playlister.Repositories;
+using Playlister.Utilities;
 using Refit;
 
 namespace Playlister.Extensions
@@ -74,7 +77,7 @@ namespace Playlister.Extensions
                     })
             };
 
-            services.AddRefitClient<ISpotifyAccountsApi>(snakeCaseSettings)
+            services.AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
@@ -82,7 +85,7 @@ namespace Playlister.Extensions
                 // .AddHttpMessageHandler<HttpLoggingMiddleware>()
                 .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 
-            services.AddRefitClient<ISpotifyApi>(snakeCaseSettings)
+            services.AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
@@ -103,6 +106,12 @@ namespace Playlister.Extensions
                 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             }
         }
+
+        public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+            services
+                .AddScoped<IPlaylistRepository, PlaylistRepository>()
+                .AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>()
+                .AddScoped<IAccessTokenRepository, AccessTokenRepository>();
 
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config,

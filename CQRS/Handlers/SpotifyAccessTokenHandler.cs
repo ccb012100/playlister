@@ -1,40 +1,36 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Requests;
-using Playlister.HttpClients;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
-using Playlister.Utilities;
+using Playlister.RefitClients;
+using Playlister.Repositories;
 
 namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class SpotifyAccessTokenHandler : IRequestHandler<AccessTokenRequest, UserAccessInfo>
+    public class SpotifyAccessTokenHandler : IRequestHandler<AccessTokenRequest, UserAccessToken>
     {
         private readonly ISpotifyAccountsApi _api;
-        private readonly ILogger<SpotifyAccessTokenHandler> _logger;
         private readonly SpotifyOptions _options;
-        private readonly IMemoryCache _cache;
+        private readonly IAccessTokenRepository _tokenRepository;
 
         public SpotifyAccessTokenHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options,
-            ILogger<SpotifyAccessTokenHandler> logger, IMemoryCache cache)
+            IAccessTokenRepository tokenRepository)
         {
             _api = api;
-            _logger = logger;
-            _cache = cache;
+            _tokenRepository = tokenRepository;
             _options = options.Value;
         }
 
-        public async Task<UserAccessInfo> Handle(AccessTokenRequest request, CancellationToken ct)
+        public async Task<UserAccessToken> Handle(AccessTokenRequest request, CancellationToken ct)
         {
             // TODO: validate that the `state` value matches the original value sent to user
             // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
-            AccessInfo info = await _api.AccessToken(
+            SpotifyAccessToken token = await _api.AccessToken(
                 new AccessTokenRequest.BodyParams
                 {
                     Code = request.Code,
@@ -43,7 +39,7 @@ namespace Playlister.CQRS.Handlers
                     ClientSecret = _options.ClientSecret
                 }, ct);
 
-            return TokenUtility.CreateUserAccessToken(info, _cache, _logger);
+            return await _tokenRepository.AddToken(token);
         }
     }
 }

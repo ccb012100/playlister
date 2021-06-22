@@ -13,9 +13,7 @@ namespace Playlister
 
         public static SnakeCaseNamingPolicy Instance { get; } = new();
 
-        public override string ConvertName(string name)
-        {
-            return _newtonsoftSnakeCaseNamingStrategy.GetPropertyName(name, false);
-        }
+        public override string ConvertName(string name) =>
+            _newtonsoftSnakeCaseNamingStrategy.GetPropertyName(name, false);
     }
 }

@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Playlister.Models.SpotifyApi;
 using Refit;
 
-namespace Playlister.HttpClients
+namespace Playlister.RefitClients
 {
     public interface ISpotifyApi
     {

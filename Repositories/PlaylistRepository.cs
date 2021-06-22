@@ -20,17 +20,10 @@ namespace Playlister.Repositories
             _connectionString = options.Value.ConnectionString;
         }
 
-        /// <summary>
-        /// Create playlist.
-        /// If playlist exists, update the entry IFF <c>snapshot_id</c> differs.
-        /// </summary>
-        /// <param name="playlists"></param>
-        /// <param name="ct"></param>
         public async Task Upsert(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct)
         {
             const string sql =
-                "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) " +
-                "VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
+                "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
                 "ON CONFLICT(id) DO UPDATE SET " +
                 "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
                 "WHERE snapshot_id != excluded.snapshot_id;";
@@ -42,30 +35,17 @@ namespace Playlister.Repositories
             await txn.CommitAsync(ct);
         }
 
-        /// <summary>
-        /// Get all Playlists from the database.
-        /// </summary>
-        /// <returns></returns>
         public async Task<IEnumerable<Playlist>> Get()
         {
-            const string sql = "SELECT * FROM Playlist";
             await using var connection = new SqliteConnection(_connectionString);
-
-            IEnumerable<Playlist> playlists = await connection.QueryAsync<Playlist>(sql);
-
-            return playlists;
+            return await connection.QueryAsync<Playlist>("SELECT * FROM Playlist");
         }
 
         public async Task<Playlist> Get(string id)
         {
-            const string sql = "SELECT * FROM Playlist WHERE id = @id";
             await using var conn = new SqliteConnection(_connectionString);
-
-            var playlist = await conn.QuerySingleOrDefaultAsync<Playlist?>(sql);
-
-            if (playlist is null) throw new DbRecordNotFoundException($"Playlist {nameof(id)} = `{id}` not found.");
-
-            return playlist;
+            return await conn.QuerySingleOrDefaultAsync<Playlist?>("SELECT * FROM Playlist WHERE id = @id") ??
+                   throw new DbRecordNotFoundException($"Playlist {nameof(id)} = `{id}` not found.");
         }
     }
 }

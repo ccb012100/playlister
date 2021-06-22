@@ -1,6 +1,8 @@
 using System.Globalization;
+using System.Text.Json;
 using EFCore.NamingConventions.Internal;
 using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Playlister.Extensions
 {
@@ -12,7 +14,8 @@ namespace Playlister.Extensions
         /// <param name="t">Object you want converted to JSON</param>
         /// <typeparam name="T">Type of <paramref name="t"/></typeparam>
         /// <returns>String representation of the object as pretty-printed JSON</returns>
-        public static string ToPrettyPrintJson<T>(this T t) => JsonConvert.SerializeObject(t, Formatting.Indented);
+        public static string ToPrettyPrintJson<T>(this T t) =>
+            JsonSerializer.Serialize(t, new JsonSerializerOptions {WriteIndented = true});
 
         /// <summary>
         /// Convert string to snake_case using EFCore's <see cref="SnakeCaseNameRewriter"/>

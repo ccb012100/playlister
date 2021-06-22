@@ -5,6 +5,7 @@ namespace Playlister.Data
         public const string Playlist = "Playlist";
         public const string Artist = "Artist";
         public const string Album = "Album";
+        public const string AccessToken = "AccessToken";
 
         /// <summary>
         /// Tracks contained in a Playlist

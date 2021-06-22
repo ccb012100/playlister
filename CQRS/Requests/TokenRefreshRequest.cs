@@ -8,7 +8,7 @@ namespace Playlister.CQRS.Requests
     /// <summary>
     /// Request to refresh Spotify Access Token
     /// </summary>
-    public record TokenRefreshRequest : IRequest<UserAccessInfo>
+    public record TokenRefreshRequest : IRequest<UserAccessToken>
     {
         // ReSharper disable once UnusedMember.Global
         public TokenRefreshRequest(string refreshToken)
