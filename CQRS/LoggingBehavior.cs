@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Playlister.Extensions;
+using Playlister.Utilities;
 
 namespace Playlister.CQRS
 {
@@ -25,10 +25,13 @@ namespace Playlister.CQRS
         public async Task<TResponse> Handle(TRequest request, CancellationToken cancellationToken,
             RequestHandlerDelegate<TResponse> next)
         {
-            _logger.LogDebug($"{typeof(TRequest).Name} => REQUEST:{Environment.NewLine}{request.ToPrettyPrintJson()}");
+            _logger.LogTrace(
+                $"{typeof(TRequest).Name} => REQUEST:{Environment.NewLine}{JsonUtility.PrettyPrint(request)}");
+
             TResponse response = await next();
-            _logger.LogDebug(
-                $"{typeof(TRequest).Name} => RESPONSE:{Environment.NewLine}{response.ToPrettyPrintJson()}");
+
+            _logger.LogTrace(
+                $"{typeof(TRequest).Name} => RESPONSE:{Environment.NewLine}{JsonUtility.PrettyPrint(response)}");
 
             return response;
         }

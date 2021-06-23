@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Playlister
 {
@@ -18,6 +19,12 @@ namespace Playlister
         internal static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
+                .ConfigureLogging((_, builder) =>
+                {
+                    builder.AddFile(
+                        pathFormat: $"Logs/{DateTime.Today:yyyy-MM-d}.log",
+                        minimumLevel: LogLevel.Debug);
+                })
                 .UseKestrel(LogDevelopmentConfiguration)
                 .UseStartup<Startup>();
         }

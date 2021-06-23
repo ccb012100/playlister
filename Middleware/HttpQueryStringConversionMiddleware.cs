@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Primitives;
-using Playlister.Extensions;
+using Playlister.Utilities;
 
 namespace Playlister.Middleware
 {
@@ -27,7 +27,7 @@ namespace Playlister.Middleware
 
                 foreach ((string name, StringValues value) in queryDict)
                 {
-                    snakeCaseQueryDict.Add(name.ToSnakeCase(), value);
+                    snakeCaseQueryDict.Add(JsonUtility.ConvertToSnakeCase(name), value);
                 }
 
                 string newUri =

@@ -11,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
+using Playlister.Repositories;
 using Playlister.Services;
 
 namespace Playlister
@@ -45,21 +46,22 @@ namespace Playlister
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
-                .AddTransient<ICacheService, CacheService>()
                 .AddRepositories()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
 
-            services.AddRefitClients();
-
-            services.AddControllers().AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            });
+            services.AddRefitClients()
+                .AddControllers().AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                });
 
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
+
+            // set Dapper to be compatible with snake_case table names
+            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             if (_environment.IsDevelopment())
             {
@@ -67,10 +69,6 @@ namespace Playlister
             }
 
             services.ConfigureFluentMigrator();
-
-            services
-                .BuildServiceProvider()
-                .GetRequiredService<ICacheService>()
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

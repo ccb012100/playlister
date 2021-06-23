@@ -11,3 +11,5 @@ ClientApp/node_modules/
 */node_modules/
 
 playlister.sqlite
+Logs/*.txt
+Logs/*.log
