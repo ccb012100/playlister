@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
@@ -24,7 +22,12 @@ namespace Playlister.Services
         {
             UserAccessToken userToken = AccessTokens.AddOrUpdate(token.AccessToken, token.ToUserAccessToken(), (_, b) =>
             {
-                if (b == null) throw new ArgumentNullException(nameof(b));
+                if (b == null)
+                {
+                    throw new ArgumentNullException(nameof(b),
+                        "This should never be null. Check that Dapper settings are configured to work with underscores.");
+                }
+
                 b = token.ToUserAccessToken();
                 return b;
             });
@@ -54,11 +57,11 @@ namespace Playlister.Services
             }
         }
 
-        public async Task PopulateCache(IEnumerable<UserAccessToken> tokens)
+        public void PopulateCache(IEnumerable<UserAccessToken> tokens)
         {
             try
             {
-                _logger.LogDebug("populating...");
+                _logger.LogDebug("populating access token cache...");
                 foreach (UserAccessToken token in tokens)
                 {
                     SetAccessToken(token);
@@ -81,8 +84,7 @@ namespace Playlister.Services
             _logger.LogDebug($"Removed expired token {accessToken} from cache.");
         }
 
-
-        public static void SetAccessToken(UserAccessToken token)
+        private static void SetAccessToken(UserAccessToken token)
         {
             _ = AccessTokens.AddOrUpdate(token.AccessToken, token, (_, b) =>
             {

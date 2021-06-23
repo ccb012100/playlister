@@ -15,8 +15,8 @@ namespace Playlister.Controllers
         {
         }
 
-        [HttpGet("{playlistId}")]
-        public async Task<Playlist> Get(string id)
+        [HttpGet("{id}")]
+        public Task<Playlist> Get(string id)
         {
             throw new NotImplementedException();
         }

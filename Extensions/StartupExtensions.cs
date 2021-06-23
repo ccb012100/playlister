@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Text.Json;
 using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
