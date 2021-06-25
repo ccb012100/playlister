@@ -27,7 +27,7 @@ namespace Playlister.Services
         #region GetPlaylistItems
 
         /// <summary>
-        /// Get Playlist Items for specified <param name="playlistId"></param>.
+        /// GetAll Playlist Items for specified <param name="playlistId"></param>.
         /// </summary>
         /// <param name="playlistId">Spotify Id of the playlist</param>
         /// <param name="offset"></param>
@@ -56,7 +56,7 @@ namespace Playlister.Services
         #region GetCurrentUserPlaylists
 
         /// <summary>
-        /// Get the current user's playlists.
+        /// GetAll the current user's playlists.
         /// </summary>
         /// <param name="ct"></param>
         /// <param name="offset"></param>
@@ -71,7 +71,7 @@ namespace Playlister.Services
         }
 
         /// <summary>
-        /// Get the current user's playlists.
+        /// GetAll the current user's playlists.
         /// </summary>
         /// <param name="next">URI of the next page of playlists</param>
         /// <param name="ct"></param>

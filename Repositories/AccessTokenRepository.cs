@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Dapper;
@@ -18,19 +17,22 @@ namespace Playlister.Repositories
         private readonly string _connectionString;
         private readonly ILogger<AccessTokenRepository> _logger;
 
-        private static readonly ConcurrentDictionary<string, UserAccessToken> CachedTokens = new();
+        private static readonly CacheObject<UserAccessToken> TokenCache;
+        static AccessTokenRepository() => TokenCache = new CacheObject<UserAccessToken>();
 
         public AccessTokenRepository(IOptions<DatabaseOptions> options, ILogger<AccessTokenRepository> logger)
         {
             _connectionString = options.Value.ConnectionString;
             _logger = logger;
 
-            Task.Run(PopulateCache).Wait();
+            TokenCache.Initialize(PopulateCache);
         }
 
         public async Task<UserAccessToken> AddToken(SpotifyAccessToken spotifyToken)
         {
-            UserAccessToken userToken = Set(spotifyToken);
+            if (!TokenCache.Initialized) await PopulateCache();
+
+            UserAccessToken userToken = Cache(spotifyToken);
 
             try
             {
@@ -52,33 +54,24 @@ namespace Playlister.Repositories
 
         public UserAccessToken? Get(string accessToken)
         {
-            _ = CachedTokens.TryGetValue(accessToken, out UserAccessToken? userAccessToken);
+            _ = TokenCache.Items.TryGetValue(accessToken, out UserAccessToken? userAccessToken);
             _logger.LogDebug($"Result of getting {accessToken} from cache: {JsonUtility.PrettyPrint(userAccessToken)}");
             return userAccessToken;
         }
 
         public void RemoveAccessToken(string accessToken)
         {
-            _ = CachedTokens.Remove(accessToken, out _);
+            _ = TokenCache.Items.Remove(accessToken, out _);
 
             _logger.LogDebug($"Removed token {accessToken} from cache.");
         }
 
         #region cache tokens
 
-        private UserAccessToken Set(SpotifyAccessToken token)
+        private UserAccessToken Cache(SpotifyAccessToken token)
         {
-            UserAccessToken userToken = CachedTokens.AddOrUpdate(token.AccessToken, token.ToUserAccessToken(), (_, b) =>
-            {
-                if (b == null)
-                {
-                    throw new ArgumentNullException(nameof(b),
-                        "This should never be null. Check that Dapper settings are configured to work with underscores.");
-                }
-
-                b = token.ToUserAccessToken();
-                return b;
-            });
+            UserAccessToken userToken = TokenCache.Items.AddOrUpdate(token.AccessToken, token.ToUserAccessToken(),
+                (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : token.ToUserAccessToken());
 
             _logger.LogDebug($"Added token to cache: {JsonUtility.PrettyPrint(userToken)}");
 
@@ -87,12 +80,12 @@ namespace Playlister.Repositories
 
         private void ClearExpiredTokensFromCache()
         {
-            foreach (var (key, userToken) in CachedTokens)
+            foreach ((string key, UserAccessToken userToken) in TokenCache.Items)
             {
                 // only remove expired tokens after 6 hours
                 if (userToken.Expiration >= DateTime.UtcNow.AddHours(-6)) continue;
 
-                _ = CachedTokens.Remove(key, out _);
+                _ = TokenCache.Items.Remove(key, out _);
                 _logger.LogDebug($"Removed expired token {userToken.AccessToken} from cache.");
             }
         }
@@ -118,12 +111,12 @@ namespace Playlister.Repositories
                 throw;
             }
 
-            _logger.LogDebug($"Cache populated: {JsonUtility.PrettyPrint(CachedTokens)}");
+            _logger.LogDebug($"Cache populated: {JsonUtility.PrettyPrint(TokenCache.Items)}");
         }
 
         private static void SetAccessToken(UserAccessToken token)
         {
-            _ = CachedTokens.AddOrUpdate(token.AccessToken, token, (_, b) =>
+            _ = TokenCache.Items.AddOrUpdate(token.AccessToken, token, (_, b) =>
             {
                 if (b == null) throw new ArgumentNullException(nameof(b));
                 b = token;

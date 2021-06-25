@@ -17,7 +17,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get the User who was assigned the Access Token in the Authorization Header.
+        /// GetAll the User who was assigned the Access Token in the Authorization Header.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -29,7 +29,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get the current user's Playlists.
+        /// GetAll the current user's Playlists.
         /// </summary>
         /// <returns></returns>
         [HttpGet("playlists")]

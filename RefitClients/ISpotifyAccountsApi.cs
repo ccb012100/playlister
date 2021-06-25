@@ -19,7 +19,7 @@ namespace Playlister.RefitClients
             AccessTokenRequest.BodyParams bodyParams, CancellationToken ct);
 
         /// <summary>
-        /// Get a Refresh Token for User from Spotify.
+        /// GetAll a Refresh Token for User from Spotify.
         /// </summary>
         /// <param name="authHeaderParam"></param>
         /// <param name="bodyParams"></param>

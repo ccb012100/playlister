@@ -8,7 +8,7 @@ namespace Playlister.RefitClients
     public interface ISpotifyApi
     {
         /// <summary>
-        /// Get detailed profile information about the current user (including the current user’s username).
+        /// GetAll detailed profile information about the current user (including the current user’s username).
         /// </summary>
         /// <param name="ct"></param>
         /// <returns>The User who was assigned the provided Access Token.</returns>
@@ -16,7 +16,7 @@ namespace Playlister.RefitClients
         Task<PrivateUserObject> GetCurrentUser(CancellationToken ct);
 
         /// <summary>
-        /// Get a list of the playlists owned or followed by the current Spotify user.
+        /// GetAll a list of the playlists owned or followed by the current Spotify user.
         /// </summary>
         /// <param name="ct"></param>
         /// <param name="limit">The maximum number of playlists to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c></param>

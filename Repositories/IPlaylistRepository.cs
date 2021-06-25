@@ -17,11 +17,11 @@ namespace Playlister.Repositories
         Task Upsert(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct);
 
         /// <summary>
-        /// Get all Playlists from the DB
+        /// GetAll all Playlists from the DB
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Playlist>> Get();
+        IEnumerable<Playlist> GetAll();
 
-        Task<Playlist> Get(string id);
+        Playlist? Get(string id);
     }
 }

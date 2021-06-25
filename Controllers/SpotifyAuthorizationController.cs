@@ -16,7 +16,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get the Spotify Accounts URL to direct user
+        /// GetAll the Spotify Accounts URL to direct user
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -28,7 +28,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get an Access Token for User.
+        /// GetAll an Access Token for User.
         /// </summary>
         /// <param name="tokenRequest"></param>
         /// <returns></returns>
