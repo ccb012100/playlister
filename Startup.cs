@@ -45,7 +45,6 @@ namespace Playlister
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>()
                 .AddTransient<HttpQueryStringConversionMiddleware>()
-                .AddTransient<ICacheService, CacheService>()
                 .AddRepositories()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<SpotifyApiService>()

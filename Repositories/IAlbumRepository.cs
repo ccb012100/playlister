@@ -5,8 +5,8 @@ using Playlister.Models;
 
 namespace Playlister.Repositories
 {
-    public interface IPlaylistTrackRepository
+    public interface IAlbumRepository
     {
-        Task Upsert(MinimalPlaylist playlist, IEnumerable<PlaylistItem> tracks, CancellationToken ct);
+        Task Upsert(IEnumerable<Album> albums, CancellationToken ct);
     }
 }

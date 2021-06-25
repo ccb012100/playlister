@@ -35,6 +35,8 @@ namespace Playlister.Repositories
             await connection.OpenAsync(ct);
             DbTransaction txn = await connection.BeginTransactionAsync(ct);
 
+            (string playlistId, string? snapshotId) = playlist;
+
             await connection.ExecuteAsync(sql,
                 tracks.Select(x => new
                 {
@@ -45,8 +47,8 @@ namespace Playlister.Repositories
                     x.AddedAt,
                     x.Track.DurationMs,
                     AlbumId = x.Track.Album.Id,
-                    PlaylistId = playlist.Id,
-                    playlist.SnapshotId
+                    PlaylistId = playlistId,
+                    SnapshotId = snapshotId
                 }),
                 transaction: txn);
 
