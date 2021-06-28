@@ -23,5 +23,7 @@ namespace Playlister.Repositories
         IEnumerable<Playlist> GetAll();
 
         Playlist? Get(string id);
+
+        Task Upsert(SimplifiedPlaylistObject playlist);
     }
 }

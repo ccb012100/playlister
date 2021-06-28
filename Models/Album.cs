@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -46,5 +47,12 @@ namespace Playlister.Models
                 throw new InvalidOperationException($"Could not parse ReleaseDate value {ReleaseDate}");
             }
         }
+
+        /// <summary>
+        /// Get a pairing of each artist's Id with the album's Id.
+        /// </summary>
+        /// <returns>Collection of album id, artist id tuples.</returns>
+        public IEnumerable<(string AlbumId, string ArtistId)> GetAlbumArtistPairings() =>
+            Artists.Select(x => (AlbumId: Id, ArtistId: x.Id));
     }
 }

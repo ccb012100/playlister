@@ -28,16 +28,15 @@ namespace Playlister.Data
             Create.Table(DataTables.Artist)
                 .WithSpotifyIdColumn()
                 .WithTimeStamps()
-                .WithColumn("name").AsString().NotNullable()
-                .WithColumn("url").AsString().NotNullable();
+                .WithColumn("name").AsString().NotNullable();
 
             Create.Table(DataTables.Album)
                 .WithSpotifyIdColumn()
                 .WithTimeStamps()
+                .WithColumn("name").AsString().NotNullable()
                 .WithColumn("total_tracks").AsInt16().NotNullable()
                 .WithColumn("album_type").AsString()
-                .WithColumn("release_date").AsDateTime()
-                .WithColumn("url").AsString().NotNullable();
+                .WithColumn("release_date").AsDateTime();
 
             Create.Table(DataTables.PlaylistTrack)
                 .WithColumn("id").AsString().NotNullable()
@@ -62,6 +61,7 @@ namespace Playlister.Data
                 .WithColumn("artist_id").AsString().NotNullable();
         }
 
+        // TODO: figure out why these PKs aren't being created
         private void CreatePrimaryKeys()
         {
             Create.PrimaryKey()
@@ -78,6 +78,7 @@ namespace Playlister.Data
                 .Columns("id", "playlist_id");
         }
 
+        // TODO: figure out why these FKs aren't being created
         private void CreateForeignKeys()
         {
             Create.ForeignKey()

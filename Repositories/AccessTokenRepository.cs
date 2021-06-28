@@ -4,8 +4,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Playlister.Configuration;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.Utilities;
@@ -14,15 +12,15 @@ namespace Playlister.Repositories
 {
     public class AccessTokenRepository : IAccessTokenRepository
     {
-        private readonly string _connectionString;
+        private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<AccessTokenRepository> _logger;
 
         private static readonly CacheObject<UserAccessToken> TokenCache;
         static AccessTokenRepository() => TokenCache = new CacheObject<UserAccessToken>();
 
-        public AccessTokenRepository(IOptions<DatabaseOptions> options, ILogger<AccessTokenRepository> logger)
+        public AccessTokenRepository(IConnectionFactory connectionFactory, ILogger<AccessTokenRepository> logger)
         {
-            _connectionString = options.Value.ConnectionString;
+            _connectionFactory = connectionFactory;
             _logger = logger;
 
             TokenCache.Initialize(PopulateCache);
@@ -36,11 +34,10 @@ namespace Playlister.Repositories
 
             try
             {
-                const string sql =
-                    "INSERT INTO AccessToken(access_token, refresh_token, expiration) VALUES(@AccessToken, @RefreshToken, @Expiration)";
-
-                await using var conn = new SqliteConnection(_connectionString);
-                await conn.ExecuteAsync(sql, userToken);
+                await using SqliteConnection conn = _connectionFactory.Connection;
+                await conn.ExecuteAsync(
+                    "INSERT INTO AccessToken(access_token, refresh_token, expiration) VALUES(@AccessToken, @RefreshToken, @Expiration)",
+                    userToken);
             }
             catch (Exception e)
             {
@@ -94,7 +91,7 @@ namespace Playlister.Repositories
         {
             try
             {
-                await using var conn = new SqliteConnection(_connectionString);
+                await using SqliteConnection conn = _connectionFactory.Connection;
                 IEnumerable<UserAccessToken>? tokens =
                     await conn.QueryAsync<UserAccessToken>("SELECT * FROM AccessToken");
 

@@ -8,8 +8,6 @@ using System.Threading.Tasks;
 using Dapper;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using Playlister.Configuration;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
@@ -18,15 +16,15 @@ namespace Playlister.Repositories
 {
     public class PlaylistRepository : IPlaylistRepository
     {
+        private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<PlaylistRepository> _logger;
-        private readonly string _connectionString;
 
         private static readonly CacheObject<Playlist> PlaylistCache = new();
 
-        public PlaylistRepository(IOptions<DatabaseOptions> options, ILogger<PlaylistRepository> logger)
+        public PlaylistRepository(IConnectionFactory connectionFactory, ILogger<PlaylistRepository> logger)
         {
+            _connectionFactory = connectionFactory;
             _logger = logger;
-            _connectionString = options.Value.ConnectionString;
 
             PlaylistCache.Initialize(PopulateCache);
         }
@@ -46,11 +44,11 @@ namespace Playlister.Repositories
                 "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
                 "WHERE snapshot_id != excluded.snapshot_id;";
 
-            await using var connection = new SqliteConnection(_connectionString);
+            await using SqliteConnection connection = _connectionFactory.Connection;
             await connection.OpenAsync(ct);
             DbTransaction txn = await connection.BeginTransactionAsync(ct);
 
-            await connection.ExecuteAsync(playlistSql, playlists, transaction: txn);
+            await connection.ExecuteAsync(playlistSql, playlists, txn);
 
             await txn.CommitAsync(ct);
 
@@ -61,6 +59,17 @@ namespace Playlister.Repositories
             }
         }
 
+        public async Task Upsert(SimplifiedPlaylistObject playlist)
+        {
+            const string sql =
+                "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
+                "ON CONFLICT(id) DO UPDATE SET " +
+                "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public;";
+
+            await using SqliteConnection connection = _connectionFactory.Connection;
+            await connection.ExecuteAsync(sql, playlist);
+        }
+
         public IEnumerable<Playlist> GetAll() => PlaylistCache.Items.Select(p => p.Value);
 
         public Playlist? Get(string id) => GetFromCache(id);
@@ -69,7 +78,7 @@ namespace Playlister.Repositories
 
         private void Cache(Playlist playlist)
         {
-            Playlist? pl = PlaylistCache.Items.AddOrUpdate(playlist.Id, playlist,
+            Playlist pl = PlaylistCache.Items.AddOrUpdate(playlist.Id, playlist,
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist);
 
             _logger.LogDebug($"Added token to cache: {JsonUtility.PrettyPrint(pl)}");
@@ -86,7 +95,7 @@ namespace Playlister.Repositories
         {
             try
             {
-                await using var conn = new SqliteConnection(_connectionString);
+                await using SqliteConnection? conn = _connectionFactory.Connection;
                 IEnumerable<Playlist> playlists =
                     await conn.QueryAsync<Playlist>("SELECT * FROM Playlist");
 

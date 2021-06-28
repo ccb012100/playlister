@@ -7,6 +7,6 @@ namespace Playlister.Repositories
 {
     public interface IPlaylistTrackRepository
     {
-        Task Upsert(MinimalPlaylist playlist, IEnumerable<PlaylistItem> tracks, CancellationToken ct);
+        Task Upsert(MinimalPlaylist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct);
     }
 }
