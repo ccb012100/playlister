@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading;
@@ -38,18 +39,18 @@ namespace Playlister.Repositories.Implementations
             List<SimplifiedPlaylistObject> changedLists = playlists
                 .Where(pl => allLists.All(a => a.Id != pl.Id || a.SnapshotId != pl.SnapshotId)).ToList();
 
+
+            await using SqliteConnection connection = _connectionFactory.Connection;
+            await connection.OpenAsync(ct);
+            DbTransaction txn = await connection.BeginTransactionAsync(ct);
+
             const string playlistSql =
                 "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
                 "ON CONFLICT(id) DO UPDATE SET " +
                 "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
                 "WHERE snapshot_id != excluded.snapshot_id;";
 
-            await using SqliteConnection connection = _connectionFactory.Connection;
-            await connection.OpenAsync(ct);
-            DbTransaction txn = await connection.BeginTransactionAsync(ct);
-
-            await connection.ExecuteAsync(playlistSql, playlists, txn);
-
+            await connection.ExecuteAsync(playlistSql, changedLists, txn);
             await txn.CommitAsync(ct);
 
             // Cache updated lists
@@ -64,11 +65,14 @@ namespace Playlister.Repositories.Implementations
             const string sql =
                 "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
                 "ON CONFLICT(id) DO UPDATE SET " +
-                "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public;";
+                "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
+                "WHERE snapshot_id != excluded.snapshot_id;";
 
             await using SqliteConnection connection = _connectionFactory.Connection;
             await connection.ExecuteAsync(sql, playlist);
         }
+
+        public async Task RefreshCache() => await PopulateCache();
 
         public IEnumerable<Playlist> GetAll() => PlaylistCache.Items.Select(p => p.Value);
 
@@ -81,7 +85,7 @@ namespace Playlister.Repositories.Implementations
             Playlist pl = PlaylistCache.Items.AddOrUpdate(playlist.Id, playlist,
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist);
 
-            _logger.LogDebug($"Added token to cache: {JsonUtility.PrettyPrint(pl)}");
+            _logger.LogTrace($"Added playlist to cache: {JsonUtility.PrettyPrint(pl)}");
         }
 
         private Playlist? GetFromCache(string id)
@@ -103,7 +107,6 @@ namespace Playlister.Repositories.Implementations
                 foreach (Playlist? playlist in playlists)
                 {
                     Cache(playlist);
-                    _logger.LogDebug($"Added playlist to cache: {JsonUtility.PrettyPrint(playlist)}");
                 }
             }
             catch (Exception e)
@@ -112,7 +115,7 @@ namespace Playlister.Repositories.Implementations
                 throw;
             }
 
-            _logger.LogDebug($"Cache populated: {JsonUtility.PrettyPrint(PlaylistCache.Items)}");
+            _logger.LogTrace($"Cache populated: {JsonUtility.PrettyPrint(PlaylistCache.Items)}");
         }
 
         #endregion

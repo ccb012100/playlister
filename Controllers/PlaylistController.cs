@@ -21,10 +21,10 @@ namespace Playlister.Controllers
             throw new NotImplementedException();
         }
 
-        [HttpPost("tracks")]
-        public async Task<ActionResult> UpdateTracks([FromBody] MinimalPlaylist minimalPlaylistIds)
+        [HttpPost("tracks/{playlistId}")]
+        public async Task<ActionResult> UpdateTracks(string playlistId)
         {
-            await Mediator.Send(new UpdatePlaylistItemsRequest(minimalPlaylistIds));
+            await Mediator.Send(new UpdatePlaylistItemsRequest(playlistId));
 
             return NoContent();
         }

@@ -25,5 +25,7 @@ namespace Playlister.Repositories
         Playlist? Get(string id);
 
         Task Upsert(SimplifiedPlaylistObject playlist);
+
+        Task RefreshCache();
     }
 }

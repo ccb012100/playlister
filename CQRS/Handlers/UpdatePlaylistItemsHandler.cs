@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -7,7 +9,6 @@ using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
 using Playlister.Services;
-using Playlister.Utilities;
 
 namespace Playlister.CQRS.Handlers
 {
@@ -33,34 +34,33 @@ namespace Playlister.CQRS.Handlers
 
         public async Task<Unit> Handle(UpdatePlaylistItemsRequest request, CancellationToken ct)
         {
-            Playlist? playlist = _playlistRepository.Get(request.Playlist.Id);
+            Playlist? playlist = _playlistRepository.Get(request.PlaylistId);
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(request.PlaylistId, ct);
 
             // return without processing if the DB version matches the request version
-            if (playlist is not null && playlist.SnapshotId == request.Playlist.SnapshotId)
+            if (playlist is not null && playlist.SnapshotId == playlistObject.SnapshotId)
             {
                 _logger.LogDebug(
-                    $"Request id={request.Playlist.Id}, snapshot id={request.Playlist.SnapshotId} matches current data.");
+                    $"Request id `{request.PlaylistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update.");
                 return new Unit();
             }
 
-            // insert/update playlist
-            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(request.Playlist.Id, ct);
-            await _playlistRepository.Upsert(playlistObject);
-
             // get first page of playlist items
             PagingObject<PlaylistItem> page =
-                await _api.GetPlaylistItems(request.Playlist.Id, request.Offset, request.Limit, ct);
+                await _api.GetPlaylistItems(request.PlaylistId, request.Offset, request.Limit, ct);
 
-            await _trackRepository.Upsert(request.Playlist, page.Items, ct);
+            // We want to get all items so that they can be inserted into the repository in a single Transaction
+            List<PlaylistItem> allItems = page.Items.ToList();
 
-            // process the rest of the pages
-            await PageObjectProcessor.ProcessPages(
-                async token =>
-                    await _api.GetPlaylistItems(request.Playlist.Id, request.Offset, request.Limit, token),
-                async (next, token) => await _api.GetPlaylistItems(next, token),
-                async (tracks, token) =>
-                    await _trackRepository.Upsert(request.Playlist, tracks, token),
-                ct);
+            while (page.Next is not null)
+            {
+                page = await _api.GetPlaylistItems(page.Next, ct);
+                allItems.AddRange(page.Items);
+            }
+
+            await _trackRepository.Upsert(playlistObject.ToPlaylist(), allItems, ct);
+            // refresh cache because the playlist was updated through the IPlaylistTrackRepository and not IPlaylistRepository
+            await _playlistRepository.RefreshCache();
 
             return new Unit();
         }

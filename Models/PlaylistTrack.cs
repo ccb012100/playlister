@@ -10,7 +10,7 @@ namespace Playlister.Models
     /// </summary>
     public record PlaylistTrack
     {
-        public string Id { get; init; }
+        public string TrackId { get; init; }
         public DateTime AddedAt { get; init; }
         public string PlaylistId { get; init; }
         public string? SnapshotId { get; init; }

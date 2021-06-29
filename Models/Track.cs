@@ -14,6 +14,7 @@ namespace Playlister.Models
     {
         public Album Album { get; init; }
 
+        // ReSharper disable once MemberCanBePrivate.Global
         public IEnumerable<Artist> Artists { get; init; }
         public int DiscNumber { get; init; }
         public int DurationMs { get; init; }
@@ -28,10 +29,12 @@ namespace Playlister.Models
         public IEnumerable<Artist> GetAllContainedArtists() => Artists.Concat(Album.Artists);
 
         /// <summary>
-        /// Get Track/Artist Id pair for each artist on the track.
+        /// Get Track/Artist TrackId pair for each artist on the track.
         /// </summary>
         /// <returns>Collection of track id, artist id tuples</returns>
-        public IEnumerable<(string TrackId, string ArtistId)> GetArtistIdPairings() =>
-            Artists.Select(a => (TrackId: Id, ArtistId: a.Id));
+        public IEnumerable<object> GetArtistIdPairings() =>
+            Artists.Select(a => new {TrackId = Id, ArtistId = a.Id});
+
+        public string AlbumId => Album.Id;
     }
 }

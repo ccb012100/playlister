@@ -407,15 +407,10 @@
                        placeholder="playlist id"/>
                 <label for="playlist-id-input">Playlist Id</label>
               </div>
-              <div class="col p-2">
-                <input id="snapshot-id-input" type="text" v-model="snapshotId" class="m-2"
-                       placeholder="playlist snapshot id"/>
-                <label for="snapshot-id-input">Playlist Snapshot Id</label>
-              </div>
             </div>
             <div class="row">
               <div class="col p-2">
-                <button v-on:click="updateTracks" v-bind:disabled="!playlistId || !snapshotId"
+                <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
                         class="btn btn-primary p-2 align-center">
                   Update Playlist
                 </button>
@@ -427,7 +422,6 @@
         data() {
             return {
                 playlistId: null,
-                snapshotId: null,
                 successMessage: null,
                 errorMessage: null
             }
@@ -437,10 +431,7 @@
                 const self = this;
 
                 axios
-                    .post('playlists/tracks', {
-                        id: this.playlistId,
-                        snapshotId: this.snapshotId
-                    })
+                    .post('playlists/tracks/' + this.playlistId, {})
                     .then(function (response) {
                         try {
                             self.successMessage = `Updated playlist ${self.playlistId}!`;

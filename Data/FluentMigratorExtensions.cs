@@ -8,7 +8,7 @@ namespace Playlister.Data
         /// <summary>
         /// Add a Spotify <c>id</c> string column to the table and set as Primary Key.
         /// </summary>
-        /// <param name="tableWithColumnSyntax">The table to add the Id column to</param>
+        /// <param name="tableWithColumnSyntax">The table to add the TrackId column to</param>
         /// <returns></returns>
         public static ICreateTableColumnOptionOrWithColumnSyntax WithSpotifyIdColumn(
             this ICreateTableWithColumnSyntax tableWithColumnSyntax)

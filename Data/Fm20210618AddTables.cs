@@ -37,8 +37,8 @@ namespace Playlister.Data
                 .WithTimeStamps()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("total_tracks").AsInt16().NotNullable()
-                .WithColumn("album_type").AsString()
-                .WithColumn("release_date").AsDateTime();
+                .WithColumn("album_type").AsString().Nullable()
+                .WithColumn("release_date").AsDateTime().Nullable();
 
             Create.Table(DataTables.Track)
                 .WithSpotifyIdColumn()
@@ -58,7 +58,6 @@ namespace Playlister.Data
                 .WithTimeStamps()
                 .ForeignKey("fk_playlisttrack_playlistid", DataTables.Playlist, "id")
                 .WithColumn("playlist_snapshot_id").AsString().Nullable()
-                .ForeignKey("fk_playlisttrack_snapshotid", DataTables.Playlist, "snapshot_id")
                 .WithColumn("added_at").AsDateTime().NotNullable();
 
             // PK is (album_id, artist_id)

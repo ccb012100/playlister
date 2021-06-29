@@ -21,6 +21,7 @@ namespace Playlister.CQRS.Handlers
 
         public async Task<Unit> Handle(UpsertPlaylistsRequest request, CancellationToken ct)
         {
+            // TODO: run this as a background job, and call UpdatePlaylistItemsHandler for each Playlist
             await _playlistRepository.Upsert(request.Playlists, ct);
             return new Unit();
         }

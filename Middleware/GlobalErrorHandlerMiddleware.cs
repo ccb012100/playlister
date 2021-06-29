@@ -1,7 +1,9 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
+using Playlister.Utilities;
 
 namespace Playlister.Middleware
 {
@@ -34,10 +36,6 @@ namespace Playlister.Middleware
                         _logger.LogError($"Refit ApiException: `{e.ReasonPhrase} {e.Content}`");
                         response.StatusCode = (int) e.StatusCode;
                         _logger.LogError($"Authorization Header: {e.RequestMessage.Headers.Authorization}");
-                        break;
-                    default:
-                        // unhandled error
-                        _logger.LogError($"Exception was thrown:{Environment.NewLine}{error}");
                         break;
                 }
 

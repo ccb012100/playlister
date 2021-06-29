@@ -13,13 +13,14 @@ namespace Playlister.Models
     // ReSharper disable once ClassNeverInstantiated.Global
     public record PlaylistItem
     {
+        // TODO: figure out why most AddedAt is being set to 1/1/1 for a lot of items
         // ReSharper disable once MemberCanBePrivate.Global
         public DateTime AddedAt { get; init; }
         public Track Track { get; init; }
 
-        public PlaylistTrack ToPlaylistTrack(MinimalPlaylist playlist) => new()
+        public PlaylistTrack ToPlaylistTrack(Playlist playlist) => new()
         {
-            Id = Track.Id,
+            TrackId = Track.Id,
             AddedAt = AddedAt,
             PlaylistId = playlist.Id,
             SnapshotId = playlist.SnapshotId
