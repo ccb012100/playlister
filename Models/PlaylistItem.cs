@@ -20,12 +20,7 @@ namespace Playlister.Models
         public PlaylistTrack ToPlaylistTrack(MinimalPlaylist playlist) => new()
         {
             Id = Track.Id,
-            Name = Track.Name,
-            TrackNumber = Track.TrackNumber,
-            DiscNumber = Track.DiscNumber,
             AddedAt = AddedAt,
-            DurationMs = Track.DurationMs,
-            AlbumId = Track.Album.Id,
             PlaylistId = playlist.Id,
             SnapshotId = playlist.SnapshotId
         };

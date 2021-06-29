@@ -10,10 +10,12 @@ namespace Playlister.Data
         {
             CreateTables();
             CreateIndexes();
-            CreatePrimaryKeys();
-            CreateForeignKeys();
         }
 
+        /*
+         * Sqlite doesn't support most ALTER commands, so PK/FK constraints have to be part of table creation
+         * (it will just silently not create them).
+         */
         private void CreateTables()
         {
             Create.Table(DataTables.Playlist)
@@ -38,77 +40,42 @@ namespace Playlister.Data
                 .WithColumn("album_type").AsString()
                 .WithColumn("release_date").AsDateTime();
 
-            Create.Table(DataTables.PlaylistTrack)
-                .WithColumn("id").AsString().NotNullable()
+            Create.Table(DataTables.Track)
+                .WithSpotifyIdColumn()
                 .WithTimeStamps()
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("track_number").AsInt16().NotNullable()
                 .WithColumn("disc_number").AsInt16().NotNullable()
-                .WithColumn("added_at").AsDateTime().NotNullable()
                 .WithColumn("duration_ms").AsInt64().NotNullable()
                 .WithColumn("album_id").AsString().NotNullable()
-                .WithColumn("playlist_id").AsString().NotNullable()
-                .WithColumn("playlist_snapshot_id").AsString().Nullable();
+                .ForeignKey("fk_track_albumid", DataTables.Album, "id");
 
+            // PK is (track_id, playlist_id)
+            Create.Table(DataTables.PlaylistTrack)
+                .WithColumn("track_id").AsString().NotNullable().PrimaryKey()
+                .ForeignKey("fk_playlisttrack_trackid", DataTables.Track, "id")
+                .WithColumn("playlist_id").AsString().NotNullable().PrimaryKey()
+                .WithTimeStamps()
+                .ForeignKey("fk_playlisttrack_playlistid", DataTables.Playlist, "id")
+                .WithColumn("playlist_snapshot_id").AsString().Nullable()
+                .ForeignKey("fk_playlisttrack_snapshotid", DataTables.Playlist, "snapshot_id")
+                .WithColumn("added_at").AsDateTime().NotNullable();
+
+            // PK is (album_id, artist_id)
             Create.Table(DataTables.AlbumArtist)
                 .WithTimeStamps()
-                .WithColumn("album_id").AsString().NotNullable()
-                .WithColumn("artist_id").AsString().NotNullable();
+                .WithColumn("album_id").AsString().NotNullable().PrimaryKey()
+                .ForeignKey("fk_albumartist_albumid", DataTables.Album, "id")
+                .WithColumn("artist_id").AsString().NotNullable().PrimaryKey()
+                .ForeignKey("fk_albumartist_artistid", DataTables.Artist, "id");
 
+            // PK is (track_id, artist_id)
             Create.Table(DataTables.TrackArtist)
                 .WithTimeStamps()
-                .WithColumn("track_id").AsString().NotNullable()
-                .WithColumn("artist_id").AsString().NotNullable();
-        }
-
-        // TODO: figure out why these PKs aren't being created
-        private void CreatePrimaryKeys()
-        {
-            Create.PrimaryKey()
-                .OnTable(DataTables.AlbumArtist)
-                .Columns("album_id", "artist_id");
-
-            Create.PrimaryKey()
-                .OnTable(DataTables.TrackArtist)
-                .Columns("track_id", "artist_id");
-
-            // The same track could be on multiple playlists
-            Create.PrimaryKey()
-                .OnTable(DataTables.PlaylistTrack)
-                .Columns("id", "playlist_id");
-        }
-
-        // TODO: figure out why these FKs aren't being created
-        private void CreateForeignKeys()
-        {
-            Create.ForeignKey()
-                .FromTable(DataTables.PlaylistTrack).ForeignColumn("album_id")
-                .ToTable(DataTables.Album).PrimaryColumn("id");
-
-            Create.ForeignKey()
-                .FromTable(DataTables.PlaylistTrack).ForeignColumn("playlist_snapshot_id")
-                .ToTable(DataTables.PlaylistTrack).PrimaryColumn("snapshot_id");
-
-            Create.ForeignKey()
-                .FromTable(DataTables.PlaylistTrack).ForeignColumn("playlist_id")
-                .ToTable(DataTables.PlaylistTrack).PrimaryColumn("id");
-
-
-            Create.ForeignKey()
-                .FromTable(DataTables.AlbumArtist).ForeignColumn("album_id")
-                .ToTable(DataTables.Album).PrimaryColumn("id");
-
-            Create.ForeignKey()
-                .FromTable(DataTables.AlbumArtist).ForeignColumn("artist_id")
-                .ToTable(DataTables.Artist).PrimaryColumn("id");
-
-            Create.ForeignKey()
-                .FromTable(DataTables.TrackArtist).ForeignColumn("track_id")
-                .ToTable(DataTables.PlaylistTrack).PrimaryColumn("id");
-
-            Create.ForeignKey()
-                .FromTable(DataTables.TrackArtist).ForeignColumn("artist_id")
-                .ToTable(DataTables.Artist).PrimaryColumn("id");
+                .WithColumn("track_id").AsString().NotNullable().PrimaryKey()
+                .ForeignKey("fk_trackartist_trackid", DataTables.Track, "id")
+                .WithColumn("artist_id").AsString().NotNullable().PrimaryKey()
+                .ForeignKey("fk_trackartist_artistid", DataTables.Artist, "id");
         }
 
         private void CreateIndexes()

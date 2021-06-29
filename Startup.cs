@@ -12,6 +12,7 @@ using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
 using Playlister.Repositories;
+using Playlister.Repositories.Implementations;
 using Playlister.Services;
 
 namespace Playlister

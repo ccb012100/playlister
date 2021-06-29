@@ -16,6 +16,7 @@ using Playlister.Middleware;
 using Playlister.Models;
 using Playlister.RefitClients;
 using Playlister.Repositories;
+using Playlister.Repositories.Implementations;
 using Playlister.Utilities;
 using Refit;
 

@@ -12,7 +12,7 @@ using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
 
-namespace Playlister.Repositories
+namespace Playlister.Repositories.Implementations
 {
     public class PlaylistRepository : IPlaylistRepository
     {

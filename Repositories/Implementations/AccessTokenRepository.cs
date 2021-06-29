@@ -8,7 +8,7 @@ using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.Utilities;
 
-namespace Playlister.Repositories
+namespace Playlister.Repositories.Implementations
 {
     public class AccessTokenRepository : IAccessTokenRepository
     {
