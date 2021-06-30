@@ -58,25 +58,6 @@ namespace Playlister.Extensions
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
-            /*
-             * WARNING:
-             * Refit settings aren't used on body params that are marked with
-             * [Body(BodySerializationMethod.UrlEncoded)], so those models have to be set with [AliasAs] to get the
-             * properties snake_cased
-             */
-            var snakeCaseSettings = new RefitSettings
-            {
-                ContentSerializer = new NewtonsoftJsonContentSerializer(
-                    new JsonSerializerSettings
-                    {
-                        ContractResolver =
-                            new DefaultContractResolver
-                            {
-                                NamingStrategy = new SnakeCaseNamingStrategy()
-                            }
-                    })
-            };
-
             services.AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient((svc, c) =>
                 {
