@@ -29,7 +29,7 @@ namespace Playlister.Models
         public IEnumerable<Artist> GetAllContainedArtists() => Artists.Concat(Album.Artists);
 
         /// <summary>
-        /// Get Track/Artist TrackId pair for each artist on the track.
+        /// GetPlaylist Track/Artist TrackId pair for each artist on the track.
         /// </summary>
         /// <returns>Collection of track id, artist id tuples</returns>
         public IEnumerable<object> GetArtistIdPairings() =>

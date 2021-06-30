@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Requests;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
-using Playlister.Repositories;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers
@@ -16,25 +15,23 @@ namespace Playlister.CQRS.Handlers
     /// Update the list of Tracks for the specified playlist.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdatePlaylistItemsHandler : IRequestHandler<UpdatePlaylistItemsRequest, Unit>
+    public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistItemsRequest, Unit>
     {
-        private readonly IPlaylistTrackRepository _trackRepository;
-        private readonly IPlaylistRepository _playlistRepository;
-        private readonly ILogger<UpdatePlaylistItemsHandler> _logger;
+        private readonly ILogger<UpdatePlaylistHandler> _logger;
         private readonly SpotifyApiService _api;
+        private readonly IPlaylistService _playlistService;
 
-        public UpdatePlaylistItemsHandler(SpotifyApiService api, IPlaylistTrackRepository trackRepository,
-            IPlaylistRepository playlistRepository, ILogger<UpdatePlaylistItemsHandler> logger)
+        public UpdatePlaylistHandler(SpotifyApiService api, IPlaylistService playlistService,
+            ILogger<UpdatePlaylistHandler> logger)
         {
-            _trackRepository = trackRepository;
-            _playlistRepository = playlistRepository;
             _logger = logger;
             _api = api;
+            _playlistService = playlistService;
         }
 
         public async Task<Unit> Handle(UpdatePlaylistItemsRequest request, CancellationToken ct)
         {
-            Playlist? playlist = _playlistRepository.Get(request.PlaylistId);
+            Playlist? playlist = _playlistService.GetPlaylist(request.PlaylistId);
             SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(request.PlaylistId, ct);
 
             // return without processing if the DB version matches the request version
@@ -58,9 +55,7 @@ namespace Playlister.CQRS.Handlers
                 allItems.AddRange(page.Items);
             }
 
-            await _trackRepository.Upsert(playlistObject.ToPlaylist(), allItems, ct);
-            // refresh cache because the playlist was updated through the IPlaylistTrackRepository and not IPlaylistRepository
-            await _playlistRepository.RefreshCache();
+            await _playlistService.UpdatePlaylist(playlistObject.ToPlaylist(), allItems, ct);
 
             return new Unit();
         }

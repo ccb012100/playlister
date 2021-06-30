@@ -11,10 +11,6 @@ View and search your Spotify playlists
 `ReleaseDatePrecision` on `Album`s can't be set as an enum right now due to a limitation in the System.Text.Json
 serializer: https://github.com/dotnet/runtime/issues/31081
 
-## Cache
-
-IMemoryCache
-
 ## Database
 
 Sqlite

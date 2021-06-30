@@ -1,9 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
-using Playlister.Utilities;
 
 namespace Playlister.Middleware
 {

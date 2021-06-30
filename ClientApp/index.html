@@ -289,21 +289,18 @@
             <h5 class="card-title">
               User Profile
             </h5>
+            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <div class="row">
-              <button v-on:click="getUserProfile" class="btn btn-primary col p-2">Get User Profile
-              </button>
-              <button v-on:click="getUserPlaylists" class="btn btn-warning col p-2">Get Playlists
-              </button>
               <div class="col p-2">
-                <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-                <input id="offset-input" type="number" v-model="offset" class="m-2" placeholder="offset"/>
-                <label for="offset-input">Offset</label>
-                <input id="limit-input" type="number" v-model="limit" class="m-2" placeholder="limit"/>
-                <label for="limit-input">Limit</label>
-                <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2" placeholder="playlist id"/>
-                <label for="playlist-id-input">Playlist Id</label>
-                <button v-on:click="updatePlaylists" class="btn btn-info p-2 align-center">Update
-                  Playlist
+                <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile
+                </button>
+              </div>
+              <div class="col p-2">
+                <button v-on:click="getUserPlaylists" class="btn btn-warning">Get Playlists
+                </button>
+              </div>
+              <div class="col p-2">
+                <button v-on:click="updatePlaylists" class="btn btn-info align-center">Update Playlists
                 </button>
               </div>
             </div>
@@ -336,8 +333,6 @@
                 if (this.playlistId) {
                     postBody = {
                         limit: this.limit,
-                        offset: this.offset,
-                        playlistId: this.playlistId
                     };
                 }
 

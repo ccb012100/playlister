@@ -6,7 +6,7 @@ using Playlister.Models.SpotifyApi;
 
 namespace Playlister.Repositories
 {
-    public interface IPlaylistRepository
+    public interface IPlaylistWriteRepository
     {
         /// <summary>
         /// Create playlist.
@@ -16,16 +16,6 @@ namespace Playlister.Repositories
         /// <param name="ct"></param>
         Task Upsert(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct);
 
-        /// <summary>
-        /// GetAll all Playlists from the DB
-        /// </summary>
-        /// <returns></returns>
-        IEnumerable<Playlist> GetAll();
-
-        Playlist? Get(string id);
-
-        Task Upsert(SimplifiedPlaylistObject playlist);
-
-        Task RefreshCache();
+        Task Upsert(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct);
     }
 }

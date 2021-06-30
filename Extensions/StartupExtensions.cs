@@ -109,8 +109,8 @@ namespace Playlister.Extensions
 
         public static IServiceCollection AddRepositories(this IServiceCollection services) =>
             services
-                .AddScoped<IPlaylistRepository, PlaylistRepository>()
-                .AddScoped<IPlaylistTrackRepository, PlaylistTrackRepository>()
+                .AddScoped<IPlaylistReadRepository, PlaylistReadRepository>()
+                .AddScoped<IPlaylistWriteRepository, PlaylistWriteRepository>()
                 .AddScoped<IAccessTokenRepository, AccessTokenRepository>();
 
         // ReSharper disable once UnusedMethodReturnValue.Global

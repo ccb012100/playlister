@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Data;
@@ -11,34 +10,49 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
-using Playlister.Utilities;
 
 namespace Playlister.Repositories.Implementations
 {
-    public class PlaylistTrackRepository : IPlaylistTrackRepository
+    public class PlaylistWriteRepository : IPlaylistWriteRepository
     {
         private readonly IConnectionFactory _connectionFactory;
-        private readonly ILogger<PlaylistTrackRepository> _logger;
+        private readonly ILogger<PlaylistWriteRepository> _logger;
 
-        public PlaylistTrackRepository(IConnectionFactory connectionFactory, ILogger<PlaylistTrackRepository> logger)
+        public PlaylistWriteRepository(IConnectionFactory connectionFactory, ILogger<PlaylistWriteRepository> logger)
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
+        }
+
+        public async Task Upsert(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct)
+        {
+            const string playlistSql =
+                "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
+                "ON CONFLICT(id) DO UPDATE SET " +
+                "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
+                "WHERE snapshot_id != excluded.snapshot_id;";
+
+            await using SqliteConnection connection = _connectionFactory.Connection;
+            await connection.OpenAsync(ct);
+            DbTransaction txn = await connection.BeginTransactionAsync(ct);
+
+            await connection.ExecuteAsync(playlistSql, playlists, txn);
+            await txn.CommitAsync(ct);
         }
 
         public async Task Upsert(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct)
         {
             ImmutableArray<PlaylistItem> items = playlistItems.ToImmutableArray();
             _logger.LogDebug($"Upserting {items.Length} tracks on Playlist {playlist.Name}...");
-            // Get list of just new tracks so that we don't waste time trying to update stuff that already exists
-            ImmutableArray<Track> newTracks = (await GetNewTracks(items)).ToImmutableArray();
+
+            // GetPlaylist list of just new tracks so that we don't waste time trying to update stuff that already exists
+            ImmutableArray<Track> newTracks = await GetNewTracks(items);
             ImmutableArray<Album> albums = newTracks.Select(t => t.Album).ToImmutableArray();
 
             await using SqliteConnection connection = _connectionFactory.Connection;
             await connection.OpenAsync(ct);
             DbTransaction txn = await connection.BeginTransactionAsync(ct);
 
-            // We're upserting the Playlist here rather than through IPlaylistRepository so that it can be done within a transaction.
             await UpsertPlaylist(playlist, connection, txn);
             await UpsertArtists(newTracks, connection, txn);
             await UpsertAlbums(albums, connection, txn);
@@ -52,6 +66,7 @@ namespace Playlister.Repositories.Implementations
             await UpsertTrackArtist(newTracks, connection, txn);
 
             await txn.CommitAsync(ct);
+            _logger.LogDebug($"Finished upserting {items.Length} tracks on Playlist {playlist.Name}");
 
             static async Task UpsertPlaylist(Playlist plist, IDbConnection conn, IDbTransaction dbTransaction)
             {
@@ -120,30 +135,25 @@ namespace Playlister.Repositories.Implementations
 
                 await conn.ExecuteAsync(albumArtistSql, albums.SelectMany(a => a.GetAlbumArtistPairings()), dbTxn);
             }
-        }
 
-        /// <summary>
-        /// Get Tracks from input list that are not in the database.
-        /// </summary>
-        /// <param name="playlistItems"></param>
-        /// <returns></returns>
-        private async Task<IEnumerable<Track>> GetNewTracks(IEnumerable<PlaylistItem> playlistItems)
-        {
-            ImmutableArray<Track> tracks = playlistItems.Select(p => p.Track).ToImmutableArray();
+            async Task<ImmutableArray<Track>> GetNewTracks(ImmutableArray<PlaylistItem> listItems)
+            {
+                ImmutableArray<Track> tracks = listItems.Select(p => p.Track).ToImmutableArray();
 
-            await using SqliteConnection connection = _connectionFactory.Connection;
+                await using SqliteConnection conn = _connectionFactory.Connection;
 
-            IEnumerable<string> ids = tracks.Select(p => p.Id);
+                IEnumerable<string> ids = tracks.Select(p => p.Id);
 
-            var parameters = new DynamicParameters();
-            parameters.Add("@Ids", ids);
+                var parameters = new DynamicParameters();
+                parameters.Add("@Ids", ids);
 
-            IEnumerable<Track> tracksInDb =
-                await connection.QueryAsync<Track>("SELECT * FROM Track WHERE id in @Ids", parameters);
+                IEnumerable<Track> tracksInDb =
+                    await conn.QueryAsync<Track>("SELECT * FROM Track WHERE id in @Ids", parameters);
 
-            IEnumerable<string> storedTracks = tracksInDb.Select(t => t.Id);
+                IEnumerable<string> storedTracks = tracksInDb.Select(t => t.Id);
 
-            return tracks.Where(i => !storedTracks.Contains(i.Id));
+                return tracks.Where(i => !storedTracks.Contains(i.Id)).ToImmutableArray();
+            }
         }
     }
 }

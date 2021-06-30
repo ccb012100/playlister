@@ -33,7 +33,7 @@ namespace Playlister
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMemoryCache()
+            services
                 .AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
                 {
                     corsBuilder.WithOrigins("https://localhost:5001")
@@ -49,6 +49,7 @@ namespace Playlister
                 .AddTransient<HttpQueryStringConversionMiddleware>()
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddRepositories()
+                .AddTransient<IPlaylistService, PlaylistService>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();

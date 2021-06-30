@@ -17,8 +17,6 @@ namespace Playlister.Repositories.Implementations
                 Cache = SqliteCacheMode.Shared,
                 ForeignKeys = true
             }.ToString();
-
-            Console.WriteLine("CONNECTION STRING:\n" + _connectionString);
         }
 
         public SqliteConnection Connection => new(_connectionString);

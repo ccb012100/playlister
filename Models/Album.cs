@@ -49,7 +49,7 @@ namespace Playlister.Models
         }
 
         /// <summary>
-        /// Get a pairing of each artist's TrackId with the album's TrackId.
+        /// GetPlaylist a pairing of each artist's TrackId with the album's TrackId.
         /// </summary>
         /// <returns>Collection of album id, artist id tuples.</returns>
         public IEnumerable<object> GetAlbumArtistPairings() =>

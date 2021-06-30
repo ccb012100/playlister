@@ -2,7 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.CQRS.Requests;
-using Playlister.Repositories;
+using Playlister.Models.SpotifyApi;
 
 namespace Playlister.CQRS.Handlers
 {
@@ -10,19 +10,23 @@ namespace Playlister.CQRS.Handlers
     /// Add or Update the Playlists in request to the db.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpsertPlaylistsHandler : IRequestHandler<UpsertPlaylistsRequest, Unit>
+    public class UpsertPlaylistsHandler : IRequestHandler<UpdatePlaylistsRequest, Unit>
     {
-        private readonly IPlaylistRepository _playlistRepository;
+        private readonly IMediator _mediator;
 
-        public UpsertPlaylistsHandler(IPlaylistRepository playlistRepository)
+        public UpsertPlaylistsHandler(IMediator mediator)
         {
-            _playlistRepository = playlistRepository;
+            _mediator = mediator;
         }
 
-        public async Task<Unit> Handle(UpsertPlaylistsRequest request, CancellationToken ct)
+        public async Task<Unit> Handle(UpdatePlaylistsRequest request, CancellationToken ct)
         {
-            // TODO: run this as a background job, and call UpdatePlaylistItemsHandler for each Playlist
-            await _playlistRepository.Upsert(request.Playlists, ct);
+            // TODO: run this as a background job, and call UpdatePlaylistHandler for each Playlist
+            foreach (SimplifiedPlaylistObject playlist in request.Playlists)
+            {
+                await _mediator.Send(new UpdatePlaylistItemsRequest(playlist.Id), ct);
+            }
+
             return new Unit();
         }
     }
