@@ -16,7 +16,7 @@ namespace Playlister.RefitClients
         /// <returns></returns>
         [Post("/api/token")]
         Task<SpotifyAccessToken> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
-            AccessTokenRequest.BodyParams bodyParams, CancellationToken ct);
+            RequestAccessTokenCommand.BodyParams bodyParams, CancellationToken ct);
 
         /// <summary>
         /// GetAll a Refresh Token for User from Spotify.
@@ -28,6 +28,6 @@ namespace Playlister.RefitClients
         [Post("/api/token")]
         Task<SpotifyAccessToken> RefreshToken([Authorize("Basic")] string authHeaderParam,
             [Body(BodySerializationMethod.UrlEncoded)]
-            TokenRefreshRequest.BodyParams bodyParams, CancellationToken ct);
+            TokenRefreshCommand.BodyParams bodyParams, CancellationToken ct);
     }
 }

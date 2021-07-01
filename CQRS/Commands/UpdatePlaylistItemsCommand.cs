@@ -11,9 +11,9 @@ namespace Playlister.CQRS.Requests
     /// Request to Update the Playlist data stored in the database
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public record UpdatePlaylistItemsRequest : IRequest<Unit>
+    public record UpdatePlaylistItemsCommand : IRequest<Unit>
     {
-        public UpdatePlaylistItemsRequest(string playlistId)
+        public UpdatePlaylistItemsCommand(string playlistId)
         {
             PlaylistId = playlistId;
         }

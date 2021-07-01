@@ -15,7 +15,7 @@ using Playlister.Repositories;
 namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class SpotifyTokenRefreshHandler : IRequestHandler<TokenRefreshRequest, UserAccessToken>
+    public class SpotifyTokenRefreshHandler : IRequestHandler<TokenRefreshCommand, UserAccessToken>
     {
         private readonly ISpotifyAccountsApi _api;
         private readonly ILogger<SpotifyTokenRefreshHandler> _logger;
@@ -31,13 +31,13 @@ namespace Playlister.CQRS.Handlers
             _tokenRepository = tokenRepository;
         }
 
-        public async Task<UserAccessToken> Handle(TokenRefreshRequest request, CancellationToken ct)
+        public async Task<UserAccessToken> Handle(TokenRefreshCommand command, CancellationToken ct)
         {
             string authParam =
                 Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
             SpotifyAccessToken token = await _api.RefreshToken(authParam,
-                new TokenRefreshRequest.BodyParams(request.RefreshToken), ct);
+                new TokenRefreshCommand.BodyParams(command.RefreshToken), ct);
 
             return await _tokenRepository.AddToken(token);
         }

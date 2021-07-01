@@ -4,5 +4,5 @@ using Playlister.Models.SpotifyApi;
 
 namespace Playlister.CQRS.Requests
 {
-    public record UpdatePlaylistsRequest(IEnumerable<SimplifiedPlaylistObject> Playlists) : IRequest<Unit>;
+    public record UpdatePlaylistsCommand(IEnumerable<SimplifiedPlaylistObject> Playlists) : IRequest<Unit>;
 }

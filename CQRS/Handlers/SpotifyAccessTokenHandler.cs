@@ -12,7 +12,7 @@ using Playlister.Repositories;
 namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class SpotifyAccessTokenHandler : IRequestHandler<AccessTokenRequest, UserAccessToken>
+    public class SpotifyAccessTokenHandler : IRequestHandler<RequestAccessTokenCommand, UserAccessToken>
     {
         private readonly ISpotifyAccountsApi _api;
         private readonly SpotifyOptions _options;
@@ -26,14 +26,14 @@ namespace Playlister.CQRS.Handlers
             _options = options.Value;
         }
 
-        public async Task<UserAccessToken> Handle(AccessTokenRequest request, CancellationToken ct)
+        public async Task<UserAccessToken> Handle(RequestAccessTokenCommand command, CancellationToken ct)
         {
             // TODO: validate that the `state` value matches the original value sent to user
             // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
             SpotifyAccessToken token = await _api.AccessToken(
-                new AccessTokenRequest.BodyParams
+                new RequestAccessTokenCommand.BodyParams
                 {
-                    Code = request.Code,
+                    Code = command.Code,
                     RedirectUri = _options.CallbackUrl.ToString(),
                     ClientId = _options.ClientId,
                     ClientSecret = _options.ClientSecret

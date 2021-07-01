@@ -11,7 +11,7 @@ using Playlister.RefitClients;
 
 namespace Playlister.CQRS.Handlers
 {
-    public class CurrentUserHandler : IRequestHandler<CurrentUserRequest, PrivateUserObject>
+    public class CurrentUserHandler : IRequestHandler<CurrentUserCommand, PrivateUserObject>
     {
         private readonly ISpotifyApi _api;
 
@@ -20,7 +20,7 @@ namespace Playlister.CQRS.Handlers
             _api = api;
         }
 
-        public async Task<PrivateUserObject> Handle(CurrentUserRequest request, CancellationToken ct)
+        public async Task<PrivateUserObject> Handle(CurrentUserCommand command, CancellationToken ct)
         {
             return await _api.GetCurrentUser(ct);
         }

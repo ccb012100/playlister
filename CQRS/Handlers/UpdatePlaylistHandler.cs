@@ -15,7 +15,7 @@ namespace Playlister.CQRS.Handlers
     /// Update the list of Tracks for the specified playlist.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistItemsRequest, Unit>
+    public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistItemsCommand, Unit>
     {
         private readonly ILogger<UpdatePlaylistHandler> _logger;
         private readonly SpotifyApiService _api;
@@ -29,29 +29,29 @@ namespace Playlister.CQRS.Handlers
             _playlistService = playlistService;
         }
 
-        public async Task<Unit> Handle(UpdatePlaylistItemsRequest request, CancellationToken ct)
+        public async Task<Unit> Handle(UpdatePlaylistItemsCommand command, CancellationToken ct)
         {
-            Playlist? playlist = _playlistService.GetPlaylist(request.PlaylistId);
-            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(request.PlaylistId, ct);
+            Playlist? playlist = _playlistService.GetPlaylist(command.PlaylistId);
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(command.PlaylistId, ct);
 
-            // return without processing if the DB version matches the request version
+            // return without processing if the DB version matches the command version
             if (playlist is not null && playlist.SnapshotId == playlistObject.SnapshotId)
             {
                 _logger.LogDebug(
-                    $"Request id `{request.PlaylistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update.");
+                    $"Request id `{command.PlaylistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update.");
                 return new Unit();
             }
 
             // get first page of playlist items
             PagingObject<PlaylistItem> page =
-                await _api.GetPlaylistItems(request.PlaylistId, request.Offset, request.Limit, ct);
+                await _api.GetPlaylistTracks(command.PlaylistId, command.Offset, command.Limit, ct);
 
             // We want to get all items so that they can be inserted into the repository in a single Transaction
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
             {
-                page = await _api.GetPlaylistItems(page.Next, ct);
+                page = await _api.GetPlaylistTracks(page.Next, ct);
                 allItems.AddRange(page.Items);
             }
 

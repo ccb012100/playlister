@@ -10,5 +10,5 @@ using Playlister.Models;
 namespace Playlister.CQRS.Requests
 {
     // ReSharper disable once ClassNeverInstantiated.Global
-    public record CurrentUserPlaylistsRequest : IRequest<IEnumerable<Playlist>>;
+    public record CurrentUserPlaylistsCommand : IRequest<IEnumerable<Playlist>>;
 }

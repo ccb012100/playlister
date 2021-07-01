@@ -13,7 +13,7 @@ using Playlister.Services;
 namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class CurrentUserPlaylistsHandler : IRequestHandler<CurrentUserPlaylistsRequest,
+    public class CurrentUserPlaylistsHandler : IRequestHandler<CurrentUserPlaylistsCommand,
         IEnumerable<Playlist>>
     {
         private readonly SpotifyApiService _service;
@@ -25,7 +25,7 @@ namespace Playlister.CQRS.Handlers
             _logger = logger;
         }
 
-        public async Task<IEnumerable<Playlist>> Handle(CurrentUserPlaylistsRequest request,
+        public async Task<IEnumerable<Playlist>> Handle(CurrentUserPlaylistsCommand command,
             CancellationToken ct)
         {
             var sw = new Stopwatch();

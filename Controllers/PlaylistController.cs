@@ -24,7 +24,7 @@ namespace Playlister.Controllers
         [HttpPost("tracks/{playlistId}")]
         public async Task<ActionResult> UpdateTracks(string playlistId)
         {
-            await Mediator.Send(new UpdatePlaylistItemsRequest(playlistId));
+            await Mediator.Send(new UpdatePlaylistItemsCommand(playlistId));
 
             return NoContent();
         }
