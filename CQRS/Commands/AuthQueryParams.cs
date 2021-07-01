@@ -5,7 +5,7 @@ using System;
 #pragma warning disable 8618
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
-namespace Playlister.CQRS.Requests
+namespace Playlister.CQRS.Commands
 {
     // ReSharper disable once UnusedType.Global
     public record AuthQueryParams

@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Playlister.CQRS.Requests;
+using Playlister.CQRS.Commands;
 using Playlister.Models.SpotifyApi;
 using Playlister.RefitClients;
 

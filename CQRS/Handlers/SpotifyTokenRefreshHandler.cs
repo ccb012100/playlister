@@ -6,7 +6,7 @@ using MediatR;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
-using Playlister.CQRS.Requests;
+using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;

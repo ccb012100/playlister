@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
-using Playlister.CQRS.Requests;
+using Playlister.CQRS.Commands;
 
 namespace Playlister.CQRS.Handlers
 {

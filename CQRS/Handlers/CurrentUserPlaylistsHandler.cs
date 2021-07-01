@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
-using Playlister.CQRS.Requests;
+using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Services;

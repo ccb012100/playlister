@@ -5,7 +5,7 @@ using MediatR;
 
 // ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
 
-namespace Playlister.CQRS.Requests
+namespace Playlister.CQRS.Commands
 {
     /// <summary>
     /// Request to Update the Playlist data stored in the database

@@ -1,6 +1,6 @@
 using MediatR;
 
-namespace Playlister.CQRS.Requests
+namespace Playlister.CQRS.Commands
 {
     public record CurrentUserUpdatePlaylistsCommand : IRequest<Unit>;
 }
