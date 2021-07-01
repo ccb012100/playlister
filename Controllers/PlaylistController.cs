@@ -15,12 +15,6 @@ namespace Playlister.Controllers
         {
         }
 
-        [HttpGet("{id}")]
-        public Task<Playlist> Get(string id)
-        {
-            throw new NotImplementedException();
-        }
-
         [HttpPost("tracks/{playlistId}")]
         public async Task<ActionResult> UpdateTracks(string playlistId)
         {

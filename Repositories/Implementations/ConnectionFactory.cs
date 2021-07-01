@@ -1,4 +1,3 @@
-using System;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;

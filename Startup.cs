@@ -49,7 +49,7 @@ namespace Playlister
                 .AddTransient<HttpQueryStringConversionMiddleware>()
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddRepositories()
-                .AddTransient<IPlaylistService, PlaylistService>()
+                .AddScoped<IPlaylistService, PlaylistService>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();

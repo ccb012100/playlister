@@ -3,6 +3,7 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Logging;
 
 namespace Playlister.Middleware
 {
@@ -12,23 +13,36 @@ namespace Playlister.Middleware
     internal class SpotifyAuthHeaderMiddleware : DelegatingHandler
     {
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILogger<SpotifyAuthHeaderMiddleware> _logger;
 
-        public SpotifyAuthHeaderMiddleware(IHttpContextAccessor contextAccessor)
+        public SpotifyAuthHeaderMiddleware(IHttpContextAccessor contextAccessor,
+            ILogger<SpotifyAuthHeaderMiddleware> logger)
         {
             _contextAccessor = contextAccessor;
+            _logger = logger;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            var accessToken = (string?) _contextAccessor.HttpContext!.Items["AccessToken"];
+            _logger.LogInformation("Entering auth header middleware");
 
-            if (!string.IsNullOrWhiteSpace(accessToken))
+            HttpContext? httpContext = _contextAccessor.HttpContext;
+
+            if (httpContext is not null)
             {
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                var accessToken = (string?) httpContext.Items["AccessToken"];
+
+                if (!string.IsNullOrWhiteSpace(accessToken))
+                {
+                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                }
+            }
+            else
+            {
+                _logger.LogWarning($"No http context was found for request:\n{request.RequestUri}");
             }
 
-            return await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+            return await base.SendAsync(request, ct).ConfigureAwait(false);
         }
     }
 }

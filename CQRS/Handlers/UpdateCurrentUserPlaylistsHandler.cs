@@ -13,13 +13,13 @@ namespace Playlister.CQRS.Handlers
     // ReSharper disable once UnusedType.Global
     public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUserPlaylistsCommand, Unit>
     {
-        private readonly IMediator _mediator;
         private readonly ISpotifyApiService _api;
+        private readonly IPlaylistService _playlistService;
 
-        public UpdateCurrentUserPlaylistsHandler(IMediator mediator, ISpotifyApiService api)
+        public UpdateCurrentUserPlaylistsHandler(ISpotifyApiService api, IPlaylistService playlistService)
         {
-            _mediator = mediator;
             _api = api;
+            _playlistService = playlistService;
         }
 
         public async Task<Unit> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
@@ -28,7 +28,7 @@ namespace Playlister.CQRS.Handlers
                 async token => await _api.GetCurrentUserPlaylists(token),
                 async (next, token) => await _api.GetCurrentUserPlaylists(next, token),
                 async (playlistObjects, token) =>
-                    await _mediator.Send(new UpdatePlaylistsCommand(playlistObjects), token),
+                    await _playlistService.UpdatePlaylists(playlistObjects, token),
                 ct);
 
             return new Unit();

@@ -22,7 +22,7 @@ namespace Playlister.CQRS.Commands
         public string PlaylistId { get; }
 
         /// <summary>
-        /// The index of the first playlist to return.
+        /// The index of the first track to return.
         /// Default: <c>0</c> (the first object). Maximum offset: <c>100.000</c>.
         /// Use with limit to get the next set of playlists.
         /// </summary>
@@ -30,7 +30,7 @@ namespace Playlister.CQRS.Commands
         public int Offset { get; init; } = 0;
 
         /// <summary>
-        /// The maximum number of playlists to return.
+        /// The maximum number of tracks to return.
         /// Default: <c>50</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.
         /// Note: the Default on Spotify API is 50.
         /// </summary>

@@ -23,7 +23,7 @@ namespace Playlister.Controllers
         [HttpGet]
         public async Task<PrivateUserObject> Get()
         {
-            PrivateUserObject user = await Mediator.Send(new CurrentUserCommand());
+            PrivateUserObject user = await Mediator.Send(new GetCurrentUserCommand());
 
             return user;
         }
@@ -35,7 +35,7 @@ namespace Playlister.Controllers
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
-            IEnumerable<Playlist> lists = await Mediator.Send(new CurrentUserPlaylistsCommand());
+            IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand());
 
             return Ok(lists);
         }

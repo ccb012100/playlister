@@ -42,4 +42,8 @@
     <ItemGroup>
       <_ContentIncludedByDefault Remove="wwwroot\js\components.js" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Logs" />
+    </ItemGroup>
 </Project>
