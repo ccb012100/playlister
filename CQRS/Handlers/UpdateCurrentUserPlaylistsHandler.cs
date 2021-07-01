@@ -14,9 +14,9 @@ namespace Playlister.CQRS.Handlers
     public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUserPlaylistsCommand, Unit>
     {
         private readonly IMediator _mediator;
-        private readonly SpotifyApiService _api;
+        private readonly ISpotifyApiService _api;
 
-        public UpdateCurrentUserPlaylistsHandler(IMediator mediator, SpotifyApiService api)
+        public UpdateCurrentUserPlaylistsHandler(IMediator mediator, ISpotifyApiService api)
         {
             _mediator = mediator;
             _api = api;

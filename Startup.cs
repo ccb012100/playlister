@@ -51,7 +51,7 @@ namespace Playlister
                 .AddRepositories()
                 .AddTransient<IPlaylistService, PlaylistService>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
-                .AddHttpClient<SpotifyApiService>()
+                .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
                 .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
 
             services.AddRefitClients()

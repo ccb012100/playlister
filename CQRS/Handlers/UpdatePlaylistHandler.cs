@@ -18,10 +18,10 @@ namespace Playlister.CQRS.Handlers
     public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistCommand, Unit>
     {
         private readonly ILogger<UpdatePlaylistHandler> _logger;
-        private readonly SpotifyApiService _api;
+        private readonly ISpotifyApiService _api;
         private readonly IPlaylistService _playlistService;
 
-        public UpdatePlaylistHandler(SpotifyApiService api, IPlaylistService playlistService,
+        public UpdatePlaylistHandler(ISpotifyApiService api, IPlaylistService playlistService,
             ILogger<UpdatePlaylistHandler> logger)
         {
             _logger = logger;

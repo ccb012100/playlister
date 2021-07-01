@@ -16,10 +16,10 @@ namespace Playlister.CQRS.Handlers
     public class CurrentUserPlaylistsHandler : IRequestHandler<CurrentUserPlaylistsCommand,
         IEnumerable<Playlist>>
     {
-        private readonly SpotifyApiService _service;
+        private readonly ISpotifyApiService _service;
         private readonly ILogger<CurrentUserPlaylistsHandler> _logger;
 
-        public CurrentUserPlaylistsHandler(SpotifyApiService service, ILogger<CurrentUserPlaylistsHandler> logger)
+        public CurrentUserPlaylistsHandler(ISpotifyApiService service, ILogger<CurrentUserPlaylistsHandler> logger)
         {
             _service = service;
             _logger = logger;
