@@ -47,7 +47,7 @@ namespace Playlister.Controllers
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
-            await Mediator.Send(new CurrentUserUpdatePlaylistsCommand());
+            await Mediator.Send(new UpdateCurrentUserPlaylistsCommand());
 
             return NoContent();
         }

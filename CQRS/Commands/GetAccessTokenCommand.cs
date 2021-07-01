@@ -12,7 +12,7 @@ namespace Playlister.CQRS.Commands
     /// <summary>
     /// Request to get an Access Token from Spotify
     /// </summary>
-    public record RequestAccessTokenCommand : IRequest<UserAccessToken>
+    public record GetAccessTokenCommand : IRequest<UserAccessToken>
     {
         /// <summary>
         /// The authorization code returned from the initial request to the Spotify Account /authorize endpoint.

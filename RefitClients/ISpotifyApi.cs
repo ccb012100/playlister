@@ -43,7 +43,7 @@ namespace Playlister.RefitClients
         [Get(
             "/playlists/{playlistId}/tracks?market=from_token&" +
             "fields=fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))")]
-        Task<PagingObject<PlaylistItem>> GetPlaylistItems(string playlistId, int? offset, int? limit,
+        Task<PagingObject<PlaylistItem>> GetPlaylistTracks(string playlistId, int? offset, int? limit,
             CancellationToken ct);
     }
 }

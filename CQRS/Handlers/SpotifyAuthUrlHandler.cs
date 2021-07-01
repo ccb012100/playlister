@@ -10,7 +10,7 @@ using Playlister.CQRS.Commands;
 namespace Playlister.CQRS.Handlers
 {
     // ReSharper disable once UnusedType.Global
-    public class SpotifyAuthUrlHandler : IRequestHandler<AuthUrlCommand, Uri>
+    public class SpotifyAuthUrlHandler : IRequestHandler<GetAuthUrlCommand, Uri>
     {
         private const string Scope = "user-read-private";
         private readonly SpotifyOptions _options;
@@ -20,7 +20,7 @@ namespace Playlister.CQRS.Handlers
             _options = options.Value;
         }
 
-        public Task<Uri> Handle(AuthUrlCommand command, CancellationToken ct)
+        public Task<Uri> Handle(GetAuthUrlCommand command, CancellationToken ct)
         {
             // https://accounts.spotify.com/authorize?
             // client_id=5fe01282e44241328a84e7c5cc169165

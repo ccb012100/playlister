@@ -11,7 +11,7 @@ namespace Playlister.CQRS.Handlers
     /// Add or Update the current user's playlists to the db.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<CurrentUserUpdatePlaylistsCommand, Unit>
+    public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUserPlaylistsCommand, Unit>
     {
         private readonly IMediator _mediator;
         private readonly SpotifyApiService _api;
@@ -22,7 +22,7 @@ namespace Playlister.CQRS.Handlers
             _api = api;
         }
 
-        public async Task<Unit> Handle(CurrentUserUpdatePlaylistsCommand command, CancellationToken ct)
+        public async Task<Unit> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
         {
             await PageObjectProcessor.ProcessPages(
                 async token => await _api.GetCurrentUserPlaylists(token),

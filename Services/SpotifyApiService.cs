@@ -35,7 +35,7 @@ namespace Playlister.Services
         /// <exception cref="NotImplementedException"></exception>
         public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(string playlistId, int? offset, int? limit,
             CancellationToken ct) =>
-            await _spotifyApi.GetPlaylistItems(playlistId, offset, limit, ct);
+            await _spotifyApi.GetPlaylistTracks(playlistId, offset, limit, ct);
 
         public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(Uri next, CancellationToken ct) =>
             (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>(next, ct))!;

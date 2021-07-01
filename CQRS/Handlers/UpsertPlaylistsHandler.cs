@@ -24,7 +24,7 @@ namespace Playlister.CQRS.Handlers
             // TODO: run this as a background job, and call UpdatePlaylistHandler for each Playlist
             foreach (SimplifiedPlaylistObject playlist in command.Playlists)
             {
-                await _mediator.Send(new UpdatePlaylistItemsCommand(playlist.Id), ct);
+                await _mediator.Send(new UpdatePlaylistCommand(playlist.Id), ct);
             }
 
             return new Unit();

@@ -22,7 +22,7 @@ namespace Playlister.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            Uri authUrl = await Mediator.Send(new AuthUrlCommand());
+            Uri authUrl = await Mediator.Send(new GetAuthUrlCommand());
 
             return Ok(authUrl);
         }
@@ -33,7 +33,7 @@ namespace Playlister.Controllers
         /// <param name="tokenCommand"></param>
         /// <returns></returns>
         [HttpPost("token")]
-        public async Task<IActionResult> AccessToken([FromBody] RequestAccessTokenCommand tokenCommand)
+        public async Task<IActionResult> AccessToken([FromBody] GetAccessTokenCommand tokenCommand)
         {
             UserAccessToken token = await Mediator.Send(tokenCommand);
 
@@ -41,9 +41,9 @@ namespace Playlister.Controllers
         }
 
         [ValidateToken, HttpPost("token/refresh")]
-        public async Task<IActionResult> RefreshToken([FromBody] TokenRefreshCommand tokenRefreshCommand)
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
         {
-            UserAccessToken userAccessToken = await Mediator.Send(tokenRefreshCommand);
+            UserAccessToken userAccessToken = await Mediator.Send(refreshTokenCommand);
 
             return Ok(userAccessToken);
         }

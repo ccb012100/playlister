@@ -72,7 +72,7 @@ namespace Playlister.Middleware
                         try
                         {
                             UserAccessToken refreshedToken =
-                                await _mediator.Send(new TokenRefreshCommand(token.RefreshToken));
+                                await _mediator.Send(new RefreshTokenCommand(token.RefreshToken));
 
                             _logger.LogDebug(
                                 $"Refreshed token:{Environment.NewLine}{JsonUtility.PrettyPrint(refreshedToken)}");

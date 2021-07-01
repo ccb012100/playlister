@@ -15,7 +15,7 @@ namespace Playlister.CQRS.Handlers
     /// Update the list of Tracks for the specified playlist.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistItemsCommand, Unit>
+    public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistCommand, Unit>
     {
         private readonly ILogger<UpdatePlaylistHandler> _logger;
         private readonly SpotifyApiService _api;
@@ -29,7 +29,7 @@ namespace Playlister.CQRS.Handlers
             _playlistService = playlistService;
         }
 
-        public async Task<Unit> Handle(UpdatePlaylistItemsCommand command, CancellationToken ct)
+        public async Task<Unit> Handle(UpdatePlaylistCommand command, CancellationToken ct)
         {
             Playlist? playlist = _playlistService.GetPlaylist(command.PlaylistId);
             SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(command.PlaylistId, ct);
