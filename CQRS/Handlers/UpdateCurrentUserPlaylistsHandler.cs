@@ -25,11 +25,10 @@ namespace Playlister.CQRS.Handlers
         public async Task<Unit> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
         {
             await PageObjectProcessor.ProcessPages(
-                async token => await _api.GetCurrentUserPlaylists(token),
-                async (next, token) => await _api.GetCurrentUserPlaylists(next, token),
+                async token => await _api.GetCurrentUserPlaylists(command.AccessToken, token),
+                async (next, token) => await _api.GetCurrentUserPlaylists(command.AccessToken, next, token),
                 async (playlistObjects, token) =>
-                    await _playlistService.UpdatePlaylists(playlistObjects, token),
-                ct);
+                    await _playlistService.UpdatePlaylists(command.AccessToken, playlistObjects, token), ct);
 
             return new Unit();
         }

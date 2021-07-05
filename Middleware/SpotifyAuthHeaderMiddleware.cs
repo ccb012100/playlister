@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -40,6 +41,7 @@ namespace Playlister.Middleware
             else
             {
                 _logger.LogWarning($"No http context was found for request:\n{request.RequestUri}");
+                throw new InvalidOperationException();
             }
 
             return await base.SendAsync(request, ct).ConfigureAwait(false);

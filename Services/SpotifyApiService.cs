@@ -21,21 +21,39 @@ namespace Playlister.Services
             Client = client;
         }
 
-        public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(string playlistId, int? offset, int? limit,
+        public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(string accessToken, string playlistId,
+            int? offset, int? limit, CancellationToken ct)
+        {
+            Client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            return await _spotifyApi.GetPlaylistTracks(accessToken, playlistId, offset, limit, ct);
+        }
+
+        public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(string accessToken, Uri next,
+            CancellationToken ct)
+        {
+            Client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            return (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>(next, ct))!;
+        }
+
+        public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylists(string accessToken,
+            CancellationToken ct, int? offset = null, int? limit = 50) =>
+            await _spotifyApi.GetCurrentUserPlaylists(accessToken, offset, limit, ct);
+
+        public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylists(string accessToken, Uri next,
+            CancellationToken ct)
+        {
+            Client.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+
+            return (await Client.GetFromJsonAsync<PagingObject<SimplifiedPlaylistObject>>(next, ct))!;
+        }
+
+        public async Task<SimplifiedPlaylistObject> GetPlaylist(string accessToken, string playlistId,
             CancellationToken ct) =>
-            await _spotifyApi.GetPlaylistTracks(playlistId, offset, limit, ct);
-
-        public async Task<PagingObject<PlaylistItem>> GetPlaylistTracks(Uri next, CancellationToken ct) =>
-            (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>(next, ct))!;
-
-        public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylists(CancellationToken ct,
-            int? offset = null, int? limit = 50) => await _spotifyApi.GetCurrentUserPlaylists(offset, limit, ct);
-
-        public async Task<PagingObject<SimplifiedPlaylistObject>>
-            GetCurrentUserPlaylists(Uri next, CancellationToken ct) =>
-            (await Client.GetFromJsonAsync<PagingObject<SimplifiedPlaylistObject>>(next, ct))!;
-
-        public async Task<SimplifiedPlaylistObject> GetPlaylist(string playlistId, CancellationToken ct) =>
-            await _spotifyApi.GetPlaylist(playlistId, ct);
+            await _spotifyApi.GetPlaylist(accessToken, playlistId, ct);
     }
 }

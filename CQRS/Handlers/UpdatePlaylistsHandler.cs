@@ -24,7 +24,7 @@ namespace Playlister.CQRS.Handlers
         {
             foreach (SimplifiedPlaylistObject playlist in command.Playlists)
             {
-                await _playlistService.UpdatePlaylist(playlist.Id, 0, 50, ct);
+                await _playlistService.UpdatePlaylist(command.AccessToken, playlist.Id, 0, 50, ct);
             }
 
             return new Unit();

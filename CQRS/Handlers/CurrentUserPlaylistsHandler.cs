@@ -31,12 +31,14 @@ namespace Playlister.CQRS.Handlers
             var sw = new Stopwatch();
             sw.Start();
 
-            PagingObject<SimplifiedPlaylistObject> page = await _service.GetCurrentUserPlaylists(ct);
+            PagingObject<SimplifiedPlaylistObject> page =
+                await _service.GetCurrentUserPlaylists(command.AccessToken, ct);
+
             List<Playlist> lists = page.Items.Select(i => i.ToPlaylist()).ToList();
 
             while (page.Next is not null)
             {
-                page = await _service.GetCurrentUserPlaylists(page.Next, ct);
+                page = await _service.GetCurrentUserPlaylists(command.AccessToken, page.Next, ct);
 
                 lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
             }

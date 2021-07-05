@@ -61,7 +61,6 @@ namespace Playlister.Middleware
                     if (token.Expiration > DateTime.Now)
                     {
                         valid = true;
-                        _httpContextAccessor.HttpContext!.Items["AccessToken"] = authToken;
                         _logger.LogTrace("Token is valid");
                     }
                     else

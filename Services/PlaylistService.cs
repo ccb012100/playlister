@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
@@ -31,20 +32,24 @@ namespace Playlister.Services
             PlaylistCache.Initialize(PopulateCache);
         }
 
-        public Playlist? GetPlaylist(string id) => GetFromCache(id);
-
-        public async Task UpdatePlaylists(IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct)
+        public async Task UpdatePlaylists(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists,
+            CancellationToken ct)
         {
             foreach (SimplifiedPlaylistObject playlist in playlists)
             {
-                await UpdatePlaylist(playlist.Id, 0, 50, ct);
+                await UpdatePlaylist(accessToken, playlist.Id, 0, 50, ct);
             }
         }
 
-        public async Task UpdatePlaylist(string playlistId, int offset, int limit, CancellationToken ct)
+        public Task UpdatePlaylist(UpdatePlaylistCommand updateCommand, CancellationToken ct) =>
+            UpdatePlaylist(updateCommand.AccessToken, updateCommand.PlaylistId, updateCommand.Offset,
+                updateCommand.Limit, ct);
+
+        public async Task UpdatePlaylist(string accessToken, string playlistId, int offset, int limit,
+            CancellationToken ct)
         {
-            Playlist? playlist = GetPlaylist(playlistId);
-            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(playlistId, ct);
+            Playlist? playlist = GetFromCache(playlistId);
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(accessToken, playlistId, ct);
 
             // return without processing if the DB version matches the command version
             if (playlist is not null && playlist.SnapshotId == playlistObject.SnapshotId)
@@ -56,15 +61,14 @@ namespace Playlister.Services
             }
 
             // get first page of playlist items
-            PagingObject<PlaylistItem> page =
-                await _api.GetPlaylistTracks(playlistId, offset, limit, ct);
+            PagingObject<PlaylistItem> page = await _api.GetPlaylistTracks(accessToken, playlistId, offset, limit, ct);
 
             // We want to get all items so that they can be inserted into the repository in a single Transaction
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
             {
-                page = await _api.GetPlaylistTracks(page.Next, ct);
+                page = await _api.GetPlaylistTracks(accessToken, page.Next, ct);
                 allItems.AddRange(page.Items);
             }
 

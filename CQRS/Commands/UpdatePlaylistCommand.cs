@@ -13,10 +13,15 @@ namespace Playlister.CQRS.Commands
     // ReSharper disable once UnusedType.Global
     public record UpdatePlaylistCommand : IRequest<Unit>
     {
-        public UpdatePlaylistCommand(string playlistId)
+        public UpdatePlaylistCommand(string accessToken, string playlistId)
         {
+            AccessToken = accessToken;
             PlaylistId = playlistId;
         }
+
+        // ReSharper disable once MemberCanBePrivate.Global
+        // ReSharper disable once UnusedAutoPropertyAccessor.Global
+        public string AccessToken { get; }
 
         // ReSharper disable once UnassignedGetOnlyAutoProperty
         public string PlaylistId { get; }

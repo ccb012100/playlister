@@ -1,3 +1,6 @@
+using System;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -14,6 +17,7 @@ using Playlister.Middleware;
 using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
 using Playlister.Services;
+using Polly;
 
 namespace Playlister
 {
@@ -44,15 +48,12 @@ namespace Playlister
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
                 .AddConfigOptions(Configuration, _environment)
                 .AddHttpContextAccessor()
-                .AddTransient<HttpLoggingMiddleware>()
-                .AddTransient<SpotifyAuthHeaderMiddleware>()
-                .AddTransient<HttpQueryStringConversionMiddleware>()
-                .AddSingleton<IConnectionFactory, ConnectionFactory>()
+                .AddMiddleware()
+                .AddServices()
                 .AddRepositories()
-                .AddScoped<IPlaylistService, PlaylistService>()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
                 .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
-                .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>();
+                .AddPolicyHandler(HttpClientExtensions.GetRetryPolicy());
 
             services.AddRefitClients()
                 .AddControllers().AddJsonOptions(options =>

@@ -6,13 +6,15 @@ using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
+using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
     [ValidateToken, ApiController, Route("api/user")]
     public class CurrentSpotifyUserController : BaseController
     {
-        public CurrentSpotifyUserController(IMediator mediator) : base(mediator)
+        public CurrentSpotifyUserController(IMediator mediator, IAccessTokenUtility tokenUtility)
+            : base(mediator, tokenUtility)
         {
         }
 
@@ -23,7 +25,8 @@ namespace Playlister.Controllers
         [HttpGet]
         public async Task<PrivateUserObject> Get()
         {
-            PrivateUserObject user = await Mediator.Send(new GetCurrentUserCommand());
+            PrivateUserObject user =
+                await Mediator.Send(new GetCurrentUserCommand(AccessToken));
 
             return user;
         }
@@ -35,7 +38,7 @@ namespace Playlister.Controllers
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
-            IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand());
+            IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand(AccessToken));
 
             return Ok(lists);
         }
@@ -47,7 +50,7 @@ namespace Playlister.Controllers
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
-            await Mediator.Send(new UpdateCurrentUserPlaylistsCommand());
+            await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
 
             return NoContent();
         }

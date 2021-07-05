@@ -15,6 +15,7 @@ using Playlister.Models;
 using Playlister.RefitClients;
 using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
+using Playlister.Services;
 using Playlister.Utilities;
 using Refit;
 
@@ -33,6 +34,22 @@ namespace Playlister.Extensions
             return services
                 .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
                 .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IConnectionFactory, ConnectionFactory>()
+                .AddScoped<IPlaylistService, PlaylistService>()
+                .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+        }
+
+        public static IServiceCollection AddMiddleware(this IServiceCollection services)
+        {
+            return services
+                .AddTransient<HttpLoggingMiddleware>()
+                .AddTransient<SpotifyAuthHeaderMiddleware>()
+                .AddTransient<HttpQueryStringConversionMiddleware>();
         }
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
@@ -70,7 +87,7 @@ namespace Playlister.Extensions
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                 })
                 // .AddHttpMessageHandler<HttpLoggingMiddleware>()
-                .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>()
+                // .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>()
                 .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
 
             return services;
