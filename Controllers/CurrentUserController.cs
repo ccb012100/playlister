@@ -11,15 +11,15 @@ using Playlister.Utilities;
 namespace Playlister.Controllers
 {
     [ValidateToken, ApiController, Route("api/user")]
-    public class CurrentSpotifyUserController : BaseController
+    public class CurrentUserController : BaseController
     {
-        public CurrentSpotifyUserController(IMediator mediator, IAccessTokenUtility tokenUtility)
+        public CurrentUserController(IMediator mediator, IAccessTokenUtility tokenUtility)
             : base(mediator, tokenUtility)
         {
         }
 
         /// <summary>
-        /// GetAll the User who was assigned the Access Token in the Authorization Header.
+        /// Get the User who was assigned the Access Token in the Authorization Header.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -32,7 +32,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// GetAll the current user's Playlists.
+        /// Get the current user's Playlists.
         /// </summary>
         /// <returns></returns>
         [HttpGet("playlists")]

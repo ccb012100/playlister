@@ -16,7 +16,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// GetAll the Spotify Accounts URL to direct user
+        /// Get the Spotify Accounts URL to direct user
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -28,12 +28,12 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// GetAll an Access Token for User.
+        /// Get an Access Token for User.
         /// </summary>
         /// <param name="tokenCommand"></param>
         /// <returns></returns>
         [HttpPost("token")]
-        public async Task<IActionResult> AccessToken([FromBody] GetAccessTokenCommand tokenCommand)
+        public async Task<IActionResult> GetAccessToken([FromBody] GetAccessTokenCommand tokenCommand)
         {
             UserAccessToken token = await Mediator.Send(tokenCommand);
 

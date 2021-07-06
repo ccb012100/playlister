@@ -1,10 +1,8 @@
-using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
-using Playlister.Models;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers

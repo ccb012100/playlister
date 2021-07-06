@@ -70,7 +70,7 @@
         }
 
         localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
-        axios.defaults.headers.common['Authorization'] = userToken;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
     }
 
     function lsRemoveToken() {
@@ -256,7 +256,7 @@
         },
         watch: {
             userToken: function (val) {
-                axios.defaults.headers.common['Authorization'] = val.accessToken;
+                axios.defaults.headers.common['Authorization'] = `Bearer ${val.accessToken}`;
             }
         },
         methods: {

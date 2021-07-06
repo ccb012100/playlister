@@ -1,4 +1,9 @@
+using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Net;
+using System.Net.Http;
 using System.Reflection;
+using System.Threading.Tasks;
 using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -7,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS;
@@ -17,6 +23,8 @@ using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
 using Playlister.Services;
 using Playlister.Utilities;
+using Polly;
+using Polly.Extensions.Http;
 using Refit;
 
 namespace Playlister.Extensions
@@ -48,8 +56,7 @@ namespace Playlister.Extensions
         {
             return services
                 .AddTransient<HttpLoggingMiddleware>()
-                .AddTransient<SpotifyAuthHeaderMiddleware>()
-                .AddTransient<HttpQueryStringConversionMiddleware>();
+                .AddTransient<SpotifyAuthHeaderMiddleware>();
         }
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
@@ -79,7 +86,7 @@ namespace Playlister.Extensions
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
                 })
                 // .AddHttpMessageHandler<HttpLoggingMiddleware>()
-                .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
+                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
             services.AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient((svc, c) =>
@@ -87,8 +94,8 @@ namespace Playlister.Extensions
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                 })
                 // .AddHttpMessageHandler<HttpLoggingMiddleware>()
-                // .AddHttpMessageHandler<SpotifyAuthHeaderMiddleware>()
-                .AddHttpMessageHandler<HttpQueryStringConversionMiddleware>();
+                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+            // TODO: make sure removing HttpQueryStringConversionMiddleware didn't break anything...
 
             return services;
         }
@@ -125,6 +132,17 @@ namespace Playlister.Extensions
 
                 endpoints.MapControllers();
             });
+        }
+
+        [SuppressMessage("ReSharper", "ArgumentsStyleLiteral")]
+        [SuppressMessage("ReSharper", "ArgumentsStyleAnonymousFunction")]
+        public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
+        {
+            services
+                .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
+                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+
+            return services;
         }
     }
 }

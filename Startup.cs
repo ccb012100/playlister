@@ -1,6 +1,3 @@
-using System;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -10,14 +7,11 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
-using Playlister.Repositories;
-using Playlister.Repositories.Implementations;
-using Playlister.Services;
-using Polly;
 
 namespace Playlister
 {
@@ -52,15 +46,16 @@ namespace Playlister
                 .AddServices()
                 .AddRepositories()
                 .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
-                .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
-                .AddPolicyHandler(HttpClientExtensions.GetRetryPolicy());
-
-            services.AddRefitClients()
-                .AddControllers().AddJsonOptions(options =>
+                .Configure<HttpClientFactoryOptions>(options => options.SuppressHandlerScope = true)
+                .AddHttpClientWithPollyPolicy()
+                .AddRefitClients()
+                .AddControllers()
+                .AddJsonOptions(options =>
                 {
                     options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
+
 
             services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 

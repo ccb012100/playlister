@@ -9,7 +9,7 @@ namespace Playlister.RefitClients
     public interface ISpotifyApi
     {
         /// <summary>
-        /// GetAll detailed profile information about the current user (including the current user’s username).
+        /// Get detailed profile information about the current user (including the current user’s username).
         /// </summary>
         /// <param name="token"></param>
         /// <param name="ct"></param>

@@ -26,12 +26,12 @@ namespace Playlister.CQRS
             RequestHandlerDelegate<TResponse> next)
         {
             _logger.LogTrace(
-                $"{typeof(TRequest).Name} => REQUEST:{Environment.NewLine}{JsonUtility.PrettyPrint(request)}");
+                $"{typeof(TRequest).Name} => Mediator Request: {JsonUtility.PrettyPrint(request)}");
 
             TResponse response = await next();
 
             _logger.LogTrace(
-                $"{typeof(TRequest).Name} => RESPONSE:{Environment.NewLine}{JsonUtility.PrettyPrint(response)}");
+                $"{typeof(TRequest).Name} => Mediator Response: {JsonUtility.PrettyPrint(response)}");
 
             return response;
         }

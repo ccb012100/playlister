@@ -27,10 +27,12 @@ namespace Playlister.Utilities
                 throw new InvalidOperationException("No Authorization header found on HttpContext.Request.");
             }
 
-            string authToken = authHeader.Scheme;
+            string token = authHeader.Parameter ??
+                           throw new NullReferenceException(
+                               "The Authentication Header was present, but the Parameter was null");
 
-            _logger.LogDebug($"Found access token {authToken} on HttpContext.");
-            return authToken;
+            _logger.LogDebug($"Found access token {token} on HttpContext.");
+            return token;
         }
     }
 }
