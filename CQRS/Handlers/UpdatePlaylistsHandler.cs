@@ -13,7 +13,7 @@ namespace Playlister.CQRS.Handlers
     /// Add or Update the Playlists in command to the db.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Unit>
+    public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, int>
     {
         private readonly IPlaylistService _playlistService;
 
@@ -22,8 +22,14 @@ namespace Playlister.CQRS.Handlers
             _playlistService = playlistService;
         }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="ct"></param>
+        /// <returns>Number of playlists handled</returns>
         // ReSharper disable once UseDeconstructionOnParameter
-        public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
+        public async Task<int> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -36,7 +42,7 @@ namespace Playlister.CQRS.Handlers
                 await _playlistService.UpdatePlaylist(command.AccessToken, playlist.Id, 0, 50, ct);
             }
 
-            return new Unit();
+            return playlists.Length;
         }
     }
 }

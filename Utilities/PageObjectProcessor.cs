@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Playlister.Models.SpotifyApi;
@@ -8,7 +9,16 @@ namespace Playlister.Utilities
 {
     public static class PageObjectProcessor
     {
-        public static async Task ProcessPages<T>(
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="page1Fn"></param>
+        /// <param name="page2PlusFn"></param>
+        /// <param name="itemFn"></param>
+        /// <param name="ct"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>Total number of items processed.</returns>
+        public static async Task<int> ProcessPages<T>(
             Func<CancellationToken, Task<PagingObject<T>>> page1Fn,
             // Input: Uri and CancellationToken
             // Output: Task<PagingObject<T>>
@@ -18,9 +28,11 @@ namespace Playlister.Utilities
             Action<IEnumerable<T>, CancellationToken> itemFn,
             CancellationToken ct)
         {
+            int itemTotal = 0;
             // get 1st page
             PagingObject<T> page = await page1Fn.Invoke(ct);
             // process 1st page
+            itemTotal += page.Items.Count();
             ProcessItems(page, itemFn, ct);
 
             while (page.Next is not null)
@@ -28,8 +40,11 @@ namespace Playlister.Utilities
                 // get next page
                 page = await page2PlusFn.Invoke(page.Next, ct);
                 // process page
+                itemTotal += page.Items.Count();
                 ProcessItems(page, itemFn, ct);
             }
+
+            return itemTotal;
         }
 
         private static void ProcessItems<T>(PagingObject<T> page, Action<IEnumerable<T>, CancellationToken> itemFn,

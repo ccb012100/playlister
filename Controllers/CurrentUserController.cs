@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -50,7 +51,7 @@ namespace Playlister.Controllers
             IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand(AccessToken));
 
             sw.Stop();
-            _logger.LogInformation($"Retrieved current user's playlists. Total time: {sw.Elapsed}");
+            _logger.LogInformation($"Retrieved current user's {lists.Count()} playlists. Total time: {sw.Elapsed}");
 
             return Ok(lists);
         }
@@ -65,11 +66,10 @@ namespace Playlister.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
-
+            int total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+            // TODO: figure out why this method returns before Mediator returns and the code below this comment never seems to be run
             sw.Stop();
-            _logger.LogInformation($"Updated current user's playlists. Total time: {sw.Elapsed}");
-
+            _logger.LogInformation($"Updated current user's {total} playlists. Total time: {sw.Elapsed}");
             return NoContent();
         }
     }
