@@ -67,8 +67,8 @@ namespace Playlister.Controllers
             sw.Start();
 
             int total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
-            // TODO: figure out why this method returns before Mediator returns and the code below this comment never seems to be run
             sw.Stop();
+
             _logger.LogInformation($"Updated current user's {total} playlists. Total time: {sw.Elapsed}");
             return NoContent();
         }

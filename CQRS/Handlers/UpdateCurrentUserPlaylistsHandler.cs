@@ -1,10 +1,11 @@
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Commands;
+using Playlister.Models.SpotifyApi;
 using Playlister.Services;
-using Playlister.Utilities;
 
 namespace Playlister.CQRS.Handlers
 {
@@ -28,13 +29,20 @@ namespace Playlister.CQRS.Handlers
 
         public async Task<int> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
         {
-            int total = await PageObjectProcessor.ProcessPages(
-                async token => await _api.GetCurrentUserPlaylists(command.AccessToken, token),
-                async (next, token) => await _api.GetCurrentUserPlaylists(command.AccessToken, next, token),
-                async (playlistObjects, token) =>
-                    await _playlistService.UpdatePlaylists(command.AccessToken, playlistObjects, token), ct);
-            // TODO: figure out why this logger statement never seems to run
-            _logger.LogInformation($"PageObjectProcessor returned a total of `{total}`.");
+            int total = 0;
+
+            PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylists(command.AccessToken, ct);
+
+            await _playlistService.UpdatePlaylists(command.AccessToken, page.Items, ct);
+            total += page.Items.Count();
+            while (page.Next is not null)
+            {
+                page = await _api.GetCurrentUserPlaylists(command.AccessToken, page.Next, ct);
+                await _playlistService.UpdatePlaylists(command.AccessToken, page.Items, ct);
+                total += page.Items.Count();
+            }
+
+            _logger.LogInformation($"Processed a total of `{total}` playlists.");
             return total;
         }
     }
