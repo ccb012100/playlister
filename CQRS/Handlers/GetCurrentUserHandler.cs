@@ -11,11 +11,11 @@ using Playlister.RefitClients;
 
 namespace Playlister.CQRS.Handlers
 {
-    public class CurrentUserHandler : IRequestHandler<GetCurrentUserCommand, PrivateUserObject>
+    public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserCommand, PrivateUserObject>
     {
         private readonly ISpotifyApi _api;
 
-        public CurrentUserHandler(ISpotifyApi api)
+        public GetCurrentUserHandler(ISpotifyApi api)
         {
             _api = api;
         }

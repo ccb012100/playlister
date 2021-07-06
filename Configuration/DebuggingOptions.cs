@@ -6,5 +6,7 @@ namespace Playlister.Configuration
 
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public bool UseLoggingBehavior { get; init; } = false;
+
+        public bool UseHttpLoggingMiddleware { get; init; } = false;
     }
 }

@@ -18,8 +18,8 @@ namespace Playlister.Repositories.Implementations
         public async Task<Playlist?> Get(string id)
         {
             await using SqliteConnection conn = _connectionFactory.Connection;
-            return
-                await conn.QuerySingleOrDefaultAsync<Playlist>("SELECT * FROM Playlist WHERE id = @Id", new {Id = id});
+            return await conn.QuerySingleOrDefaultAsync<Playlist>("SELECT * FROM Playlist WHERE id = @Id",
+                new {Id = id});
         }
 
         public async Task<IEnumerable<Playlist>> Get()

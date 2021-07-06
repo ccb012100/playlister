@@ -73,12 +73,15 @@ namespace Playlister.Extensions
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
-            services.AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
+            var debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+
+            services
+                .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient((svc, c) =>
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
                 })
-                // .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
             services.AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
@@ -86,10 +89,21 @@ namespace Playlister.Extensions
                 {
                     c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                 })
-                // .AddHttpMessageHandler<HttpLoggingMiddleware>()
+                .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
             return services;
+        }
+
+        private static IHttpClientBuilder AddHttpLoggingMiddleware(this IHttpClientBuilder httpClientBuilder,
+            IOptions<DebuggingOptions>? debugOptions)
+        {
+            if (debugOptions is { } && debugOptions.Value.UseHttpLoggingMiddleware)
+            {
+                httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>();
+            }
+
+            return httpClientBuilder;
         }
 
         public static void AddDebuggingOptions(this IServiceCollection services)
@@ -103,10 +117,11 @@ namespace Playlister.Extensions
         }
 
         public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+            // these need to be added as Transient to prevent DI exceptions in Mediatr
             services
-                .AddScoped<IPlaylistReadRepository, PlaylistReadRepository>()
-                .AddScoped<IPlaylistWriteRepository, PlaylistWriteRepository>()
-                .AddScoped<IAccessTokenRepository, AccessTokenRepository>();
+                .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
+                .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>()
+                .AddTransient<IAccessTokenRepository, AccessTokenRepository>();
 
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config,

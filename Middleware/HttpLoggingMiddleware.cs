@@ -24,8 +24,7 @@ namespace Playlister.Middleware
             _logger = logger;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,
-            CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
             string? msg;
             HttpResponseMessage? response, resp;
@@ -55,7 +54,7 @@ namespace Playlister.Middleware
                     if (req.Content is StringContent || IsTextBasedContentType(req.Headers) ||
                         IsTextBasedContentType(req.Content.Headers))
                     {
-                        string result = await req.Content.ReadAsStringAsync(cancellationToken);
+                        string result = await req.Content.ReadAsStringAsync(ct);
 
                         _logger.LogDebug($"{msg} Content:");
                         _logger.LogDebug($"{msg} {result}");
@@ -64,7 +63,7 @@ namespace Playlister.Middleware
 
                 DateTime start = DateTime.Now;
 
-                response = await base.SendAsync(request, cancellationToken).ConfigureAwait(false);
+                response = await base.SendAsync(request, ct).ConfigureAwait(false);
 
                 DateTime end = DateTime.Now;
 
@@ -94,7 +93,7 @@ namespace Playlister.Middleware
                 IsTextBasedContentType(resp.Content.Headers))
             {
                 DateTime start = DateTime.Now;
-                string result = await resp.Content.ReadAsStringAsync(cancellationToken);
+                string result = await resp.Content.ReadAsStringAsync(ct);
                 DateTime end = DateTime.Now;
 
                 _logger.LogDebug($"{msg} Content:");

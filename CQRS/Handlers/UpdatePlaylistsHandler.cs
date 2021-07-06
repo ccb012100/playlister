@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
@@ -20,9 +22,16 @@ namespace Playlister.CQRS.Handlers
             _playlistService = playlistService;
         }
 
+        // ReSharper disable once UseDeconstructionOnParameter
         public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
         {
-            foreach (SimplifiedPlaylistObject playlist in command.Playlists)
+            var sw = new Stopwatch();
+            sw.Start();
+
+            SimplifiedPlaylistObject[] playlists = command.Playlists as SimplifiedPlaylistObject[] ??
+                                                   command.Playlists.ToArray();
+
+            foreach (SimplifiedPlaylistObject playlist in playlists)
             {
                 await _playlistService.UpdatePlaylist(command.AccessToken, playlist.Id, 0, 50, ct);
             }

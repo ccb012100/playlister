@@ -1,7 +1,9 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.Models;
@@ -13,9 +15,13 @@ namespace Playlister.Controllers
     [ValidateToken, ApiController, Route("api/user")]
     public class CurrentUserController : BaseController
     {
-        public CurrentUserController(IMediator mediator, IAccessTokenUtility tokenUtility)
+        private readonly ILogger<CurrentUserController> _logger;
+
+        public CurrentUserController(IMediator mediator, IAccessTokenUtility tokenUtility,
+            ILogger<CurrentUserController> logger)
             : base(mediator, tokenUtility)
         {
+            _logger = logger;
         }
 
         /// <summary>
@@ -38,7 +44,13 @@ namespace Playlister.Controllers
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand(AccessToken));
+
+            sw.Stop();
+            _logger.LogInformation($"Retrieved current user's playlists. Total time: {sw.Elapsed}");
 
             return Ok(lists);
         }
@@ -50,7 +62,13 @@ namespace Playlister.Controllers
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+
+            sw.Stop();
+            _logger.LogInformation($"Updated current user's playlists. Total time: {sw.Elapsed}");
 
             return NoContent();
         }

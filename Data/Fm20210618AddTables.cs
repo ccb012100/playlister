@@ -52,10 +52,10 @@ namespace Playlister.Data
 
             // PK is (track_id, playlist_id)
             Create.Table(DataTables.PlaylistTrack)
+                .WithTimeStamps()
                 .WithColumn("track_id").AsString().NotNullable().PrimaryKey()
                 .ForeignKey("fk_playlisttrack_trackid", DataTables.Track, "id")
                 .WithColumn("playlist_id").AsString().NotNullable().PrimaryKey()
-                .WithTimeStamps()
                 .ForeignKey("fk_playlisttrack_playlistid", DataTables.Playlist, "id")
                 .WithColumn("playlist_snapshot_id").AsString().Nullable()
                 .WithColumn("added_at").AsDateTime().NotNullable();

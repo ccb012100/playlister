@@ -30,13 +30,13 @@ namespace Playlister.Middleware
 
         public async Task Invoke(HttpContext context, IAccessTokenRepository tokenRepository)
         {
-            _logger.LogTrace($"Entered {nameof(TokenValidationMiddleware)}");
+            _logger.LogDebug($"Entered {nameof(TokenValidationMiddleware)}");
             Endpoint? endpoint = context.Features.Get<IEndpointFeature>().Endpoint;
             var attribute = endpoint?.Metadata.GetMetadata<ValidateTokenAttribute>();
 
             if (attribute is null)
             {
-                _logger.LogTrace($"There is no ValidateTokenAttribute on the endpoint {endpoint?.DisplayName}");
+                _logger.LogDebug($"There is no ValidateTokenAttribute on the endpoint {endpoint?.DisplayName}");
                 await _next(context); // call action in Controller
                 return;
             }
@@ -50,7 +50,7 @@ namespace Playlister.Middleware
                 return;
             }
 
-            _logger.LogTrace($"Validating access to endpoint {endpoint?.DisplayName}");
+            _logger.LogDebug($"Validating access to endpoint {endpoint?.DisplayName}");
 
             if (authHeader.Scheme != "Bearer")
             {
@@ -60,18 +60,18 @@ namespace Playlister.Middleware
             }
 
             string authToken = authHeader.Parameter!;
-            _logger.LogTrace($"auth token = {authToken}");
+            _logger.LogDebug($"auth token = {authToken}");
 
             if (tokenRepository.Get(authToken) is { } token)
             {
                 if (token.Expiration > DateTime.Now)
                 {
-                    _logger.LogTrace("Token is valid");
+                    _logger.LogDebug("Token is valid");
                     await _next(context);
                     return;
                 }
 
-                _logger.LogWarning($"Cache entry expiration {token.Expiration} has passed.");
+                _logger.LogDebug($"Cache entry expiration {token.Expiration} has passed.");
                 tokenRepository.RemoveAccessToken(authToken);
 
                 if (token.RefreshToken is not null)

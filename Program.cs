@@ -19,11 +19,9 @@ namespace Playlister
         internal static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost.CreateDefaultBuilder(args)
-                .ConfigureLogging((_, builder) =>
+                .ConfigureLogging((context, builder) =>
                 {
-                    builder.AddFile(
-                        pathFormat: $"Logs/{DateTime.Today:yyyy-MM-d}.log",
-                        minimumLevel: LogLevel.Debug);
+                    builder.AddFile(context.Configuration.GetSection("Logging"));
                 })
                 .UseKestrel(LogDevelopmentConfiguration)
                 .UseStartup<Startup>();

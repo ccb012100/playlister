@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -35,7 +37,9 @@ namespace Playlister.Services
         public async Task UpdatePlaylists(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists,
             CancellationToken ct)
         {
-            foreach (SimplifiedPlaylistObject playlist in playlists)
+            ImmutableArray<SimplifiedPlaylistObject> playlistArray = playlists.ToImmutableArray();
+
+            foreach (SimplifiedPlaylistObject playlist in playlistArray)
             {
                 await UpdatePlaylist(accessToken, playlist.Id, 0, 50, ct);
             }
@@ -48,6 +52,9 @@ namespace Playlister.Services
         public async Task UpdatePlaylist(string accessToken, string playlistId, int offset, int limit,
             CancellationToken ct)
         {
+            var sw = new Stopwatch();
+            sw.Start();
+
             Playlist? playlist = GetFromCache(playlistId);
             SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(accessToken, playlistId, ct);
 
@@ -56,6 +63,7 @@ namespace Playlister.Services
             {
                 _logger.LogInformation(
                     $"Playlist `{playlistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update. Not proceeding further.");
+                sw.Stop();
 
                 return;
             }
@@ -75,6 +83,8 @@ namespace Playlister.Services
             playlist = playlistObject.ToPlaylist();
             await _playlistWriteRepository.Upsert(playlist, allItems, ct);
             Cache(playlist);
+            sw.Stop();
+            _logger.LogInformation($"Updated playlist {playlist.Id} \"{playlist.Name}\n. Total time: {sw.Elapsed}");
         }
 
         private void Cache(Playlist playlist)
@@ -82,7 +92,7 @@ namespace Playlister.Services
             Playlist pl = PlaylistCache.Items.AddOrUpdate(playlist.Id, playlist,
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist);
 
-            _logger.LogTrace($"Added playlist to cache: {JsonUtility.PrettyPrint(pl)}");
+            _logger.LogDebug($"Added playlist to cache: {JsonUtility.PrettyPrint(pl)}");
         }
 
         private Playlist? GetFromCache(string id)
@@ -102,7 +112,7 @@ namespace Playlister.Services
                 Cache(playlist);
             }
 
-            _logger.LogTrace($"Cache populated: {JsonUtility.PrettyPrint(PlaylistCache.Items)}");
+            _logger.LogDebug($"Cache populated: {JsonUtility.PrettyPrint(PlaylistCache.Items)}");
         }
     }
 }
