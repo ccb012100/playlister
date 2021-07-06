@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -16,10 +17,18 @@ namespace Playlister.Models
 
         // ReSharper disable once MemberCanBePrivate.Global
         public IEnumerable<Artist> Artists { get; init; }
+
+        [JsonPropertyName("disc_number")]
         public int DiscNumber { get; init; }
+
+        [JsonPropertyName("duration_ms")]
         public int DurationMs { get; init; }
+
         public string Id { get; init; }
+
         public string Name { get; init; }
+
+        [JsonPropertyName("track_number")]
         public int TrackNumber { get; init; }
 
         /// <summary>

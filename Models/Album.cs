@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -14,20 +15,29 @@ namespace Playlister.Models
 {
     public record Album
     {
+        [JsonPropertyName("album_type")]
         public string AlbumType { get; init; }
+
         public IEnumerable<Artist> Artists { get; init; }
+
         public string Id { get; init; }
+
         public string Name { get; init; }
 
         /// <summary>
         /// The date the album was first released, for example “1981-12-15”. Depending on the precision, it might be shown as “1981” or “1981-12”.
         /// </summary>
+        [JsonPropertyName("release_date")]
+        // ReSharper disable once MemberCanBePrivate.Global
         public string ReleaseDate { get; init; }
 
+        [JsonPropertyName("release_date_precision")]
         public string ReleaseDatePrecision { get; init; }
 
+        [JsonPropertyName("total_tracks")]
         public int TotalTracks { get; init; }
 
+        [JsonPropertyName("date_of_release")]
         public DateTime DateOfRelease
         {
             get

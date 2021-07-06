@@ -27,13 +27,8 @@ namespace Playlister.Utilities
                     .WaitAndRetryAsync(
                         retryCount: 3,
                         sleepDurationProvider: (_, response, _) =>
-                        {
-                            svc.GetService<ILogger<SpotifyApiService>>()?.LogWarning(
-                                $"RetryAfter Header: {JsonUtility.PrettyPrint(response.Result?.Headers.RetryAfter)}");
-
-                            return response.Result?.Headers.RetryAfter?.Delta ??
-                                   throw new InvalidOperationException("Could not find valid RetryAfter header.");
-                        },
+                            response.Result?.Headers.RetryAfter?.Delta ??
+                            throw new InvalidOperationException("Could not find valid RetryAfter header."),
 #pragma warning disable 1998
                         onRetryAsync: async (_, timespan, retryAttempt, _) =>
 #pragma warning restore 1998

@@ -54,8 +54,8 @@ namespace Playlister.Services
             // return without processing if the DB version matches the command version
             if (playlist is not null && playlist.SnapshotId == playlistObject.SnapshotId)
             {
-                _logger.LogDebug(
-                    $"Request id `{playlistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update.");
+                _logger.LogInformation(
+                    $"Playlist `{playlistId}` (playlist name `{playlist.Name}`) hasn't changed since the last update. Not proceeding further.");
 
                 return;
             }

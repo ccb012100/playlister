@@ -1,9 +1,5 @@
-using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
-using System.Net.Http;
 using System.Reflection;
-using System.Threading.Tasks;
 using FluentMigrator.Runner;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
@@ -12,7 +8,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS;
@@ -23,8 +18,6 @@ using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
 using Playlister.Services;
 using Playlister.Utilities;
-using Polly;
-using Polly.Extensions.Http;
 using Refit;
 
 namespace Playlister.Extensions
@@ -95,7 +88,6 @@ namespace Playlister.Extensions
                 })
                 // .AddHttpMessageHandler<HttpLoggingMiddleware>()
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
-            // TODO: make sure removing HttpQueryStringConversionMiddleware didn't break anything...
 
             return services;
         }

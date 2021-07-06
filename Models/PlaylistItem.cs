@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 
@@ -13,9 +14,10 @@ namespace Playlister.Models
     // ReSharper disable once ClassNeverInstantiated.Global
     public record PlaylistItem
     {
-        // TODO: figure out why most AddedAt is being set to 1/1/1 for a lot of items
+        [JsonPropertyName("added_at")]
         // ReSharper disable once MemberCanBePrivate.Global
         public DateTime AddedAt { get; init; }
+
         public Track Track { get; init; }
 
         public PlaylistTrack ToPlaylistTrack(Playlist playlist) => new()
