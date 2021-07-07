@@ -26,7 +26,7 @@ namespace Playlister.Repositories.Implementations
             TokenCache.Initialize(PopulateCache);
         }
 
-        public async Task<UserAccessToken> AddToken(SpotifyAccessToken spotifyToken)
+        public async Task<UserAccessToken> AddTokenAsync(SpotifyAccessToken spotifyToken)
         {
             if (!TokenCache.Initialized) await PopulateCache();
 

@@ -8,8 +8,33 @@ namespace Playlister.Services
 {
     public interface IPlaylistService
     {
-        Task UpdatePlaylist(string accessToken, string playlistId, int offset, int limit, CancellationToken ct);
-        Task UpdatePlaylist(UpdatePlaylistCommand updateCommand, CancellationToken ct);
-        Task UpdatePlaylists(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists, CancellationToken ct);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="playlistId"></param>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task UpdatePlaylistAsync(string accessToken, string playlistId, int offset, int limit, CancellationToken ct);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="updateCommand"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task UpdatePlaylistAsync(UpdatePlaylistCommand updateCommand, CancellationToken ct);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="playlists"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task UpdatePlaylistsAsync(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists,
+            CancellationToken ct);
     }
 }

@@ -22,7 +22,7 @@ namespace Playlister.Repositories.Implementations
                 new {Id = id});
         }
 
-        public async Task<IEnumerable<Playlist>> Get()
+        public async Task<IEnumerable<Playlist>> GetAllAsync()
         {
             await using SqliteConnection conn = _connectionFactory.Connection;
             return await conn.QueryAsync<Playlist>("SELECT * FROM Playlist");

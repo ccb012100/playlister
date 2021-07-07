@@ -31,14 +31,14 @@ namespace Playlister.CQRS.Handlers
         {
             int total = 0;
 
-            PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylists(command.AccessToken, ct);
+            PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
 
-            await _playlistService.UpdatePlaylists(command.AccessToken, page.Items, ct);
+            await _playlistService.UpdatePlaylistsAsync(command.AccessToken, page.Items, ct);
             total += page.Items.Count();
             while (page.Next is not null)
             {
-                page = await _api.GetCurrentUserPlaylists(command.AccessToken, page.Next, ct);
-                await _playlistService.UpdatePlaylists(command.AccessToken, page.Items, ct);
+                page = await _api.GetCurrentUserPlaylistsAsync(command.AccessToken, page.Next, ct);
+                await _playlistService.UpdatePlaylistsAsync(command.AccessToken, page.Items, ct);
                 total += page.Items.Count();
             }
 

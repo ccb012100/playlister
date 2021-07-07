@@ -26,13 +26,13 @@ namespace Playlister.CQRS.Handlers
             CancellationToken ct)
         {
             PagingObject<SimplifiedPlaylistObject> page =
-                await _service.GetCurrentUserPlaylists(command.AccessToken, ct);
+                await _service.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
 
             List<Playlist> lists = page.Items.Select(i => i.ToPlaylist()).ToList();
 
             while (page.Next is not null)
             {
-                page = await _service.GetCurrentUserPlaylists(command.AccessToken, page.Next, ct);
+                page = await _service.GetCurrentUserPlaylistsAsync(command.AccessToken, page.Next, ct);
 
                 lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
             }

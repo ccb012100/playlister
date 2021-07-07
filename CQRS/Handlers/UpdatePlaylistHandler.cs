@@ -21,7 +21,7 @@ namespace Playlister.CQRS.Handlers
 
         public async Task<Unit> Handle(UpdatePlaylistCommand command, CancellationToken ct)
         {
-            await _playlistService.UpdatePlaylist(command, ct);
+            await _playlistService.UpdatePlaylistAsync(command, ct);
 
             return new Unit();
         }

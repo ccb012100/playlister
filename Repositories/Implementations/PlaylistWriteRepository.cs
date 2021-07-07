@@ -27,14 +27,14 @@ namespace Playlister.Repositories.Implementations
             _logger = logger;
         }
 
-        public async Task Upsert(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct)
+        public async Task UpsertAsync(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct)
         {
             var sw = new Stopwatch();
             sw.Start();
 
             ImmutableArray<PlaylistItem> items = playlistItems.ToImmutableArray();
 
-            // GetPlaylist list of just new tracks so that we don't waste time trying to update stuff that already exists
+            // Get list of just new tracks so that we don't waste time trying to update stuff that already exists
             ImmutableArray<Track> newTracks = await GetNewTracks(items);
             ImmutableArray<Album> albums = newTracks.Select(t => t.Album).ToImmutableArray();
 

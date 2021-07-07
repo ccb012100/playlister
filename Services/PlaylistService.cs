@@ -34,29 +34,29 @@ namespace Playlister.Services
             PlaylistCache.Initialize(PopulateCache);
         }
 
-        public async Task UpdatePlaylists(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists,
+        public async Task UpdatePlaylistsAsync(string accessToken, IEnumerable<SimplifiedPlaylistObject> playlists,
             CancellationToken ct)
         {
             ImmutableArray<SimplifiedPlaylistObject> playlistArray = playlists.ToImmutableArray();
 
             foreach (SimplifiedPlaylistObject playlist in playlistArray)
             {
-                await UpdatePlaylist(accessToken, playlist.Id, 0, 50, ct);
+                await UpdatePlaylistAsync(accessToken, playlist.Id, 0, 50, ct);
             }
         }
 
-        public Task UpdatePlaylist(UpdatePlaylistCommand updateCommand, CancellationToken ct) =>
-            UpdatePlaylist(updateCommand.AccessToken, updateCommand.PlaylistId, updateCommand.Offset,
+        public Task UpdatePlaylistAsync(UpdatePlaylistCommand updateCommand, CancellationToken ct) =>
+            UpdatePlaylistAsync(updateCommand.AccessToken, updateCommand.PlaylistId, updateCommand.Offset,
                 updateCommand.Limit, ct);
 
-        public async Task UpdatePlaylist(string accessToken, string playlistId, int offset, int limit,
+        public async Task UpdatePlaylistAsync(string accessToken, string playlistId, int offset, int limit,
             CancellationToken ct)
         {
             var sw = new Stopwatch();
             sw.Start();
 
             Playlist? playlist = GetFromCache(playlistId);
-            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylist(accessToken, playlistId, ct);
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
 
             // return without processing if the DB version matches the command version
             if (playlist is not null && playlist.SnapshotId == playlistObject.SnapshotId)
@@ -69,19 +69,19 @@ namespace Playlister.Services
             }
 
             // get first page of playlist items
-            PagingObject<PlaylistItem> page = await _api.GetPlaylistTracks(accessToken, playlistId, offset, limit, ct);
+            PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync(accessToken, playlistId, offset, limit, ct);
 
             // We want to get all items so that they can be inserted into the repository in a single Transaction
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
             {
-                page = await _api.GetPlaylistTracks(accessToken, page.Next, ct);
+                page = await _api.GetPlaylistTracksAsync(accessToken, page.Next, ct);
                 allItems.AddRange(page.Items);
             }
 
             playlist = playlistObject.ToPlaylist();
-            await _playlistWriteRepository.Upsert(playlist, allItems, ct);
+            await _playlistWriteRepository.UpsertAsync(playlist, allItems, ct);
             Cache(playlist);
             sw.Stop();
             _logger.LogInformation($"Updated playlist {playlist.Id} \"{playlist.Name}\n. Total time: {sw.Elapsed}");
@@ -104,7 +104,7 @@ namespace Playlister.Services
 
         private async Task PopulateCache()
         {
-            IEnumerable<Playlist> playlists = await _playlistReadRepository.Get();
+            IEnumerable<Playlist> playlists = await _playlistReadRepository.GetAllAsync();
 
             _logger.LogDebug("Populating Playlist cache...");
             foreach (Playlist? playlist in playlists)

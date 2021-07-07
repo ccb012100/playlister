@@ -6,7 +6,10 @@ namespace Playlister.Repositories
 {
     public interface IPlaylistReadRepository
     {
-        Task<Playlist?> Get(string id);
-        Task<IEnumerable<Playlist>> Get();
+        /// <summary>
+        /// Get all playlists from database.
+        /// </summary>
+        /// <returns></returns>
+        Task<IEnumerable<Playlist>> GetAllAsync();
     }
 }

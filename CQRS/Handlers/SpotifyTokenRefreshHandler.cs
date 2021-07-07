@@ -3,7 +3,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Commands;
@@ -18,15 +17,13 @@ namespace Playlister.CQRS.Handlers
     public class SpotifyTokenRefreshHandler : IRequestHandler<RefreshTokenCommand, UserAccessToken>
     {
         private readonly ISpotifyAccountsApi _api;
-        private readonly ILogger<SpotifyTokenRefreshHandler> _logger;
         private readonly SpotifyOptions _options;
         private readonly IAccessTokenRepository _tokenRepository;
 
-        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, ILogger<SpotifyTokenRefreshHandler> logger,
-            IOptions<SpotifyOptions> options, IAccessTokenRepository tokenRepository)
+        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options,
+            IAccessTokenRepository tokenRepository)
         {
             _api = api;
-            _logger = logger;
             _options = options.Value;
             _tokenRepository = tokenRepository;
         }
@@ -36,10 +33,10 @@ namespace Playlister.CQRS.Handlers
             string authParam =
                 Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
-            SpotifyAccessToken token = await _api.RefreshToken(authParam,
+            SpotifyAccessToken token = await _api.RefreshTokenAsync(authParam,
                 new RefreshTokenCommand.BodyParams(command.RefreshToken), ct);
 
-            return await _tokenRepository.AddToken(token);
+            return await _tokenRepository.AddTokenAsync(token);
         }
     }
 }

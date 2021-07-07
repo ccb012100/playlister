@@ -15,7 +15,7 @@ namespace Playlister.RefitClients
         /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
-        Task<SpotifyAccessToken> AccessToken([Body(BodySerializationMethod.UrlEncoded)]
+        Task<SpotifyAccessToken> RequestAccessTokenAsync([Body(BodySerializationMethod.UrlEncoded)]
             GetAccessTokenCommand.BodyParams bodyParams, CancellationToken ct);
 
         /// <summary>
@@ -26,7 +26,7 @@ namespace Playlister.RefitClients
         /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
-        Task<SpotifyAccessToken> RefreshToken([Authorize("Basic")] string authHeaderParam,
+        Task<SpotifyAccessToken> RefreshTokenAsync([Authorize("Basic")] string authHeaderParam,
             [Body(BodySerializationMethod.UrlEncoded)]
             RefreshTokenCommand.BodyParams bodyParams, CancellationToken ct);
     }

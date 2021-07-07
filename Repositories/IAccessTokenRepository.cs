@@ -6,8 +6,24 @@ namespace Playlister.Repositories
 {
     public interface IAccessTokenRepository
     {
-        Task<UserAccessToken> AddToken(SpotifyAccessToken spotifyToken);
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="spotifyToken"></param>
+        /// <returns></returns>
+        Task<UserAccessToken> AddTokenAsync(SpotifyAccessToken spotifyToken);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <returns></returns>
         UserAccessToken? Get(string accessToken);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="accessToken"></param>
         void RemoveAccessToken(string accessToken);
     }
 }

@@ -21,6 +21,6 @@ namespace Playlister.CQRS.Handlers
         }
 
         public async Task<PrivateUserObject> Handle(GetCurrentUserCommand command, CancellationToken ct) =>
-            await _api.GetCurrentUser(command.AccessToken, ct);
+            await _api.GetCurrentUserAsync(command.AccessToken, ct);
     }
 }

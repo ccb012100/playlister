@@ -7,7 +7,7 @@ namespace Playlister.Utilities
 {
     public static class JsonUtility
     {
-        public static JsonSerializerOptions SnakeCaseSerializerOptions =>
+        private static JsonSerializerOptions SnakeCaseSerializerOptions =>
             new()
             {
                 PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance

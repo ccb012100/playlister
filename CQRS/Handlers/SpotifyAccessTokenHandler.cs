@@ -30,7 +30,7 @@ namespace Playlister.CQRS.Handlers
         {
             // TODO: validate that the `state` value matches the original value sent to user
             // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
-            SpotifyAccessToken token = await _api.AccessToken(
+            SpotifyAccessToken token = await _api.RequestAccessTokenAsync(
                 new GetAccessTokenCommand.BodyParams
                 {
                     Code = command.Code,
@@ -39,7 +39,7 @@ namespace Playlister.CQRS.Handlers
                     ClientSecret = _options.ClientSecret
                 }, ct);
 
-            return await _tokenRepository.AddToken(token);
+            return await _tokenRepository.AddTokenAsync(token);
         }
     }
 }

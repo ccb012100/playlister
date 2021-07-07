@@ -39,7 +39,7 @@ namespace Playlister.CQRS.Handlers
 
             foreach (SimplifiedPlaylistObject playlist in playlists)
             {
-                await _playlistService.UpdatePlaylist(command.AccessToken, playlist.Id, 0, 50, ct);
+                await _playlistService.UpdatePlaylistAsync(command.AccessToken, playlist.Id, 0, 50, ct);
             }
 
             return playlists.Length;
