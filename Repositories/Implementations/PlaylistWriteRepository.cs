@@ -148,16 +148,14 @@ namespace Playlister.Repositories.Implementations
                 await using SqliteConnection conn = _connectionFactory.Connection;
 
                 IEnumerable<string> ids = tracks.Select(p => p.Id);
-
+                _logger.LogWarning($"Ids: {JsonUtility.PrettyPrint(ids)}");
                 var parameters = new DynamicParameters();
                 parameters.Add("@Ids", ids);
 
-                IEnumerable<Track> tracksInDb =
-                    await conn.QueryAsync<Track>("SELECT * FROM Track WHERE id in @Ids", parameters);
+                IEnumerable<string> tracksInDb =
+                    await conn.QueryAsync<string>("SELECT id FROM Track WHERE id in @Ids", parameters);
 
-                IEnumerable<string> storedTracks = tracksInDb.Select(t => t.Id);
-
-                return tracks.Where(i => !storedTracks.Contains(i.Id)).ToImmutableArray();
+                return tracks.Where(i => !tracksInDb.Contains(i.Id)).ToImmutableArray();
             }
         }
     }

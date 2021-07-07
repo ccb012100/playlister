@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
@@ -53,7 +54,10 @@ namespace Playlister.Services
         public async Task UpdatePlaylistsAsync(string accessToken, IEnumerable<Playlist> playlists,
             CancellationToken ct)
         {
-            foreach (Playlist pl in playlists.Where(IsChanged)) await UpdatePlaylistAsync(accessToken, pl, 0, 50, ct);
+            ImmutableArray<Playlist> changedPlaylists = playlists.Where(IsChanged).ToImmutableArray();
+            _logger.LogInformation($"Found {changedPlaylists.Length} changed playlists.");
+
+            foreach (Playlist pl in changedPlaylists) await UpdatePlaylistAsync(accessToken, pl, 0, 50, ct);
         }
 
         #region UpdatePlaylist
@@ -109,20 +113,25 @@ namespace Playlister.Services
             // return without processing if the DB version matches the command version
             if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId)
             {
-                _logger.LogInformation($"{playlist} is unchanged since the last update.");
+                _logger.LogDebug($"{playlist} is unchanged since the last update.");
                 return false;
             }
 
-            StringBuilder sb = new();
-            sb.AppendLine($"{playlist} has changed since the last update:");
-            sb.AppendLine($"\tSnapshotId:  {playlist.SnapshotId ?? "null"}");
-            sb.AppendLine(cachedPlaylist is null
-                ? $"\tCached SnapshotId:  No cached version."
-                : $"\tCached SnapshotId:  {cachedPlaylist?.SnapshotId ?? "null"}.");
-
-            _logger.LogInformation(sb.ToString());
+            _logger.LogInformation(LogInfoMessage(playlist, cachedPlaylist));
 
             return true;
+
+            static string LogInfoMessage(Playlist playlist, Playlist? cachedPlaylist)
+            {
+                StringBuilder sb = new();
+                sb.AppendLine($"{playlist} has changed since the last update:");
+                sb.AppendLine($"\tSnapshotId:  {playlist.SnapshotId ?? "null"}");
+                sb.AppendLine(cachedPlaylist is null
+                    ? $"\tCached SnapshotId:  No cached version."
+                    : $"\tCached SnapshotId:  {cachedPlaylist?.SnapshotId ?? "null"}.");
+
+                return sb.ToString();
+            }
         }
 
         #region cache
