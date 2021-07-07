@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 // ReSharper disable MemberCanBePrivate.Global
@@ -64,6 +65,7 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The version identifier for the current playlist. Can be supplied in other requests to target a specific playlist version.
         /// </summary>
+        [JsonPropertyName("snapshot_id")]
         public string? SnapshotId { get; init; }
 
         /// <summary>

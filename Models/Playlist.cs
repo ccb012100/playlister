@@ -19,5 +19,7 @@ namespace Playlister.Models
         public string? Description { get; init; }
 
         public bool? Public { get; init; }
+
+        public override string ToString() => $"Playlist `{Id}` (\"{Name}\")";
     }
 }

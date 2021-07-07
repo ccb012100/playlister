@@ -1,10 +1,9 @@
-using System.Linq;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Commands;
-using Playlister.Models.SpotifyApi;
+using Playlister.Models;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers
@@ -15,35 +14,25 @@ namespace Playlister.CQRS.Handlers
     // ReSharper disable once UnusedType.Global
     public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUserPlaylistsCommand, int>
     {
-        private readonly ISpotifyApiService _api;
         private readonly IPlaylistService _playlistService;
-        private readonly ILogger<UpdateCurrentUserPlaylistsHandler> _logger;
 
-        public UpdateCurrentUserPlaylistsHandler(ISpotifyApiService api, IPlaylistService playlistService,
-            ILogger<UpdateCurrentUserPlaylistsHandler> logger)
-        {
-            _api = api;
+        public UpdateCurrentUserPlaylistsHandler(IPlaylistService playlistService) =>
             _playlistService = playlistService;
-            _logger = logger;
-        }
 
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="command"></param>
+        /// <param name="ct"></param>
+        /// <returns>Number of playlists handled.</returns>
         public async Task<int> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
         {
-            int total = 0;
+            ImmutableArray<Playlist> playlists = (await
+                _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct)!).ToImmutableArray();
 
-            PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
+            await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
 
-            await _playlistService.UpdatePlaylistsAsync(command.AccessToken, page.Items, ct);
-            total += page.Items.Count();
-            while (page.Next is not null)
-            {
-                page = await _api.GetCurrentUserPlaylistsAsync(command.AccessToken, page.Next, ct);
-                await _playlistService.UpdatePlaylistsAsync(command.AccessToken, page.Items, ct);
-                total += page.Items.Count();
-            }
-
-            _logger.LogInformation($"Processed a total of `{total}` playlists.");
-            return total;
+            return playlists.Length;
         }
     }
 }

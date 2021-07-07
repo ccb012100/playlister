@@ -1,10 +1,8 @@
-using System.Diagnostics;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Playlister.CQRS.Commands;
-using Playlister.Models.SpotifyApi;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers
@@ -13,14 +11,11 @@ namespace Playlister.CQRS.Handlers
     /// Add or Update the Playlists in command to the db.
     /// </summary>
     // ReSharper disable once UnusedType.Global
-    public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, int>
+    public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Unit>
     {
         private readonly IPlaylistService _playlistService;
 
-        public UpdatePlaylistsHandler(IPlaylistService playlistService)
-        {
-            _playlistService = playlistService;
-        }
+        public UpdatePlaylistsHandler(IPlaylistService playlistService) => _playlistService = playlistService;
 
         /// <summary>
         ///
@@ -29,20 +24,12 @@ namespace Playlister.CQRS.Handlers
         /// <param name="ct"></param>
         /// <returns>Number of playlists handled</returns>
         // ReSharper disable once UseDeconstructionOnParameter
-        public async Task<int> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
+        public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
         {
-            var sw = new Stopwatch();
-            sw.Start();
+            await _playlistService.UpdatePlaylistsAsync(command.AccessToken,
+                command.Playlists.Select(p => p.ToPlaylist()), ct);
 
-            SimplifiedPlaylistObject[] playlists = command.Playlists as SimplifiedPlaylistObject[] ??
-                                                   command.Playlists.ToArray();
-
-            foreach (SimplifiedPlaylistObject playlist in playlists)
-            {
-                await _playlistService.UpdatePlaylistAsync(command.AccessToken, playlist.Id, 0, 50, ct);
-            }
-
-            return playlists.Length;
+            return new Unit();
         }
     }
 }

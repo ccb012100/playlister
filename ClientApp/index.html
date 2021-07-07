@@ -290,6 +290,7 @@
               User Profile
             </h5>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+            <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
             <div class="row">
               <div class="col p-2">
                 <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile
@@ -341,6 +342,7 @@
                     .then(function (response) {
                         try {
                             self.displayObject = {};
+                            self.successMessage = `Update Playlists call returned: ${response.status} ${response.statusText}`;
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -358,6 +360,7 @@
                         try {
                             self.userProfile = response.data;
                             self.displayObject = [self.userProfile];
+                            self.successMessage = `Get Current User call returned: ${response.status} ${response.statusText}`;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -375,7 +378,7 @@
                         try {
                             self.userPlaylists = response.data;
                             self.displayObject = self.userPlaylists;
-                            console.log(`Playlists count = ${response.data.length}.`)
+                            self.successMessage = `Get User Playlists call returned: ${response.status} ${response.statusText} | Response contained ${response.data.length} playlists.`;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
