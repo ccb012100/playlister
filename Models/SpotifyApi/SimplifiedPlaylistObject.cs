@@ -93,7 +93,8 @@ namespace Playlister.Models.SpotifyApi
                 Name = Name,
                 Collaborative = Collaborative,
                 Description = Description,
-                Public = Public
+                Public = Public,
+                Count = Tracks.Total
             };
         }
     }

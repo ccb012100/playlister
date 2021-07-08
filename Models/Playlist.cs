@@ -20,6 +20,11 @@ namespace Playlister.Models
 
         public bool? Public { get; init; }
 
+        /// <summary>
+        /// Number of tracks in the playlist
+        /// </summary>
+        public int Count { get; init; }
+
         public override string ToString() => $"Playlist `{Id}` (\"{Name}\")";
     }
 }

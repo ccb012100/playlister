@@ -61,7 +61,7 @@ namespace Playlister.Repositories.Implementations
             static async Task UpsertPlaylist(Playlist plist, IDbConnection conn, IDbTransaction dbTransaction)
             {
                 const string sql =
-                    "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public) " +
+                    "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public, count) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public, @Count) " +
                     "ON CONFLICT(id) DO UPDATE SET " +
                     "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
                     "WHERE snapshot_id != excluded.snapshot_id;";
@@ -148,7 +148,7 @@ namespace Playlister.Repositories.Implementations
                 await using SqliteConnection conn = _connectionFactory.Connection;
 
                 IEnumerable<string> ids = tracks.Select(p => p.Id);
-                _logger.LogWarning($"Ids: {JsonUtility.PrettyPrint(ids)}");
+
                 var parameters = new DynamicParameters();
                 parameters.Add("@Ids", ids);
 
