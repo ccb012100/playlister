@@ -125,9 +125,9 @@ namespace Playlister.Services
             {
                 StringBuilder sb = new();
                 sb.AppendLine($"{playlist} has changed since the last update:");
-                sb.AppendLine($"\tSnapshotId:  {playlist.SnapshotId ?? "null"}");
+                sb.AppendLine($"\tSnapshotId:         {playlist.SnapshotId ?? "null"}");
                 sb.AppendLine(cachedPlaylist is null
-                    ? $"\tCached SnapshotId:  No cached version."
+                    ? $"\tCached SnapshotId:  [No cached version]"
                     : $"\tCached SnapshotId:  {cachedPlaylist?.SnapshotId ?? "null"}.");
 
                 return sb.ToString();
