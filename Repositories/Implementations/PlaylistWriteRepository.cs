@@ -63,7 +63,7 @@ namespace Playlister.Repositories.Implementations
                 const string sql =
                     "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public, count) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public, @Count) " +
                     "ON CONFLICT(id) DO UPDATE SET " +
-                    "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public " +
+                    "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public, description = excluded.description, count = excluded.count " +
                     "WHERE snapshot_id != excluded.snapshot_id;";
 
                 await conn.ExecuteAsync(sql, plist, dbTransaction);
