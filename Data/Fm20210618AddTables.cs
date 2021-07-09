@@ -38,7 +38,7 @@ namespace Playlister.Data
                 .WithColumn("name").AsString().NotNullable()
                 .WithColumn("total_tracks").AsInt16().NotNullable()
                 .WithColumn("album_type").AsString().Nullable()
-                .WithColumn("release_date").AsDateTime().Nullable();
+                .WithColumn("release_date").AsString().Nullable();
 
             Create.Table(DataTables.Track)
                 .WithSpotifyIdColumn()
