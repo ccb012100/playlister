@@ -120,8 +120,7 @@ namespace Playlister.Extensions
             // these need to be added as Transient to prevent DI exceptions in Mediatr
             services
                 .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
-                .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>()
-                .AddTransient<IAccessTokenRepository, AccessTokenRepository>();
+                .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
 
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config,

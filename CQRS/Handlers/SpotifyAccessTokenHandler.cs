@@ -16,13 +16,10 @@ namespace Playlister.CQRS.Handlers
     {
         private readonly ISpotifyAccountsApi _api;
         private readonly SpotifyOptions _options;
-        private readonly IAccessTokenRepository _tokenRepository;
 
-        public SpotifyAccessTokenHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options,
-            IAccessTokenRepository tokenRepository)
+        public SpotifyAccessTokenHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options)
         {
             _api = api;
-            _tokenRepository = tokenRepository;
             _options = options.Value;
         }
 
@@ -39,7 +36,7 @@ namespace Playlister.CQRS.Handlers
                     ClientSecret = _options.ClientSecret
                 }, ct);
 
-            return await _tokenRepository.AddTokenAsync(token);
+            return token.ToUserAccessToken();
         }
     }
 }

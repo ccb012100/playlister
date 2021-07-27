@@ -18,14 +18,11 @@ namespace Playlister.CQRS.Handlers
     {
         private readonly ISpotifyAccountsApi _api;
         private readonly SpotifyOptions _options;
-        private readonly IAccessTokenRepository _tokenRepository;
 
-        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options,
-            IAccessTokenRepository tokenRepository)
+        public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options)
         {
             _api = api;
             _options = options.Value;
-            _tokenRepository = tokenRepository;
         }
 
         public async Task<UserAccessToken> Handle(RefreshTokenCommand command, CancellationToken ct)
@@ -36,7 +33,7 @@ namespace Playlister.CQRS.Handlers
             SpotifyAccessToken token = await _api.RefreshTokenAsync(authParam,
                 new RefreshTokenCommand.BodyParams(command.RefreshToken), ct);
 
-            return await _tokenRepository.AddTokenAsync(token);
+            return token.ToUserAccessToken();
         }
     }
 }

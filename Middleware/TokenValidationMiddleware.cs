@@ -28,7 +28,7 @@ namespace Playlister.Middleware
             _mediator = mediator;
         }
 
-        public async Task Invoke(HttpContext context, IAccessTokenRepository tokenRepository)
+        public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug($"Entered {nameof(TokenValidationMiddleware)}");
             Endpoint? endpoint = context.Features.Get<IEndpointFeature>().Endpoint;
@@ -62,43 +62,14 @@ namespace Playlister.Middleware
             string authToken = authHeader.Parameter!;
             _logger.LogDebug($"auth token = {authToken}");
 
-            if (tokenRepository.Get(authToken) is { } token)
+            if (!string.IsNullOrWhiteSpace(authToken))
             {
-                if (token.Expiration > DateTime.Now)
-                {
-                    _logger.LogDebug("Token is valid");
-                    await _next(context);
-                    return;
-                }
-
-                _logger.LogDebug($"Cache entry expiration {token.Expiration} has passed.");
-                tokenRepository.RemoveAccessToken(authToken);
-
-                if (token.RefreshToken is not null)
-                {
-                    try
-                    {
-                        UserAccessToken refreshedToken =
-                            await _mediator.Send(new RefreshTokenCommand(token.RefreshToken));
-
-                        _logger.LogDebug($"Refreshed token:{JsonUtility.PrettyPrint(refreshedToken)}");
-
-                        // update Authorization header
-                        context.Request.Headers["Authorization"] = $"Bearer {refreshedToken.AccessToken}";
-                        await _next(context);
-                        return;
-                    }
-                    catch (ApiException e)
-                    {
-                        _logger.LogWarning($"Token Refresh failed: {e.Message}.");
-                    }
-                }
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                _logger.LogDebug("Token is valid");
+                await _next(context);
                 return;
             }
 
-            _logger.LogWarning("Auth token was not found in the cache");
+            _logger.LogWarning("Auth token was not found in the Authorization Header");
             context.Response.StatusCode = StatusCodes.Status401Unauthorized;
         }
     }
