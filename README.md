@@ -1,6 +1,6 @@
 # playlister
 
-View and search your Spotify playlists
+Tool to download your Spotify Playlists into a SQLite database.
 
 ## notes
 
