@@ -41,10 +41,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <_ContentIncludedByDefault Remove="wwwroot\js\components.js" />
+        <Content Include="Data\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Logs" />
+        <_ContentIncludedByDefault Remove="wwwroot\js\components.js" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Logs" />
     </ItemGroup>
 </Project>
