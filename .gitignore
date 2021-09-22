@@ -1,5 +1,4 @@
 .vs
-.vscode/
 .idea/
 Folder.DotSettings.user
 
@@ -13,5 +12,6 @@ ClientApp/node_modules/
 */node_modules/
 
 playlister.sqlite
-Logs/*.txt
-Logs/*.log
+playlister.db
+Logs/
+**/*.log
