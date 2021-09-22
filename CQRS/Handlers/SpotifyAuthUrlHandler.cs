@@ -18,6 +18,11 @@ namespace Playlister.CQRS.Handlers
         public SpotifyAuthUrlHandler(IOptions<SpotifyOptions> options)
         {
             _options = options.Value;
+
+            if (string.IsNullOrWhiteSpace(_options.ClientId))
+            {
+                throw new Exception("Client Id is not present.");
+            }
         }
 
         public Task<Uri> Handle(GetAuthUrlCommand command, CancellationToken ct)
