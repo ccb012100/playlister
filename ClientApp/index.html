@@ -294,6 +294,10 @@
             </h5>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+            <div class="d-flex justify-content-center">
+              <div v-if="isLoading" class="spinner-border text-primary" role="status">
+              </div>
+            </div>
             <div class="row">
               <div class="col p-2">
                 <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile
@@ -327,10 +331,12 @@
           offset: Number,
           limit: Number,
           playlistId: null,
+          isLoading: false,
         };
       },
       methods: {
         updatePlaylists() {
+          this.isLoading = true;
           const self = this;
           let postBody = {};
 
@@ -352,7 +358,8 @@
             })
             .catch(function (error) {
               self.errorMessage = error.message;
-            });
+            })
+            .finally(() => (this.isLoading = false));
         },
         getUserProfile() {
           const self = this;
