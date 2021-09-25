@@ -105,8 +105,10 @@
           </div>
         `,
       mounted() {
-        // this.authenticated = !!lsGetToken();
-        if (this.$route.path === '/app/home') {
+        this.authenticated = !!lsGetToken();
+
+        if (this.authenticated) {
+        } else if (this.$route.path === '/app/home') {
           this.signIn();
         }
       },
@@ -246,7 +248,14 @@
           console.log('User does not have a token. Going back to homepage.');
           this.$router.push({ name: 'homepage' });
         } else {
-          this.userToken = token;
+          let dateNow = new Date();
+          let expirationDate = new Date(token.expiration);
+
+          if (expirationDate > dateNow) {
+            this.userToken = token;
+          } else {
+            this.refreshToken();
+          }
         }
       },
       data() {
@@ -282,7 +291,9 @@
               }
             })
             .catch(function (error) {
+              this.errorMessage = 'Failed to refresh token';
               self.errorMessage = error.message;
+              lsRemoveToken();
             });
         },
       },
