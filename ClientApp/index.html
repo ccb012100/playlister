@@ -105,7 +105,10 @@
           </div>
         `,
       mounted() {
-        this.authenticated = !!lsGetToken();
+        // this.authenticated = !!lsGetToken();
+        if (this.$route.path === '/app/home') {
+          this.signIn();
+        }
       },
       data() {
         return {
@@ -294,9 +297,9 @@
             </h5>
             <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
             <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
-            <div class="d-flex justify-content-center">
-              <div v-if="isLoading" class="spinner-border text-primary" role="status">
-              </div>
+            <div v-if="isLoading" class="d-flex justify-content-center">
+              <div class="spinner-border text-primary" role="status"></div>
+              <strong>Updating Playlists...</strong>
             </div>
             <div class="row">
               <div class="col p-2">
@@ -321,6 +324,11 @@
           </div>
           </div>
         `,
+      mounted() {
+        this.$nextTick(function () {
+          this.updatePlaylists();
+        });
+      },
       data() {
         return {
           userProfile: null,
