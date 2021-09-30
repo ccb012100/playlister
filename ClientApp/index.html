@@ -78,8 +78,6 @@
       axios.defaults.headers.common['Authorization'] = null;
     }
 
-    // TODO: check expiration on access token
-
     /*
      * Define Components
      */
@@ -108,6 +106,7 @@
         this.authenticated = !!lsGetToken();
 
         if (this.authenticated) {
+          router.push({ name: 'data-page' });
         } else if (this.$route.path === '/app/home') {
           this.signIn();
         }
