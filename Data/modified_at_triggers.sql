@@ -25,7 +25,8 @@ create trigger playlist_track_modified
 begin
     update PlaylistTrack
     set modified_at = current_timestamp
-    where track_id = new.track_id and playlist_id = new.playlist_id;
+    where track_id = new.track_id
+      and playlist_id = new.playlist_id;
 end;
 
 create trigger track_modified

@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 namespace Playlister.Middleware
 {
     /// <summary>
-    /// Middleware to add Authorization Header with Access Token in outbound Refit requests.
+    ///     Middleware to add Authorization Header with Access Token in outbound Refit requests.
     /// </summary>
     internal class SpotifyAuthHeaderMiddleware : DelegatingHandler
     {
@@ -34,9 +34,7 @@ namespace Playlister.Middleware
                 var accessToken = (string?) httpContext.Items["AccessToken"];
 
                 if (!string.IsNullOrWhiteSpace(accessToken))
-                {
                     request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-                }
             }
             else
             {

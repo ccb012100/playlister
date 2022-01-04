@@ -13,7 +13,9 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken, ApiController, Route("api/user")]
+    [ValidateToken]
+    [ApiController]
+    [Route("api/user")]
     public class CurrentUserController : BaseController
     {
         private readonly ILogger<CurrentUserController> _logger;
@@ -26,7 +28,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get the User who was assigned the Access Token in the Authorization Header.
+        ///     Get the User who was assigned the Access Token in the Authorization Header.
         /// </summary>
         /// <returns></returns>
         [HttpGet]
@@ -39,7 +41,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Get the current user's Playlists.
+        ///     Get the current user's Playlists.
         /// </summary>
         /// <returns></returns>
         [HttpGet("playlists")]
@@ -57,7 +59,7 @@ namespace Playlister.Controllers
         }
 
         /// <summary>
-        /// Update list of current user's playlists.
+        ///     Update list of current user's playlists.
         /// </summary>
         /// <returns></returns>
         [HttpPost("playlists")]
@@ -66,7 +68,7 @@ namespace Playlister.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            int total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+            var total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
             sw.Stop();
 
             _logger.LogInformation($"Updated current user's {total} playlists. Total time: {sw.Elapsed}");

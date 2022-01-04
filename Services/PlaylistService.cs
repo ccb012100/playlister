@@ -17,12 +17,11 @@ namespace Playlister.Services
 {
     public class PlaylistService : IPlaylistService
     {
-        private readonly IPlaylistWriteRepository _writeRepository;
-        private readonly ISpotifyApiService _api;
-        private readonly IPlaylistReadRepository _readRepository;
-        private readonly ILogger<PlaylistService> _logger;
-
         private static readonly CacheObject<Playlist> PlaylistCache = new();
+        private readonly ISpotifyApiService _api;
+        private readonly ILogger<PlaylistService> _logger;
+        private readonly IPlaylistReadRepository _readRepository;
+        private readonly IPlaylistWriteRepository _writeRepository;
 
         public PlaylistService(IPlaylistReadRepository readRepository, IPlaylistWriteRepository writeRepository,
             ISpotifyApiService api, ILogger<PlaylistService> logger)
@@ -60,6 +59,34 @@ namespace Playlister.Services
             foreach (Playlist pl in changedPlaylists) await UpdatePlaylistAsync(accessToken, pl, 0, 50, ct);
         }
 
+        private bool IsChanged(Playlist playlist)
+        {
+            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
+
+            // return without processing if the DB version matches the command version
+            if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId)
+            {
+                _logger.LogDebug($"{playlist} is unchanged since the last update.");
+                return false;
+            }
+
+            _logger.LogInformation(LogInfoMessage(playlist, cachedPlaylist));
+
+            return true;
+
+            static string LogInfoMessage(Playlist playlist, Playlist? cachedPlaylist)
+            {
+                StringBuilder sb = new();
+                sb.AppendLine($"{playlist} has changed since the last update:");
+                sb.AppendLine($"\tSnapshotId:         {playlist.SnapshotId ?? "null"}");
+                sb.AppendLine(cachedPlaylist is null
+                    ? "\tCached SnapshotId:  [No cached version]"
+                    : $"\tCached SnapshotId:  {cachedPlaylist.SnapshotId ?? "null"}.");
+
+                return sb.ToString();
+            }
+        }
+
         #region UpdatePlaylist
 
         public async Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct)
@@ -67,12 +94,10 @@ namespace Playlister.Services
             SimplifiedPlaylistObject playlistObject =
                 await _api.GetPlaylistAsync(command.AccessToken, command.PlaylistId, ct);
 
-            Playlist playlist = playlistObject.ToPlaylist();
+            var playlist = playlistObject.ToPlaylist();
 
             if (IsChanged(playlist))
-            {
                 await UpdatePlaylistAsync(command.AccessToken, playlist, command.Offset, command.Limit, ct);
-            }
         }
 
         private async Task UpdatePlaylistAsync(string accessToken, Playlist playlist, int offset, int limit,
@@ -106,34 +131,6 @@ namespace Playlister.Services
 
         #endregion
 
-        private bool IsChanged(Playlist playlist)
-        {
-            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
-
-            // return without processing if the DB version matches the command version
-            if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId)
-            {
-                _logger.LogDebug($"{playlist} is unchanged since the last update.");
-                return false;
-            }
-
-            _logger.LogInformation(LogInfoMessage(playlist, cachedPlaylist));
-
-            return true;
-
-            static string LogInfoMessage(Playlist playlist, Playlist? cachedPlaylist)
-            {
-                StringBuilder sb = new();
-                sb.AppendLine($"{playlist} has changed since the last update:");
-                sb.AppendLine($"\tSnapshotId:         {playlist.SnapshotId ?? "null"}");
-                sb.AppendLine(cachedPlaylist is null
-                    ? $"\tCached SnapshotId:  [No cached version]"
-                    : $"\tCached SnapshotId:  {cachedPlaylist?.SnapshotId ?? "null"}.");
-
-                return sb.ToString();
-            }
-        }
-
         #region cache
 
         private void Cache(Playlist playlist)
@@ -156,10 +153,7 @@ namespace Playlister.Services
             IEnumerable<Playlist> playlists = await _readRepository.GetAllAsync();
 
             _logger.LogDebug("Populating Playlist cache...");
-            foreach (Playlist? playlist in playlists)
-            {
-                Cache(playlist);
-            }
+            foreach (Playlist? playlist in playlists) Cache(playlist);
 
             _logger.LogDebug($"Cache populated: {JsonUtility.PrettyPrint(PlaylistCache.Items)}");
         }
