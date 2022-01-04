@@ -25,7 +25,7 @@ namespace Playlister.Middleware
 
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
         {
-            _logger.LogInformation("Entering auth header middleware");
+            _logger.LogDebug("Entering auth header middleware");
 
             HttpContext? httpContext = _contextAccessor.HttpContext;
 

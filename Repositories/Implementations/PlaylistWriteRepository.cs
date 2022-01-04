@@ -72,7 +72,7 @@ namespace Playlister.Repositories.Implementations
             async Task UpsertPlaylistTracks(Playlist plist, ImmutableArray<PlaylistItem> playlistTracks,
                 IDbConnection conn, IDbTransaction dbTxn)
             {
-                _logger.LogInformation(
+                _logger.LogDebug(
                     $"Attempting to upsert playlist tracks for playlist {plist.Id} \"{plist.Name}\"...");
 
                 const string playlistTrackSql =
