@@ -21,7 +21,7 @@ namespace Playlister.CQRS.Handlers
 
             if (string.IsNullOrWhiteSpace(_options.ClientId))
             {
-                throw new Exception("Client Id is not present.");
+                throw new Exception("Client Id is not present. Make sure that the project secrets have been set.");
             }
         }
 
