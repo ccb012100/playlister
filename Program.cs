@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace Playlister
 {
@@ -21,6 +23,12 @@ namespace Playlister
             return WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging((context, builder) =>
                 {
+                    // Remove Console logger
+                    foreach (var sd in builder.Services.Where(s => s.ImplementationType == typeof(ConsoleLoggerProvider)))
+                    {
+                        builder.Services.Remove(sd);
+                        break;
+                    }
                     builder.AddFile(context.Configuration.GetSection("Logging"));
                 })
                 .UseKestrel(LogDevelopmentConfiguration)
