@@ -18,12 +18,14 @@ namespace Playlister
     public class Startup
     {
         private readonly IWebHostEnvironment _environment;
+        private readonly string? _namespace;
         private const string CorsPolicyName = "CorsPolicy";
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
             Configuration = configuration;
             _environment = environment;
+            _namespace = GetType().Namespace;
         }
 
         private IConfiguration Configuration { get; }
@@ -39,13 +41,15 @@ namespace Playlister
                         .AllowAnyHeader()
                         .AllowCredentials();
                 }))
+                # pragma warning disable 8604
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
+                # pragma warning restore
                 .AddConfigOptions(Configuration, _environment)
                 .AddHttpContextAccessor()
                 .AddMiddleware()
                 .AddServices()
                 .AddRepositories()
-                .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo {Title = "Playlister", Version = "v1"}))
+                .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "Playlister", Version = "v1" }))
                 .Configure<HttpClientFactoryOptions>(options => options.SuppressHandlerScope = true)
                 .AddHttpClientWithPollyPolicy()
                 .AddRefitClients()
@@ -110,19 +114,10 @@ namespace Playlister
             app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
         }
 
-        private void OnStarted(ILogger logger)
-        {
-            logger.LogInformation($"{GetType().Namespace} Started");
-        }
+        private void OnStarted(ILogger logger) => logger.LogInformation("{Namespace} Started", _namespace);
 
-        private void OnStopping(ILogger logger)
-        {
-            logger.LogInformation($"{GetType().Namespace} Stopping");
-        }
+        private void OnStopping(ILogger logger) => logger.LogInformation("{Namespace} Stopping", _namespace);
 
-        private void OnStopped(ILogger logger)
-        {
-            logger.LogInformation($"{GetType().Namespace} Stopped");
-        }
+        private void OnStopped(ILogger logger) => logger.LogInformation("{Namespace} Stopped", _namespace);
     }
 }

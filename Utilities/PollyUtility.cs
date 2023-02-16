@@ -34,7 +34,7 @@ namespace Playlister.Utilities
 #pragma warning restore 1998
                         {
                             svc.GetService<ILogger<SpotifyApiService>>()?.LogWarning(
-                                $"Received a 429 HTTP response; delaying for {timespan.TotalSeconds}s, then making retry attempt {retryAttempt}");
+                                "Received a 429 HTTP response; delaying for {TotalSeconds}s, then making retry attempt {AttemptCount}", timespan.TotalSeconds, retryAttempt);
                         }
                     );
     }

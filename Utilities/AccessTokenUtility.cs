@@ -31,7 +31,7 @@ namespace Playlister.Utilities
                            throw new NullReferenceException(
                                "The Authentication Header was present, but the Parameter was null");
 
-            _logger.LogDebug($"Found access token {token} on HttpContext.");
+            _logger.LogDebug("Found access token {Token} on HttpContext", token);
             return token;
         }
     }

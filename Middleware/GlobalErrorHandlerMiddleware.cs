@@ -31,9 +31,9 @@ namespace Playlister.Middleware
                 {
                     case Refit.ApiException e:
                         // custom application error
-                        _logger.LogError($"Refit ApiException: `{e.ReasonPhrase} {e.Content}`");
-                        response.StatusCode = (int) e.StatusCode;
-                        _logger.LogError($"Authorization Header: {e.RequestMessage.Headers.Authorization}");
+                        _logger.LogError("Refit ApiException: `{ReasonPhrase} {Content}`", e.ReasonPhrase, e.Content);
+                        response.StatusCode = (int)e.StatusCode;
+                        _logger.LogError("Authorization Header: {Headers}", e.RequestMessage.Headers.Authorization);
                         break;
                 }
 

@@ -53,7 +53,7 @@ namespace Playlister.Controllers
             IEnumerable<Playlist> lists = await Mediator.Send(new GetCurrentUserPlaylistsCommand(AccessToken));
 
             sw.Stop();
-            _logger.LogInformation($"Retrieved current user's {lists.Count()} playlists. Total time: {sw.Elapsed}");
+            _logger.LogInformation("Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}", lists.Count(), sw.Elapsed);
 
             return Ok(lists);
         }
@@ -71,7 +71,7 @@ namespace Playlister.Controllers
             var total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
             sw.Stop();
 
-            _logger.LogInformation($"Updated current user's {total} playlists. Total time: {sw.Elapsed}");
+            _logger.LogInformation("Updated current user's {Total} playlists. Total time: {Elapsed}", total, sw.Elapsed);
             return NoContent();
         }
     }
