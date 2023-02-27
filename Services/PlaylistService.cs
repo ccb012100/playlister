@@ -135,6 +135,11 @@ namespace Playlister.Services
             CancellationToken ct
         )
         {
+            _logger.LogInformation(
+                "Updating playlist {PlaylistId} (\"{PlaylistName}\")...",
+                playlist.Id,
+                playlist.Name
+            );
             var sw = new Stopwatch();
             sw.Start();
 

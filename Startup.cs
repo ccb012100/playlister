@@ -1,4 +1,6 @@
+using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using MediatR;
@@ -12,6 +14,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
+using Playlister.Utilities;
 
 namespace Playlister
 {
@@ -131,8 +134,11 @@ namespace Playlister
             });
         }
 
-        private void OnStarted(ILogger logger) =>
+        private void OnStarted(ILogger logger)
+        {
             logger.LogInformation("{Namespace} Started", _namespace);
+            UrlUtility.OpenUrl("https://localhost:5001/app/");
+        }
 
         private void OnStopping(ILogger logger) =>
             logger.LogInformation("{Namespace} Stopping", _namespace);

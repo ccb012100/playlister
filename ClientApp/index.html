@@ -367,6 +367,7 @@
             try {
               self.displayObject = {};
               self.successMessage = `Update Playlists call returned: ${ response.status } ${ response.statusText }`;
+              router.push({ name: 'stop-application' });
             } catch (e) {
               self.errorMessage = e;
             }
@@ -374,7 +375,9 @@
           .catch(function (error) {
             self.errorMessage = error.message;
           })
-          .finally(() => (this.isLoading = false));
+          .finally(() => {
+            this.isLoading = false;
+          });
       },
       getUserProfile() {
         const self = this;
@@ -413,6 +416,50 @@
           });
       },
     },
+  };
+
+  const StopApplicationTemplate = {
+    template: `<div class="card">
+          <div class="card-body">
+            <h5 class="card-title d-flex justify-content-center">
+              Stop Application
+            </h5>
+            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+            <div class="row">
+              <div class="col p-2 d-flex justify-content-center"> Stopping App... </div>
+            </div>
+            <div class="row">
+                <div class="col p-2 d-flex justify-content-center"> {{ statusMessage }} </div>
+            </div>
+          </div>
+          </div>`,
+    mounted() {
+      this.stopApp();
+    },
+    methods: {
+      data() {
+        return {
+          errorMessage: null,
+          statusMessage: null,
+        }
+      },
+      stopApp() {
+        this.statusMessage = 'Stopping application...';
+
+        axios
+          .post('user/stop-application/', {})
+          .then(function (response) {
+            try {
+              self.statusMessage = `Stop App call returned: ${ response.status } ${ response.statusText }`;
+            } catch (e) {
+              self.errorMessage = e;
+            }
+          })
+          .catch(function (error) {
+            self.errorMessage = error.message;
+          });
+      },
+    }
   };
 
   const PlaylistDataComponent = {
@@ -515,6 +562,8 @@
       component: SpotifyDataComponent,
       props: true,
     },
+    { path: '/stop-application', name: 'stop-application', component: StopApplicationTemplate },
+    { path: '/stop', name: 'stop-application', component: StopApplicationTemplate },
     { path: '/logout', name: 'logout', component: LogoutComponent },
     { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
   ];
