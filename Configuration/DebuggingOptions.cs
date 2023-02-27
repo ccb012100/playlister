@@ -4,6 +4,8 @@ namespace Playlister.Configuration
     {
         public const string Debugging = "Debugging";
 
+        public bool PrintEnvironmentInfo { get; init; } = false;
+
         // ReSharper disable once AutoPropertyCanBeMadeGetOnly.Global
         public bool UseLoggingBehavior { get; init; } = false;
 

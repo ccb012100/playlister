@@ -1,10 +1,12 @@
 using System;
+using System.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Playlister.Utilities;
 
 namespace Playlister
 {
@@ -29,7 +31,16 @@ namespace Playlister
 
         private static void LogDevelopmentConfiguration(WebHostBuilderContext context, KestrelServerOptions options)
         {
-            if (context.HostingEnvironment.IsDevelopment()) ShowConfig(context.Configuration);
+            if (context.HostingEnvironment.IsDevelopment())
+            {
+                var debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
+                var printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
+
+                if (bool.Parse(printEnv.Value))
+                {
+                    ShowConfig(context.Configuration);
+                }
+            }
         }
 
         /// <summary>
@@ -38,10 +49,14 @@ namespace Playlister
         /// <param name="configuration"></param>
         private static void ShowConfig(IConfiguration configuration)
         {
-            foreach (IConfigurationSection pair in configuration.GetChildren())
+            var children = configuration.GetChildren().ToList();
+            if (children.Any())
             {
-                Console.WriteLine($"{pair.Path} - {pair.Value}");
-                ShowConfig(pair);
+                foreach (IConfigurationSection section in children)
+                {
+                    ShowConfig(section);
+                    Console.WriteLine($"{section.Path} => {section.Value}");
+                }
             }
         }
     }
