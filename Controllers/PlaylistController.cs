@@ -10,9 +10,8 @@ namespace Playlister.Controllers
     [ValidateToken, ApiController, Route("api/playlists")]
     public class PlaylistController : BaseController
     {
-        public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility) : base(mediator, tokenUtility)
-        {
-        }
+        public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility)
+            : base(mediator, tokenUtility) { }
 
         [HttpPost("tracks/{playlistId}")]
         public async Task<ActionResult> UpdateTracks(string playlistId)

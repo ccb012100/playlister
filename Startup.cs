@@ -34,22 +34,32 @@ namespace Playlister
         public void ConfigureServices(IServiceCollection services)
         {
             services
-                .AddCors(o => o.AddPolicy(CorsPolicyName, corsBuilder =>
-                {
-                    corsBuilder.WithOrigins("https://localhost:5001")
-                        .WithMethods("GET", "POST")
-                        .AllowAnyHeader()
-                        .AllowCredentials();
-                }))
-                # pragma warning disable 8604
+                .AddCors(
+                    o =>
+                        o.AddPolicy(
+                            CorsPolicyName,
+                            corsBuilder =>
+                            {
+                                corsBuilder
+                                    .WithOrigins("https://localhost:5001")
+                                    .WithMethods("GET", "POST")
+                                    .AllowAnyHeader()
+                                    .AllowCredentials();
+                            }
+                        )
+                )
+# pragma warning disable 8604
                 .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
-                # pragma warning restore
+# pragma warning restore
                 .AddConfigOptions(Configuration, _environment)
                 .AddHttpContextAccessor()
                 .AddMiddleware()
                 .AddServices()
                 .AddRepositories()
-                .AddSwaggerGen(c => c.SwaggerDoc("v1", new OpenApiInfo { Title = "Playlister", Version = "v1" }))
+                .AddSwaggerGen(
+                    c =>
+                        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Playlister", Version = "v1" })
+                )
                 .Configure<HttpClientFactoryOptions>(options => options.SuppressHandlerScope = true)
                 .AddHttpClientWithPollyPolicy()
                 .AddRefitClients()
@@ -60,8 +70,10 @@ namespace Playlister
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
 
-
-            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
+            services.AddSpaStaticFiles(configuration =>
+            {
+                configuration.RootPath = "ClientApp";
+            });
 
             // set Dapper to be compatible with snake_case table names
             Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
@@ -76,8 +88,11 @@ namespace Playlister
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         // ReSharper disable once UnusedMember.Global
-        public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory,
-            IHostApplicationLifetime appLifetime)
+        public void Configure(
+            IApplicationBuilder app,
+            ILoggerFactory loggerFactory,
+            IHostApplicationLifetime appLifetime
+        )
         {
             ILogger<Startup> logger = loggerFactory.CreateLogger<Startup>();
             appLifetime.ApplicationStarted.Register(() => OnStarted(logger));
@@ -98,8 +113,7 @@ namespace Playlister
             {
                 // The default HSTS value is 30 days.
                 // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseExceptionHandler("/Error")
-                    .UseHsts();
+                app.UseExceptionHandler("/Error").UseHsts();
             }
 
             app.UseHttpsRedirection()
@@ -111,13 +125,19 @@ namespace Playlister
                 .AddEndpoints(Configuration, _environment);
 
             // ~/app/* URLs will serve up the SPA default page (index.html)
-            app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
+            app.UseSpa(spa =>
+            {
+                spa.Options.SourcePath = "/app";
+            });
         }
 
-        private void OnStarted(ILogger logger) => logger.LogInformation("{Namespace} Started", _namespace);
+        private void OnStarted(ILogger logger) =>
+            logger.LogInformation("{Namespace} Started", _namespace);
 
-        private void OnStopping(ILogger logger) => logger.LogInformation("{Namespace} Stopping", _namespace);
+        private void OnStopping(ILogger logger) =>
+            logger.LogInformation("{Namespace} Stopping", _namespace);
 
-        private void OnStopped(ILogger logger) => logger.LogInformation("{Namespace} Stopped", _namespace);
+        private void OnStopped(ILogger logger) =>
+            logger.LogInformation("{Namespace} Stopped", _namespace);
     }
 }

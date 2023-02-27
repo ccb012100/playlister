@@ -24,8 +24,11 @@ namespace Playlister.Extensions
 {
     public static class StartupExtensions
     {
-        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config,
-            IWebHostEnvironment env)
+        public static IServiceCollection AddConfigOptions(
+            this IServiceCollection services,
+            IConfiguration config,
+            IWebHostEnvironment env
+        )
         {
             if (env.IsDevelopment())
             {
@@ -54,15 +57,20 @@ namespace Playlister.Extensions
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
         {
-            string connectionString = services.BuildServiceProvider()
-                .GetService<IOptions<DatabaseOptions>>()!.Value.ConnectionString;
+            string connectionString = services
+                .BuildServiceProvider()
+                .GetService<IOptions<DatabaseOptions>>()!
+                .Value.ConnectionString;
 
             ServiceProvider serviceProvider = services
                 .AddFluentMigratorCore()
-                .ConfigureRunner(c => c
-                    .AddSQLite()
-                    .WithGlobalConnectionString(connectionString)
-                    .ScanIn(Assembly.GetExecutingAssembly()).For.All())
+                .ConfigureRunner(
+                    c =>
+                        c.AddSQLite()
+                            .WithGlobalConnectionString(connectionString)
+                            .ScanIn(Assembly.GetExecutingAssembly())
+                            .For.All()
+                )
                 .AddLogging(c => c.AddFluentMigratorConsole())
                 .BuildServiceProvider(false);
 
@@ -73,30 +81,43 @@ namespace Playlister.Extensions
         // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
-            var debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+            var debugOptions = services
+                .BuildServiceProvider()
+                .GetService<IOptions<DebuggingOptions>>();
 
             services
                 .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
-                .ConfigureHttpClient((svc, c) =>
-                {
-                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
-                })
+                .ConfigureHttpClient(
+                    (svc, c) =>
+                    {
+                        c.BaseAddress = svc.GetService<
+                            IOptions<SpotifyOptions>
+                        >()?.Value.AccountsApiBaseAddress;
+                    }
+                )
                 .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
-            services.AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
-                .ConfigureHttpClient((svc, c) =>
-                {
-                    c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
-                })
+            services
+                .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
+                .ConfigureHttpClient(
+                    (svc, c) =>
+                    {
+                        c.BaseAddress = svc.GetService<
+                            IOptions<SpotifyOptions>
+                        >()?.Value.ApiBaseAddress;
+                    }
+                )
                 .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
             return services;
         }
 
-        private static IHttpClientBuilder AddHttpLoggingMiddleware(this IHttpClientBuilder httpClientBuilder,
-            IOptions<DebuggingOptions>? debugOptions)
+        private static IHttpClientBuilder AddHttpLoggingMiddleware(
+            this IHttpClientBuilder httpClientBuilder,
+            IOptions<DebuggingOptions>? debugOptions
+        )
         {
             if (debugOptions is { } && debugOptions.Value.UseHttpLoggingMiddleware)
             {
@@ -108,7 +129,9 @@ namespace Playlister.Extensions
 
         public static void AddDebuggingOptions(this IServiceCollection services)
         {
-            var debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+            var debugOptions = services
+                .BuildServiceProvider()
+                .GetService<IOptions<DebuggingOptions>>();
 
             if (debugOptions is not null && debugOptions.Value.UseLoggingBehavior)
             {
@@ -123,18 +146,28 @@ namespace Playlister.Extensions
                 .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
 
         // ReSharper disable once UnusedMethodReturnValue.Global
-        public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config,
-            IWebHostEnvironment env)
+        public static IApplicationBuilder AddEndpoints(
+            this IApplicationBuilder builder,
+            IConfiguration config,
+            IWebHostEnvironment env
+        )
         {
             return builder.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())
                     // view app settings at ~/debug
-                    endpoints.MapGet("/debug", async context
-                        => await context.Response.WriteAsync((config as IConfigurationRoot).GetDebugView()));
+                    endpoints.MapGet(
+                        "/debug",
+                        async context =>
+                            await context.Response.WriteAsync(
+                                (config as IConfigurationRoot).GetDebugView()
+                            )
+                    );
 
-                endpoints.MapGet("/info", async context
-                    => await context.Response.WriteAsJsonAsync(new AppInfo()));
+                endpoints.MapGet(
+                    "/info",
+                    async context => await context.Response.WriteAsJsonAsync(new AppInfo())
+                );
 
                 endpoints.MapControllers();
             });
@@ -142,7 +175,9 @@ namespace Playlister.Extensions
 
         [SuppressMessage("ReSharper", "ArgumentsStyleLiteral")]
         [SuppressMessage("ReSharper", "ArgumentsStyleAnonymousFunction")]
-        public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
+        public static IServiceCollection AddHttpClientWithPollyPolicy(
+            this IServiceCollection services
+        )
         {
             services
                 .AddHttpClient<ISpotifyApiService, SpotifyApiService>()

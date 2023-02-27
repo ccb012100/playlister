@@ -13,7 +13,9 @@ namespace Playlister.Controllers
 
         internal string AccessToken =>
             _accessTokenUtility?.GetAccessTokenFromCurrentHttpContext()
-            ?? throw new InvalidOperationException("This controller does not have an IAccessTokenUtility.");
+            ?? throw new InvalidOperationException(
+                "This controller does not have an IAccessTokenUtility"
+            );
 
         protected BaseController(IMediator mediator, IAccessTokenUtility accessTokenUtility)
         {

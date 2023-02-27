@@ -19,13 +19,20 @@ namespace Playlister.Repositories.Implementations
         private readonly IConnectionFactory _connectionFactory;
         private readonly ILogger<PlaylistWriteRepository> _logger;
 
-        public PlaylistWriteRepository(IConnectionFactory connectionFactory, ILogger<PlaylistWriteRepository> logger)
+        public PlaylistWriteRepository(
+            IConnectionFactory connectionFactory,
+            ILogger<PlaylistWriteRepository> logger
+        )
         {
             _connectionFactory = connectionFactory;
             _logger = logger;
         }
 
-        public async Task UpsertAsync(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct)
+        public async Task UpsertAsync(
+            Playlist playlist,
+            IEnumerable<PlaylistItem> playlistItems,
+            CancellationToken ct
+        )
         {
             var sw = new Stopwatch();
             sw.Start();
@@ -56,89 +63,145 @@ namespace Playlister.Repositories.Implementations
 
             sw.Stop();
             _logger.LogInformation(
-                $"Upserted {items.Length} tracks ({newTracks.Length} new tracks) on Playlist {playlist.Id} {playlist.Name}. Total time: {sw.Elapsed}");
+                "Upserted {Length} tracks ({Length} new tracks) on Playlist {PlaylistId} {PlaylistName}. Total time: {Elapsed}",
+                items.Length,
+                newTracks.Length,
+                playlist.Id,
+                playlist.Name,
+                sw.Elapsed
+            );
 
-            static async Task UpsertPlaylist(Playlist plist, IDbConnection conn, IDbTransaction dbTransaction)
+            static async Task UpsertPlaylist(
+                Playlist plist,
+                IDbConnection conn,
+                IDbTransaction dbTransaction
+            )
             {
                 const string sql =
-                    "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public, count) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public, @Count) " +
-                    "ON CONFLICT(id) DO UPDATE SET " +
-                    "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public, description = excluded.description, count = excluded.count " +
-                    "WHERE snapshot_id != excluded.snapshot_id;";
+                    "INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public, count) VALUES(@Id, @SnapshotId, @Name, @Collaborative, @Description, @Public, @Count) "
+                    + "ON CONFLICT(id) DO UPDATE SET "
+                    + "snapshot_id = excluded.snapshot_id, name = excluded.name, collaborative = excluded.collaborative, public = excluded.public, description = excluded.description, count = excluded.count "
+                    + "WHERE snapshot_id != excluded.snapshot_id;";
 
                 await conn.ExecuteAsync(sql, plist, dbTransaction);
             }
 
-            async Task UpsertPlaylistTracks(Playlist plist, ImmutableArray<PlaylistItem> playlistTracks,
-                IDbConnection conn, IDbTransaction dbTxn)
+            async Task UpsertPlaylistTracks(
+                Playlist plist,
+                ImmutableArray<PlaylistItem> playlistTracks,
+                IDbConnection conn,
+                IDbTransaction dbTxn
+            )
             {
                 _logger.LogDebug(
-                    $"Attempting to upsert playlist tracks for playlist {plist.Id} \"{plist.Name}\"...");
+                    "Attempting to upsert playlist tracks for playlist {PlaylistId} \"{PlaylistName}\"...",
+                    plist.Id,
+                    plist.Name
+                );
 
                 const string playlistTrackSql =
-                    "INSERT INTO PlaylistTrack(track_id, playlist_id, playlist_snapshot_id, added_at) VALUES(@TrackId, @PlaylistId, @SnapshotId, @AddedAt) " +
-                    "ON CONFLICT(track_id, playlist_id) DO UPDATE SET playlist_snapshot_id = excluded.playlist_snapshot_id " +
-                    "WHERE playlist_snapshot_id != excluded.playlist_snapshot_id";
+                    "INSERT INTO PlaylistTrack(track_id, playlist_id, playlist_snapshot_id, added_at) VALUES(@TrackId, @PlaylistId, @SnapshotId, @AddedAt) "
+                    + "ON CONFLICT(track_id, playlist_id) DO UPDATE SET playlist_snapshot_id = excluded.playlist_snapshot_id "
+                    + "WHERE playlist_snapshot_id != excluded.playlist_snapshot_id";
 
                 try
                 {
-                    await conn.ExecuteAsync(playlistTrackSql, playlistTracks.Select(x => x.ToPlaylistTrack(plist)),
-                        dbTxn);
+                    await conn.ExecuteAsync(
+                        playlistTrackSql,
+                        playlistTracks.Select(x => x.ToPlaylistTrack(plist)),
+                        dbTxn
+                    );
                 }
                 catch (SqliteException)
                 {
                     _logger.LogCritical(
-                        $"SqliteException thrown while trying to insert tracks into playlist {JsonUtility.PrettyPrint(plist)}");
+                        "SqliteException thrown while trying to insert tracks into playlist {Playlist}",
+                        JsonUtility.PrettyPrint(plist)
+                    );
                     throw;
                 }
             }
 
-            async Task InsertTracks(Playlist plist, ImmutableArray<Track> tracks, IDbConnection conn,
-                IDbTransaction dbTxn)
+            async Task InsertTracks(
+                Playlist plist,
+                ImmutableArray<Track> tracks,
+                IDbConnection conn,
+                IDbTransaction dbTxn
+            )
             {
                 const string trackSql =
-                    "INSERT INTO Track(id, name, track_number, disc_number, duration_ms, album_id) VALUES(@Id, @Name, @TrackNumber, @DiscNumber, @DurationMs, @AlbumId) " +
+                    "INSERT INTO Track(id, name, track_number, disc_number, duration_ms, album_id) VALUES(@Id, @Name, @TrackNumber, @DiscNumber, @DurationMs, @AlbumId) "
+                    +
                     // only update snapshot_id on conflict, because the rest should be the same
                     "ON CONFLICT(id) DO NOTHING;";
 
                 await conn.ExecuteAsync(trackSql, tracks, dbTxn);
                 _logger.LogInformation(
-                    $"Inserted {tracks.Length} tracks into Track table from playlist {plist.Id} \"{plist.Name}\".");
+                    "Inserted {Length} tracks into Track table from playlist {PlaylistId} \"{PlaylistName}\"",
+                    tracks.Length,
+                    plist.Id,
+                    plist.Name
+                );
             }
 
-            static async Task UpsertTrackArtist(ImmutableArray<Track> tracks, IDbConnection conn, IDbTransaction dtTxn)
+            static async Task UpsertTrackArtist(
+                ImmutableArray<Track> tracks,
+                IDbConnection conn,
+                IDbTransaction dtTxn
+            )
             {
                 const string trackArtistSql =
-                    "INSERT INTO TrackArtist(track_id, artist_id) VALUES(@TrackId, @ArtistId) " +
-                    "ON CONFLICT(track_id, artist_id) DO NOTHING";
+                    "INSERT INTO TrackArtist(track_id, artist_id) VALUES(@TrackId, @ArtistId) "
+                    + "ON CONFLICT(track_id, artist_id) DO NOTHING";
 
-                await conn.ExecuteAsync(trackArtistSql, tracks.SelectMany(x => x.GetArtistIdPairings()), dtTxn);
+                await conn.ExecuteAsync(
+                    trackArtistSql,
+                    tracks.SelectMany(x => x.GetArtistIdPairings()),
+                    dtTxn
+                );
             }
 
-            static async Task UpsertAlbums(ImmutableArray<Album> albums, IDbConnection conn, IDbTransaction dbTxn)
+            static async Task UpsertAlbums(
+                ImmutableArray<Album> albums,
+                IDbConnection conn,
+                IDbTransaction dbTxn
+            )
             {
                 const string albumSql =
-                    "INSERT INTO Album(id, name, total_tracks, album_type, release_date) VALUES(@Id, @Name, @TotalTracks, @AlbumType, @ReleaseDate) " +
-                    "ON CONFLICT(id) DO NOTHING;";
+                    "INSERT INTO Album(id, name, total_tracks, album_type, release_date) VALUES(@Id, @Name, @TotalTracks, @AlbumType, @ReleaseDate) "
+                    + "ON CONFLICT(id) DO NOTHING;";
 
                 await conn.ExecuteAsync(albumSql, albums, dbTxn);
             }
 
-            static async Task UpsertArtists(ImmutableArray<Track> tracks, IDbConnection conn, IDbTransaction dbTxn)
+            static async Task UpsertArtists(
+                ImmutableArray<Track> tracks,
+                IDbConnection conn,
+                IDbTransaction dbTxn
+            )
             {
                 IEnumerable<Artist> artists = tracks.SelectMany(x => x.GetAllContainedArtists());
 
-                const string artistSql = "INSERT INTO Artist(id, name) VALUES(@Id, @Name) ON CONFLICT(id) DO NOTHING;";
+                const string artistSql =
+                    "INSERT INTO Artist(id, name) VALUES(@Id, @Name) ON CONFLICT(id) DO NOTHING;";
                 await conn.ExecuteAsync(artistSql, artists, dbTxn);
             }
 
-            static async Task UpsertAlbumArtist(ImmutableArray<Album> albums, IDbConnection conn, IDbTransaction dbTxn)
+            static async Task UpsertAlbumArtist(
+                ImmutableArray<Album> albums,
+                IDbConnection conn,
+                IDbTransaction dbTxn
+            )
             {
                 const string albumArtistSql =
-                    "INSERT INTO AlbumArtist(album_id, artist_id) VALUES(@AlbumId, @ArtistId) " +
-                    "ON CONFLICT(album_id, artist_id) DO NOTHING";
+                    "INSERT INTO AlbumArtist(album_id, artist_id) VALUES(@AlbumId, @ArtistId) "
+                    + "ON CONFLICT(album_id, artist_id) DO NOTHING";
 
-                await conn.ExecuteAsync(albumArtistSql, albums.SelectMany(a => a.GetAlbumArtistPairings()), dbTxn);
+                await conn.ExecuteAsync(
+                    albumArtistSql,
+                    albums.SelectMany(a => a.GetAlbumArtistPairings()),
+                    dbTxn
+                );
             }
 
             async Task<ImmutableArray<Track>> GetNewTracks(ImmutableArray<PlaylistItem> listItems)
@@ -152,8 +215,10 @@ namespace Playlister.Repositories.Implementations
                 var parameters = new DynamicParameters();
                 parameters.Add("@Ids", ids);
 
-                IEnumerable<string> tracksInDb =
-                    await conn.QueryAsync<string>("SELECT id FROM Track WHERE id in @Ids", parameters);
+                IEnumerable<string> tracksInDb = await conn.QueryAsync<string>(
+                    "SELECT id FROM Track WHERE id in @Ids",
+                    parameters
+                );
 
                 return tracks.Where(i => !tracksInDb.Contains(i.Id)).ToImmutableArray();
             }

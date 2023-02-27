@@ -21,7 +21,9 @@ namespace Playlister.CQRS.Handlers
 
             if (string.IsNullOrWhiteSpace(_options.ClientId))
             {
-                throw new Exception("Client Id is not present. Make sure that the project secrets have been set.");
+                throw new Exception(
+                    "Client Id is not present. Make sure that the project secrets have been set"
+                );
             }
         }
 
@@ -35,7 +37,9 @@ namespace Playlister.CQRS.Handlers
              * &scope=user-read-private%20user-read-email
              * &state=34fFs29kd09
              */
-            StringBuilder builder = new StringBuilder(_options.AccountsApiBaseAddress.OriginalString)
+            StringBuilder builder = new StringBuilder(
+                _options.AccountsApiBaseAddress.OriginalString
+            )
                 .Append("/authorize?")
                 .Append("response_type=code")
                 .Append($"&client_id={_options.ClientId}")

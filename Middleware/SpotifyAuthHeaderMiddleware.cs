@@ -16,14 +16,19 @@ namespace Playlister.Middleware
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<SpotifyAuthHeaderMiddleware> _logger;
 
-        public SpotifyAuthHeaderMiddleware(IHttpContextAccessor contextAccessor,
-            ILogger<SpotifyAuthHeaderMiddleware> logger)
+        public SpotifyAuthHeaderMiddleware(
+            IHttpContextAccessor contextAccessor,
+            ILogger<SpotifyAuthHeaderMiddleware> logger
+        )
         {
             _contextAccessor = contextAccessor;
             _logger = logger;
         }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
+        protected override async Task<HttpResponseMessage> SendAsync(
+            HttpRequestMessage request,
+            CancellationToken ct
+        )
         {
             _logger.LogDebug("Entering auth header middleware");
 
@@ -31,14 +36,20 @@ namespace Playlister.Middleware
 
             if (httpContext is not null)
             {
-                var accessToken = (string?) httpContext.Items["AccessToken"];
+                var accessToken = (string?)httpContext.Items["AccessToken"];
 
                 if (!string.IsNullOrWhiteSpace(accessToken))
-                    request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    request.Headers.Authorization = new AuthenticationHeaderValue(
+                        "Bearer",
+                        accessToken
+                    );
             }
             else
             {
-                _logger.LogWarning($"No http context was found for request:\n{request.RequestUri}");
+                _logger.LogWarning(
+                    "No http context was found for request:\n{RequestUri}",
+                    request.RequestUri
+                );
                 throw new InvalidOperationException();
             }
 
