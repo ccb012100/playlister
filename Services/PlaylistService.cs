@@ -168,10 +168,10 @@ namespace Playlister.Services
 
             sw.Stop();
             _logger.LogInformation(
-                "Updated playlist {PlaylistId} (\"{PlaylistName}\"). Total time: {Elapsed}",
+                "\n=> Updated playlist {PlaylistId} (\"{PlaylistName}\").\nTotal time: {Elapsed}ms\n",
                 playlist.Id,
                 playlist.Name,
-                sw.Elapsed
+                sw.ElapsedMilliseconds
             );
         }
 

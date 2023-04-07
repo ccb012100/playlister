@@ -63,12 +63,12 @@ namespace Playlister.Repositories.Implementations
 
             sw.Stop();
             _logger.LogInformation(
-                "Upserted {Length} tracks ({Length} new tracks) on Playlist {PlaylistId} {PlaylistName}. Total time: {Elapsed}",
+                "\nUpserted {Length} tracks ({Length} new tracks) on Playlist {PlaylistId} {PlaylistName}. Total time: {Elapsed}ms\n",
                 items.Length,
                 newTracks.Length,
                 playlist.Id,
                 playlist.Name,
-                sw.Elapsed
+                sw.ElapsedMilliseconds
             );
 
             static async Task UpsertPlaylist(

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
+using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Services;
@@ -18,9 +19,13 @@ namespace Playlister.CQRS.Handlers
         : IRequestHandler<UpdateCurrentUserPlaylistsCommand, int>
     {
         private readonly IPlaylistService _playlistService;
+        private readonly ILogger<UpdateCurrentUserPlaylistsHandler> _logger;
 
-        public UpdateCurrentUserPlaylistsHandler(IPlaylistService playlistService) =>
+        public UpdateCurrentUserPlaylistsHandler(IPlaylistService playlistService, ILogger<UpdateCurrentUserPlaylistsHandler> logger)
+        {
             _playlistService = playlistService;
+            _logger = logger;
+        }
 
         /// <summary>
         ///
@@ -40,16 +45,16 @@ namespace Playlister.CQRS.Handlers
             ).ToImmutableArray();
 
             var elapsedMs = sw.Elapsed.TotalMilliseconds;
-            Console.WriteLine(
-                $"\n{DateTime.Now.ToLocalTime()}: It took {elapsedMs} seconds to get the current user's playlists."
+            _logger.LogInformation(
+                "\n=> {DateTime}: It took {Elapsed}ms to get the current user's playlists.\n",
+                DateTime.Now.ToLocalTime(),
+                elapsedMs
             );
 
             await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
 
             sw.Stop();
-            Console.WriteLine(
-                $"\n{DateTime.Now.ToLocalTime()}: It took {sw.Elapsed.TotalMilliseconds - elapsedMs} seconds to update the current user's playlists."
-            );
+            _logger.LogInformation("\n=> {DateTime}: It took {Elapsed}ms to update the current user's playlists", DateTime.Now.ToLocalTime(), sw.ElapsedMilliseconds - elapsedMs);
 
             return playlists.Length;
         }
