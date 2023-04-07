@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace Playlister.Models.SpotifyApi
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record PagingObject<T>
     {
         /// <summary>
@@ -20,7 +19,6 @@ namespace Playlister.Models.SpotifyApi
         /// <summary>
         /// The requested data.
         /// </summary>
-        // ReSharper disable once CollectionNeverUpdated.Global
         public IEnumerable<T> Items { get; init; }
 
         /// <summary>

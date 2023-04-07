@@ -90,7 +90,6 @@ namespace Playlister
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        // ReSharper disable once UnusedMember.Global
         public void Configure(
             IApplicationBuilder app,
             ILoggerFactory loggerFactory,

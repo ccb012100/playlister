@@ -8,7 +8,6 @@ namespace Playlister.Models.SpotifyApi
     /// <summary>
     /// This doesn't exist on the Spotify documentation, but seems to be a thing.
     /// </summary>
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record SimplifiedUserObject
     {
         public ExternalUrlObject ExternalUrls { get; init; }

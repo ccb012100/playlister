@@ -5,7 +5,6 @@ using System;
 
 namespace Playlister.Models.SpotifyApi
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record ImageObject
     {
         /// <summary>

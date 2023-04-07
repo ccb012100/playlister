@@ -5,7 +5,6 @@ namespace Playlister.Configuration
     {
         public const string Database = "Database";
 
-        // ReSharper disable once UnusedAutoPropertyAccessor.Global
         public string ConnectionString { get; init; }
     }
 }

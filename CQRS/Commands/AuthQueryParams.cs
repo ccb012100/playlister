@@ -7,7 +7,6 @@ using System;
 // ReSharper disable UnusedAutoPropertyAccessor.Global
 namespace Playlister.CQRS.Commands
 {
-    // ReSharper disable once UnusedType.Global
     public record AuthQueryParams
     {
         public string ClientId { get; init; }
@@ -16,7 +15,6 @@ namespace Playlister.CQRS.Commands
         public string? Scope { get; init; }
         public bool ShowDialog { get; init; }
 
-        // ReSharper disable once UnusedMember.Global
         public string ResponseType { get; init; } = "code";
     }
 }

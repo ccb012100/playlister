@@ -6,8 +6,6 @@ using System.Collections.Generic;
 
 namespace Playlister.Models.SpotifyApi
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    // ReSharper disable once UnusedType.Global
     public record PlaylistObject : SimplifiedPlaylistObject
     {
         /// <summary>

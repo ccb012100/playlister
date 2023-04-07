@@ -11,11 +11,9 @@ namespace Playlister.Models
     /// <summary>
     /// Playlist Item
     /// </summary>
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record PlaylistItem
     {
         [JsonPropertyName("added_at")]
-        // ReSharper disable once MemberCanBePrivate.Global
         public DateTime AddedAt { get; init; }
 
         public Track Track { get; init; }

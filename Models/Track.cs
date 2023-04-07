@@ -15,7 +15,6 @@ namespace Playlister.Models
     {
         public Album Album { get; init; }
 
-        // ReSharper disable once MemberCanBePrivate.Global
         public IEnumerable<Artist> Artists { get; init; }
 
         [JsonPropertyName("disc_number")]
@@ -42,7 +41,7 @@ namespace Playlister.Models
         /// </summary>
         /// <returns>Collection of track id, artist id tuples</returns>
         public IEnumerable<object> GetArtistIdPairings() =>
-            Artists.Select(a => new {TrackId = Id, ArtistId = a.Id});
+            Artists.Select(a => new { TrackId = Id, ArtistId = a.Id });
 
         public string AlbumId => Album.Id;
     }

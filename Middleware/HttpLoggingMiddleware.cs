@@ -14,7 +14,7 @@ namespace Playlister.Middleware
     /// Use on RefitApi registration to see Request/Response info for easier debugging.
     /// Adapted from https://github.com/reactiveui/refit/issues/258#issuecomment-243394076
     /// </summary>
-    // ReSharper disable once ClassNeverInstantiated.Global
+
     public class HttpLoggingMiddleware : DelegatingHandler
     {
         private readonly ILogger<HttpLoggingMiddleware> _logger;

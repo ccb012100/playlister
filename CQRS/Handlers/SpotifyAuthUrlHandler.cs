@@ -9,7 +9,6 @@ using Playlister.CQRS.Commands;
 
 namespace Playlister.CQRS.Handlers
 {
-    // ReSharper disable once UnusedType.Global
     public class SpotifyAuthUrlHandler : IRequestHandler<GetAuthUrlCommand, Uri>
     {
         private const string Scope = "user-read-private";

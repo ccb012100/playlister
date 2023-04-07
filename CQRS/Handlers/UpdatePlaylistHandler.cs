@@ -9,7 +9,6 @@ namespace Playlister.CQRS.Handlers
     /// <summary>
     /// Update the list of Tracks for the specified playlist.
     /// </summary>
-    // ReSharper disable once UnusedType.Global
     public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistCommand, Unit>
     {
         private readonly IPlaylistService _playlistService;

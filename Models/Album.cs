@@ -28,7 +28,6 @@ namespace Playlister.Models
         /// The date the album was first released, for example “1981-12-15”. Depending on the precision, it might be shown as “1981” or “1981-12”.
         /// </summary>
         [JsonPropertyName("release_date")]
-        // ReSharper disable once MemberCanBePrivate.Global
         public string ReleaseDate { get; init; }
 
         [JsonPropertyName("release_date_precision")]
@@ -43,8 +42,9 @@ namespace Playlister.Models
             get
             {
                 // Depending on precision, the ReleaseDate string could be in the format "yyyy", "yyyy-MM" or "yyyy-MM-DD"
-                if (DateTime.TryParseExact(ReleaseDate, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None,
-                    out DateTime yyyy))
+                if (
+                    DateTime.TryParseExact( ReleaseDate, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime yyyy )
+                )
                 {
                     return yyyy;
                 }
@@ -54,7 +54,9 @@ namespace Playlister.Models
                     return dt;
                 }
 
-                throw new InvalidOperationException($"Could not parse ReleaseDate value {ReleaseDate}");
+                throw new InvalidOperationException(
+                    $"Could not parse ReleaseDate value {ReleaseDate}"
+                );
             }
         }
 
@@ -63,6 +65,6 @@ namespace Playlister.Models
         /// </summary>
         /// <returns>Collection of album id, artist id tuples.</returns>
         public IEnumerable<object> GetAlbumArtistPairings() =>
-            Artists.Select(x => new {AlbumId = Id, ArtistId = x.Id});
+            Artists.Select(x => new { AlbumId = Id, ArtistId = x.Id });
     }
 }

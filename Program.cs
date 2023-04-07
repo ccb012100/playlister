@@ -17,7 +17,6 @@ namespace Playlister
             CreateWebHostBuilder(args).Build().Run();
         }
 
-        // ReSharper disable once MemberCanBePrivate.Global
         internal static IWebHostBuilder CreateWebHostBuilder(string[] args)
         {
             return WebHost

@@ -10,7 +10,6 @@ namespace Playlister.CQRS.Handlers
     /// <summary>
     /// Add or Update the Playlists in command to the db.
     /// </summary>
-    // ReSharper disable once UnusedType.Global
     public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Unit>
     {
         private readonly IPlaylistService _playlistService;
@@ -23,7 +22,6 @@ namespace Playlister.CQRS.Handlers
         /// <param name="command"></param>
         /// <param name="ct"></param>
         /// <returns>Number of playlists handled</returns>
-        // ReSharper disable once UseDeconstructionOnParameter
         public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
         {
             await _playlistService.UpdatePlaylistsAsync(command.AccessToken,

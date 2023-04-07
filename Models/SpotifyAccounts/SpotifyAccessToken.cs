@@ -8,7 +8,6 @@ using System.Text.Json.Serialization;
 
 namespace Playlister.Models.SpotifyAccounts
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
     public record SpotifyAccessToken
     {
         private const string BearerType = "Bearer";
@@ -44,7 +43,6 @@ namespace Playlister.Models.SpotifyAccounts
         /// The time period (in seconds) for which the access token is valid.
         /// </summary>
         [JsonPropertyName("expires_in")]
-        // ReSharper disable once MemberCanBePrivate.Global
         public int ExpiresIn { get; init; }
 
         /// <summary>
@@ -52,7 +50,6 @@ namespace Playlister.Models.SpotifyAccounts
         /// (When the access code expires, send a <c>POST</c> request to the Accounts service <c>/api/token</c> endpoint, but use this code in place of an authorization code. A new access token will be returned. A new refresh token might be returned too.)
         /// </summary>
         [JsonPropertyName("refresh_token")]
-        // ReSharper disable once MemberCanBePrivate.Global
         public string RefreshToken { get; init; }
 
         public UserAccessToken ToUserAccessToken() =>

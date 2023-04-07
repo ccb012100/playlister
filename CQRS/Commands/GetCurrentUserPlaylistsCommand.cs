@@ -9,6 +9,6 @@ using Playlister.Models;
 // ReSharper disable MemberCanBePrivate.Global
 namespace Playlister.CQRS.Commands
 {
-    // ReSharper disable once ClassNeverInstantiated.Global
-    public record GetCurrentUserPlaylistsCommand(string AccessToken) : IRequest<IEnumerable<Playlist>>;
+    public record GetCurrentUserPlaylistsCommand(string AccessToken)
+        : IRequest<IEnumerable<Playlist>>;
 }

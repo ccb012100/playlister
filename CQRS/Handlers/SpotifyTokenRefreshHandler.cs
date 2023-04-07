@@ -13,7 +13,6 @@ using Playlister.Repositories;
 
 namespace Playlister.CQRS.Handlers
 {
-    // ReSharper disable once UnusedType.Global
     public class SpotifyTokenRefreshHandler : IRequestHandler<RefreshTokenCommand, UserAccessToken>
     {
         private readonly ISpotifyAccountsApi _api;

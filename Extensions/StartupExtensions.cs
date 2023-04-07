@@ -78,7 +78,6 @@ namespace Playlister.Extensions
             scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
         }
 
-        // ReSharper disable once UnusedMethodReturnValue.Global
         public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
             var debugOptions = services
@@ -145,7 +144,6 @@ namespace Playlister.Extensions
                 .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
                 .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
 
-        // ReSharper disable once UnusedMethodReturnValue.Global
         public static IApplicationBuilder AddEndpoints(
             this IApplicationBuilder builder,
             IConfiguration config,

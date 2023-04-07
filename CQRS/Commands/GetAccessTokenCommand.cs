@@ -41,7 +41,6 @@ namespace Playlister.CQRS.Commands
              * The value of this parameter must exactly match the value of redirect_uri supplied when requesting the authorization code.
              */
             [Required, AliasAs("redirect_uri")]
-            // ReSharper disable once UnusedAutoPropertyAccessor.Global
             public string RedirectUri { get; init; }
 
             [Required, AliasAs("client_id")]

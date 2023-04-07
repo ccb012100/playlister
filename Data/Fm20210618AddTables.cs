@@ -3,7 +3,6 @@ using FluentMigrator;
 namespace Playlister.Data
 {
     [Migration(20210618)]
-    // ReSharper disable once UnusedType.Global
     public class Fm20210618AddPlaylistTable : AutoReversingMigration
     {
         public override void Up()
