@@ -15,3 +15,5 @@ playlister.sqlite
 playlister.db
 Logs/
 **/*.log
+
+*secrets.json
