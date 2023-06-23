@@ -27,3 +27,28 @@ The .NET `System.Text.Json` serializer/deserializer
 ## External API access
 
 A mixture of `Refit` and `HttpClient`
+
+## Redirect URIs
+
+Configured in the Spotify Developer Portal.
+
+- <https://localhost:5001/app/home/login>
+
+## Set up client secrets
+
+- Open the root folder in a CLI
+- Get **Client ID** and **ClientSecret** from [Spotify Developer Dashboard](https://developer.spotify.com/dashboard)
+- Create `secrets.json` file with the config values:
+
+```bash
+cat <<EOF > secrets.json
+{
+  "Spotify": {
+    "ClientId": "<ID>",
+    "ClientSecret": "<SECRET>",
+  }
+}
+EOF
+```
+
+- Run `cat secrets.json | dotnet user-secrets set`
