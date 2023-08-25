@@ -4,7 +4,7 @@ Tool to download your Spotify Playlists into a SQLite database.
 
 ## notes
 
-- runs on <https://localhost:5001>
+- runs on <http://localhost:5000> and <https://localhost:5001>
 
 ## String Enums
 
@@ -52,3 +52,20 @@ EOF
 ```
 
 - Run `cat secrets.json | dotnet user-secrets set`
+
+## TODO
+
+- UI
+    - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
+- .NET
+    - Tests
+        - [ ] Integration
+        - [ ] Unit
+        - [ ] Property-based
+    - Add `.devcontainer
+    - (maybe) put in Docker container
+- SQLite
+    - [ ] Add a stored proc to cull the SQL tables
+        - artists/albums/songs that have been removed from playlists and have no references
+        - need to figure out which table(s) to cull
+    - (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
