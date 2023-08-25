@@ -62,8 +62,14 @@ EOF
         - [ ] Integration
         - [ ] Unit
         - [ ] Property-based
-    - Add `.devcontainer
-    - (maybe) put in Docker container
+    - [ ] Add Polly Policy to attempt re-auths for 401s
+    - Spotify Access Token
+      - [ ] Validate that the `state` value matches the original value sent to user
+      - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+    - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
+    - [ ] `PlaylistService.cs` =>
+    - [ ] Add `.devcontainer
+    - [ ] (maybe) put in Docker container
 - SQLite
     - [ ] Add a stored proc to cull the SQL tables
         - artists/albums/songs that have been removed from playlists and have no references
