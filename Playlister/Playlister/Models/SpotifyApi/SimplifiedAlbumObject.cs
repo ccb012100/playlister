@@ -4,9 +4,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Playlister.Models.SpotifyApi.Enums;
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable IdentifierTypo
-// ReSharper disable ClassNeverInstantiated.Global
 
 #pragma warning disable 8618
 namespace Playlister.Models.SpotifyApi

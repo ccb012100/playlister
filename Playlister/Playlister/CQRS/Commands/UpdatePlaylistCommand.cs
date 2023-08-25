@@ -1,10 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using MediatR;
 
-#pragma warning disable 8618
-
-// ReSharper disable AutoPropertyCanBeMadeGetOnly.Global
-
 namespace Playlister.CQRS.Commands
 {
     /// <summary>

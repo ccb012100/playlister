@@ -5,10 +5,6 @@ using Playlister.CQRS.Commands;
 using Playlister.Models.SpotifyApi;
 using Playlister.RefitClients;
 
-// ReSharper disable UnusedMember.Global
-
-// ReSharper disable UnusedType.Global
-
 namespace Playlister.CQRS.Handlers
 {
     public class GetCurrentUserHandler : IRequestHandler<GetCurrentUserCommand, PrivateUserObject>

@@ -4,11 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable UnusedType.Global
-// ReSharper disable ClassNeverInstantiated.Global
 #pragma warning disable 8618
 
 namespace Playlister.Models
@@ -43,7 +39,7 @@ namespace Playlister.Models
             {
                 // Depending on precision, the ReleaseDate string could be in the format "yyyy", "yyyy-MM" or "yyyy-MM-DD"
                 if (
-                    DateTime.TryParseExact( ReleaseDate, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime yyyy )
+                    DateTime.TryParseExact(ReleaseDate, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime yyyy)
                 )
                 {
                     return yyyy;

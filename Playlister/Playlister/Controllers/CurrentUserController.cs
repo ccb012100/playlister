@@ -42,7 +42,7 @@ namespace Playlister.Controllers
         [HttpGet]
         public async Task<PrivateUserObject> Get()
         {
-            PrivateUserObject user = await Mediator.Send(new GetCurrentUserCommand(AccessToken));
+            PrivateUserObject user = await _mediator.Send(new GetCurrentUserCommand(AccessToken));
 
             return user;
         }
@@ -57,7 +57,7 @@ namespace Playlister.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            IEnumerable<Playlist> lists = await Mediator.Send(
+            IEnumerable<Playlist> lists = await _mediator.Send(
                 new GetCurrentUserPlaylistsCommand(AccessToken)
             );
 
@@ -81,7 +81,7 @@ namespace Playlister.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            var total = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+            var total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
             sw.Stop();
 
             _logger.LogInformation(

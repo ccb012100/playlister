@@ -1,3 +1,4 @@
+using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
@@ -7,30 +8,28 @@ namespace Playlister.Utilities
     {
         public static void OpenUrl(string url)
         {
-            // source: https://stackoverflow.com/a/43232486
-            try
+            // HACK: because of this => <https://github.com/dotnet/corefx/issues/10361>
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
             {
-                Process.Start(url);
+                Process.Start("xdg-open", url);
             }
-            catch
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
-                // hack because of this: https://github.com/dotnet/corefx/issues/10361
-                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                Process.Start(new ProcessStartInfo(url.Replace("&", "^&")) { UseShellExecute = true });
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            {
+                Process.Start("open", url);
+            }
+            else
+            {
+                try
                 {
-                    url = url.Replace("&", "^&");
-                    Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
+                    Process.Start(url);
                 }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                catch (Exception e)
                 {
-                    Process.Start("xdg-open", url);
-                }
-                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
-                {
-                    Process.Start("open", url);
-                }
-                else
-                {
-                    throw;
+                    throw new InvalidOperationException($"Encountered an error trying to open the URL on Operating System '{RuntimeInformation.OSDescription}'", e);
                 }
             }
         }

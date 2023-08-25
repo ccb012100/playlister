@@ -1,7 +1,5 @@
 using System;
 
-// ReSharper disable ClassNeverInstantiated.Global
-// ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
 
 namespace Playlister.Models.SpotifyApi

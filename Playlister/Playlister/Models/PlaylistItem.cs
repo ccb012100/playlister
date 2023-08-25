@@ -1,9 +1,7 @@
 using System;
 using System.Text.Json.Serialization;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
 
-// ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
 
 namespace Playlister.Models

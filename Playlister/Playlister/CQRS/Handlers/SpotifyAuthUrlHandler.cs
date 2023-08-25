@@ -44,7 +44,7 @@ namespace Playlister.CQRS.Handlers
                 .Append($"&client_id={_options.ClientId}")
                 .Append($"&redirect_uri={_options.CallbackUrl}")
                 .Append($"&scope={Scope}")
-                .Append($"&state={Guid.NewGuid()}"); // TODO: cache `state` so that it can be validated on access token command
+                .Append($"&state={Guid.NewGuid()}"); // TODO: cache `state` so that it can be validated on the access token command
 
             return Task.FromResult(new Uri(builder.ToString()));
         }

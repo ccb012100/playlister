@@ -8,7 +8,7 @@ namespace Playlister.Controllers
     [ApiController, Route("api/[controller]")]
     public abstract class BaseController : Controller
     {
-        internal readonly IMediator Mediator;
+        internal readonly IMediator _mediator;
         private readonly IAccessTokenUtility? _accessTokenUtility;
 
         internal string AccessToken =>
@@ -19,13 +19,13 @@ namespace Playlister.Controllers
 
         protected BaseController(IMediator mediator, IAccessTokenUtility accessTokenUtility)
         {
-            Mediator = mediator;
+            _mediator = mediator;
             _accessTokenUtility = accessTokenUtility;
         }
 
         protected BaseController(IMediator mediator)
         {
-            Mediator = mediator;
+            _mediator = mediator;
         }
     }
 }

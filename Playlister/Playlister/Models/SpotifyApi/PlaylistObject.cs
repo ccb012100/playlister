@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 
-// ReSharper disable UnusedMember.Global
 
 #pragma warning disable 8618
 

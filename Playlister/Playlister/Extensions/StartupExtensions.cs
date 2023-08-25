@@ -80,18 +80,14 @@ namespace Playlister.Extensions
 
         public static IServiceCollection AddRefitClients(this IServiceCollection services)
         {
-            var debugOptions = services
-                .BuildServiceProvider()
-                .GetService<IOptions<DebuggingOptions>>();
+            IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
 
             services
                 .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient(
                     (svc, c) =>
                     {
-                        c.BaseAddress = svc.GetService<
-                            IOptions<SpotifyOptions>
-                        >()?.Value.AccountsApiBaseAddress;
+                        c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
                     }
                 )
                 .AddHttpLoggingMiddleware(debugOptions)
@@ -102,9 +98,7 @@ namespace Playlister.Extensions
                 .ConfigureHttpClient(
                     (svc, c) =>
                     {
-                        c.BaseAddress = svc.GetService<
-                            IOptions<SpotifyOptions>
-                        >()?.Value.ApiBaseAddress;
+                        c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
                     }
                 )
                 .AddHttpLoggingMiddleware(debugOptions)
@@ -128,9 +122,7 @@ namespace Playlister.Extensions
 
         public static void AddDebuggingOptions(this IServiceCollection services)
         {
-            var debugOptions = services
-                .BuildServiceProvider()
-                .GetService<IOptions<DebuggingOptions>>();
+            IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
 
             if (debugOptions is not null && debugOptions.Value.UseLoggingBehavior)
             {
@@ -171,8 +163,6 @@ namespace Playlister.Extensions
             });
         }
 
-        [SuppressMessage("ReSharper", "ArgumentsStyleLiteral")]
-        [SuppressMessage("ReSharper", "ArgumentsStyleAnonymousFunction")]
         public static IServiceCollection AddHttpClientWithPollyPolicy(
             this IServiceCollection services
         )

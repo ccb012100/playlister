@@ -8,8 +8,6 @@ using Playlister.Services;
 using Polly;
 using Refit;
 
-// ReSharper disable ArgumentsStyleLiteral
-// ReSharper disable ArgumentsStyleAnonymousFunction
 
 namespace Playlister.Utilities
 {
@@ -34,7 +32,7 @@ namespace Playlister.Utilities
                         {
                             svc.GetService<ILogger<SpotifyApiService>>()?.LogWarning(
                                 "Received a 429 HTTP response; delaying for {TotalSeconds} seconds, then making retry attempt {AttemptCount}", timespan.TotalSeconds, retryAttempt);
-                            
+
                             await Task.CompletedTask;
                         }
                     );

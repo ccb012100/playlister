@@ -17,7 +17,7 @@ namespace Playlister.Services
 {
     public class PlaylistService : IPlaylistService
     {
-        private static readonly CacheObject<Playlist> PlaylistCache = new();
+        private static readonly CacheObject<Playlist> s_playlistCache = new();
         private readonly ISpotifyApiService _api;
         private readonly ILogger<PlaylistService> _logger;
         private readonly IPlaylistReadRepository _readRepository;
@@ -35,7 +35,7 @@ namespace Playlister.Services
             _api = api;
             _logger = logger;
 
-            PlaylistCache.Initialize(PopulateCache);
+            s_playlistCache.Initialize(PopulateCache);
         }
 
         public async Task<IEnumerable<Playlist>> GetCurrentUserPlaylistsAsync(
@@ -155,8 +155,7 @@ namespace Playlister.Services
             );
 
             // We want to get all items so that they can be inserted into the repository in a single Transaction
-            // TODO: this causes perf issues on the largest playlists; should update to only grab changes dated after
-            // the last sync
+            // TODO: this causes perf issues on the largest playlists; should update to only grab changes dated after the last sync
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
@@ -185,7 +184,7 @@ namespace Playlister.Services
 
         private void Cache(Playlist playlist)
         {
-            Playlist pl = PlaylistCache.Items.AddOrUpdate(
+            Playlist pl = s_playlistCache.Items.AddOrUpdate(
                 playlist.Id,
                 playlist,
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist
@@ -196,7 +195,7 @@ namespace Playlister.Services
 
         private Playlist? GetFromCache(string id)
         {
-            _ = PlaylistCache.Items.TryGetValue(id, out Playlist? playlist);
+            _ = s_playlistCache.Items.TryGetValue(id, out Playlist? playlist);
             _logger.LogDebug(
                 "Result of getting playlist {Id} from cache: {playlist}",
                 id,
@@ -215,7 +214,7 @@ namespace Playlister.Services
 
             _logger.LogDebug(
                 "Cache populated: {CacheItems}",
-                JsonUtility.PrettyPrint(PlaylistCache.Items)
+                JsonUtility.PrettyPrint(s_playlistCache.Items)
             );
         }
 

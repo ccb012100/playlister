@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-// ReSharper disable UnusedMember.Global
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
 
 #pragma warning disable 8618
 

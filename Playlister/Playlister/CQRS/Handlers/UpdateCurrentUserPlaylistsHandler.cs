@@ -44,7 +44,7 @@ namespace Playlister.CQRS.Handlers
                 await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct)!
             ).ToImmutableArray();
 
-            var elapsedMs = sw.Elapsed.TotalMilliseconds;
+            double elapsedMs = sw.Elapsed.TotalMilliseconds;
             _logger.LogInformation(
                 "\n=> {DateTime}: It took {Elapsed}ms to get the current user's playlists.\n",
                 DateTime.Now.ToLocalTime(),

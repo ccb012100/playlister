@@ -1,8 +1,5 @@
 using System;
 
-// ReSharper disable UnusedMember.Global
-// ReSharper disable IdentifierTypo
-
 #pragma warning disable 8618
 namespace Playlister.Models.SpotifyApi
 {

@@ -26,7 +26,7 @@ namespace Playlister.Utilities
         /// <typeparam name="T">Type of <paramref name="t"/></typeparam>
         /// <returns>String representation of the object as pretty-printed JSON</returns>
         public static string PrettyPrint<T>(T t) =>
-            JsonSerializer.Serialize(t, new JsonSerializerOptions {WriteIndented = true});
+            JsonSerializer.Serialize(t, new JsonSerializerOptions { WriteIndented = true });
 
         /// <summary>
         /// Convert string to snake_case using EFCore's <see cref="SnakeCaseNameRewriter"/>

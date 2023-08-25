@@ -3,8 +3,6 @@ using MediatR;
 using Playlister.Models;
 using Refit;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Global
-// ReSharper disable UnusedMember.Global
 #pragma warning disable 8618
 
 namespace Playlister.CQRS.Commands
