@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Playlister.Services;
@@ -29,12 +30,12 @@ namespace Playlister.Utilities
                         sleepDurationProvider: (_, response, _) =>
                             response.Result?.Headers.RetryAfter?.Delta ??
                             throw new InvalidOperationException("Could not find valid RetryAfter header."),
-#pragma warning disable 1998
                         onRetryAsync: async (_, timespan, retryAttempt, _) =>
-#pragma warning restore 1998
                         {
                             svc.GetService<ILogger<SpotifyApiService>>()?.LogWarning(
                                 "Received a 429 HTTP response; delaying for {TotalSeconds} seconds, then making retry attempt {AttemptCount}", timespan.TotalSeconds, retryAttempt);
+                            
+                            await Task.CompletedTask;
                         }
                     );
     }
