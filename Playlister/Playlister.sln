@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playlister", "Playlister\Playlister.csproj", "{D9FEC274-FE1D-4476-ACF0-506E826DC1F9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Playlister.Tests", "Playlister.Tests\Playlister.Tests.csproj", "{77D639D8-F1E9-409C-AF8D-CB733CA3D5C4}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D9FEC274-FE1D-4476-ACF0-506E826DC1F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9FEC274-FE1D-4476-ACF0-506E826DC1F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9FEC274-FE1D-4476-ACF0-506E826DC1F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9FEC274-FE1D-4476-ACF0-506E826DC1F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{77D639D8-F1E9-409C-AF8D-CB733CA3D5C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{77D639D8-F1E9-409C-AF8D-CB733CA3D5C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{77D639D8-F1E9-409C-AF8D-CB733CA3D5C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{77D639D8-F1E9-409C-AF8D-CB733CA3D5C4}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A64459FA-FE10-471E-B6B3-5586F863B622}
+	EndGlobalSection
+EndGlobal
