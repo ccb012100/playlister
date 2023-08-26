@@ -55,10 +55,11 @@ EOF
 
 ## TODO
 
-- [ ] Move this file to the top level directory
+- [x] Move this file to the top level directory
 - UI
   - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
 - .NET
+  - [ ] Fix performance issue with updating large playlists
   - Tests
     - [ ] Integration
     - [ ] Unit
@@ -72,12 +73,14 @@ EOF
   - [ ] Add `.devcontainer
   - [ ] Documentation/visualisations
   - [ ] (maybe) put in Docker container
+  - [x] Automatically open URL, not Swagger Page
+  - [x] `UrlUtility`: add case for WSL
 - SQLite
   - [ ] Add a stored proc to cull the SQL tables
     - artists/albums/songs that have been removed from playlists and have no references
     - need to figure out which table(s) to cull
-  - Schema visualisation
-  - (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
+  - [ ] Schema visualisation
+  - [ ] (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
 - CI/CD
   - [ ] Add CI/CD pipline with GitHub Actions
   - [ ] Build/format/test
