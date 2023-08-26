@@ -56,22 +56,28 @@ EOF
 ## TODO
 
 - UI
-    - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
+  - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
 - .NET
-    - Tests
-        - [ ] Integration
-        - [ ] Unit
-        - [ ] Property-based
-    - [ ] Add Polly Policy to attempt re-auths for 401s
-    - Spotify Access Token
-      - [ ] Validate that the `state` value matches the original value sent to user
-      - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
-    - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
-    - [ ] `PlaylistService.cs` =>
-    - [ ] Add `.devcontainer
-    - [ ] (maybe) put in Docker container
+  - Tests
+    - [ ] Integration
+    - [ ] Unit
+    - [ ] Property-based
+  - [ ] Add Polly Policy to attempt re-auths for 401s
+  - Spotify Access Token
+    - [ ] Validate that the `state` value matches the original value sent to user
+    - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+  - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
+  - [ ] `PlaylistService.cs` =>
+  - [ ] Add `.devcontainer
+  - [ ] Documentation/visualisations
+  - [ ] (maybe) put in Docker container
 - SQLite
-    - [ ] Add a stored proc to cull the SQL tables
-        - artists/albums/songs that have been removed from playlists and have no references
-        - need to figure out which table(s) to cull
-    - (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
+  - [ ] Add a stored proc to cull the SQL tables
+    - artists/albums/songs that have been removed from playlists and have no references
+    - need to figure out which table(s) to cull
+  - Schema visualisation
+  - (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
+- CI/CD
+  - [ ] Add CI/CD pipline with GitHub Actions
+  - [ ] Build/format/test
+  - [ ] Test coverage
