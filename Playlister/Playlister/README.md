@@ -55,6 +55,7 @@ EOF
 
 ## TODO
 
+- [ ] Move this file to the top level directory
 - UI
   - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
 - .NET
