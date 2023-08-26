@@ -136,7 +136,7 @@ namespace Playlister
         private void OnStarted(ILogger logger)
         {
             logger.LogInformation("{Namespace} Started", _namespace);
-            UrlUtility.OpenUrl("https://localhost:5001/app/");
+            UrlUtility.OpenUrl("https://localhost:5001/app/home");
         }
 
         private void OnStopping(ILogger logger) =>

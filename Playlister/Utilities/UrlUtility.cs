@@ -6,14 +6,18 @@ namespace Playlister.Utilities
 {
     public static class UrlUtility
     {
+        // HACK: because of this => <https://github.com/dotnet/corefx/issues/10361>
         public static void OpenUrl(string url)
         {
-            // HACK: because of this => <https://github.com/dotnet/corefx/issues/10361>
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            if (RuntimeInformation.OSDescription.Contains("microsoft-standard-WSL2"))
             {
-                Process.Start("xdg-open", url);
+                Process.Start("wslview", url);
             }
-            if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            {
+                Process.Start("wslview", url);
+            }
+            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 Process.Start(new ProcessStartInfo(url.Replace("&", "^&")) { UseShellExecute = true });
             }
