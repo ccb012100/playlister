@@ -72,6 +72,7 @@ EOF
   - [ ] `PlaylistService.cs` =>
   - [ ] Add `.devcontainer
   - [ ] Documentation/visualisations
+  - [ ] Use Humanizer
   - [ ] (maybe) put in Docker container
   - [x] Automatically open URL, not Swagger Page
   - [x] `UrlUtility`: add case for WSL
