@@ -48,9 +48,13 @@
 
     <ItemGroup>
       <Compile Remove="Logs\**" />
+      <Compile Remove="Playlister\**" />
       <Content Remove="Logs\**" />
+      <Content Remove="Playlister\**" />
       <EmbeddedResource Remove="Logs\**" />
+      <EmbeddedResource Remove="Playlister\**" />
       <None Remove="Logs\**" />
+      <None Remove="Playlister\**" />
     </ItemGroup>
 
     <ItemGroup>

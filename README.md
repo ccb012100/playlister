@@ -69,7 +69,7 @@ EOF
     - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
   - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
   - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
-  - [ ] Add `.devcontainer
+  - [ ] Add `.devcontainer`
   - [ ] Documentation/visualisations
   - [ ] Use Humanizer
   - [ ] (maybe) put in Docker container
