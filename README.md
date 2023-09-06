@@ -59,7 +59,6 @@ EOF
 - UI
   - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
 - .NET
-  - [ ] Fix performance issue with updating large playlists
   - Tests
     - [ ] Integration
     - [ ] Unit
@@ -69,7 +68,7 @@ EOF
     - [ ] Validate that the `state` value matches the original value sent to user
     - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
   - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
-  - [ ] `PlaylistService.cs` =>
+  - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
   - [ ] Add `.devcontainer
   - [ ] Documentation/visualisations
   - [ ] Use Humanizer
