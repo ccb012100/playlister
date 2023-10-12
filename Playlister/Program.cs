@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
@@ -22,9 +23,7 @@ namespace Playlister
                 .CreateDefaultBuilder(args)
                 .ConfigureLogging(
                     (context, builder) =>
-                    {
-                        builder.AddFile(context.Configuration.GetSection("Logging"));
-                    }
+                    { builder.AddFile(context.Configuration.GetSection("Logging")); }
                 )
                 .UseKestrel(LogDevelopmentConfiguration)
                 .UseStartup<Startup>();
@@ -37,13 +36,11 @@ namespace Playlister
         {
             if (context.HostingEnvironment.IsDevelopment())
             {
-                var debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
-                var printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
+                IConfigurationSection debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
+                IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
 
-                if (bool.Parse(printEnv.Value))
-                {
-                    ShowConfig(context.Configuration);
-                }
+                if (bool.Parse(printEnv.Value!))
+                { ShowConfig(context.Configuration); }
             }
         }
 
@@ -53,7 +50,8 @@ namespace Playlister
         /// <param name="configuration"></param>
         private static void ShowConfig(IConfiguration configuration)
         {
-            var children = configuration.GetChildren().ToList();
+            List<IConfigurationSection> children = configuration.GetChildren().ToList();
+
             if (children.Any())
             {
                 foreach (IConfigurationSection section in children)

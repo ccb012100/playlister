@@ -150,7 +150,7 @@ namespace Playlister.Extensions
                         "/debug",
                         async context =>
                             await context.Response.WriteAsync(
-                                (config as IConfigurationRoot).GetDebugView()
+                                (config as IConfigurationRoot)!.GetDebugView()
                             )
                     );
 
