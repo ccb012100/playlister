@@ -2,8 +2,13 @@
 
 .DS_Store
 
-bin/
-out/
-obj/
+**/bin
+**/obj
+**/out
+
+**/Logs
+
+**/.vscode
+**/.vs
 
 /Folder.DotSettings.user
