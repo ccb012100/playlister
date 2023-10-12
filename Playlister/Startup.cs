@@ -49,9 +49,7 @@ namespace Playlister
                             }
                         )
                 )
-# pragma warning disable 8604
-                .AddMediatR(Assembly.GetAssembly(typeof(Startup)))
-# pragma warning restore
+                .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>())
                 .AddConfigOptions(Configuration, _environment)
                 .AddHttpContextAccessor()
                 .AddMiddleware()
