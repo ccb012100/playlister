@@ -23,61 +23,61 @@
 </head>
 
 <body class="container">
-  <div id="app">
-    <nav class="navbar">
-      <div class="container-fluid d-flex justify-content-start">
-        <div class="navbar-nav p-1">
-          <router-link :to="{ name: 'homepage' }" class="btn btn-info"> Home</router-link>
-        </div>
-        <div class="navbar-nav p-1">
-          <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
-        </div>
-        <div class="navbar-nav p-1 ms-auto">
-          <router-link :to="{name: 'logout'}" class="btn btn-danger">Sign out</router-link>
-        </div>
-      </div>
-    </nav>
-    <router-view></router-view>
-  </div>
+    <div id="app">
+        <nav class="navbar">
+            <div class="container-fluid d-flex justify-content-start">
+                <div class="navbar-nav p-1">
+                    <router-link :to="{ name: 'homepage' }" class="btn btn-info"> Home</router-link>
+                </div>
+                <div class="navbar-nav p-1">
+                    <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
+                </div>
+                <div class="navbar-nav p-1 ms-auto">
+                    <router-link :to="{name: 'logout'}" class="btn btn-danger">Sign out</router-link>
+                </div>
+            </div>
+        </nav>
+        <router-view></router-view>
+    </div>
 </body>
 <script type="module">
-  /*
-   * Configure Axios
-   */
-  axios.defaults.withCredentials = true;
-  axios.defaults.baseURL = 'https://localhost:5001/api/';
-  const userTokenItemName = 'userToken';
+    /*
+     * Configure Axios
+     */
+    axios.defaults.withCredentials = true;
+    axios.defaults.baseURL = 'https://localhost:5001/api/';
+    const userTokenItemName = 'userToken';
 
-  function lsGetToken(key) {
-    const token = localStorage.getItem(userTokenItemName);
+    function lsGetToken(key) {
+        const token = localStorage.getItem(userTokenItemName);
 
-    if (!token) {
-      console.log('No user token was found in local storage.');
-      return undefined;
+        if (!token) {
+            console.log('No user token was found in local storage.');
+            return undefined;
+        }
+
+        return JSON.parse(token);
     }
 
-    return JSON.parse(token);
-  }
+    function lsSetToken(userToken) {
+        if (!userToken) {
+            throw new Error('Invalid userToken input.');
+        }
 
-  function lsSetToken(userToken) {
-    if (!userToken) {
-      throw new Error('Invalid userToken input.');
+        localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
+        axios.defaults.headers.common['Authorization'] = `Bearer ${ userToken }`;
     }
 
-    localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
-    axios.defaults.headers.common['Authorization'] = `Bearer ${ userToken }`;
-  }
+    function lsRemoveToken() {
+        localStorage.removeItem(userTokenItemName);
+        axios.defaults.headers.common['Authorization'] = null;
+    }
 
-  function lsRemoveToken() {
-    localStorage.removeItem(userTokenItemName);
-    axios.defaults.headers.common['Authorization'] = null;
-  }
-
-  /*
-   * Define Components
-   */
-  const RootComponent = {
-    template: `
+    /*
+     * Define Components
+     */
+    const RootComponent = {
+        template: `
           <h3>Page loaded at:</h3>
           <pre>{{ dateLoaded }}</pre>
           <div class="card">
@@ -97,132 +97,132 @@
           </div>
           </div>
         `,
-    mounted() {
-      if (lsGetToken()) { lsRemoveToken(); }
-      this.authenticated = !!lsGetToken();
+        mounted() {
+            if (lsGetToken()) { lsRemoveToken(); }
+            this.authenticated = !!lsGetToken();
 
-      if (this.authenticated) {
-        router.push({ name: 'data-page' });
-      } else if (this.$route.path === '/app/home') {
-        this.signIn();
-      }
-    },
-    data() {
-      return {
-        dateLoaded: Date(),
-        message: null,
-        authenticated: Boolean,
-      };
-    },
-    methods: {
-      signIn() {
-        const self = this;
-        self.message = 'Signing in...';
-
-        axios
-          // Get Spotify auth URL from API
-          .get('auth')
-          .then(function (response) {
-            console.log('auth response:');
-            console.log(response);
-            try {
-              // redirect to Spotify to sign in
-              window.location.href = response.data;
-              // redirect returns to https://localhost:5001/app/home/login?code=$AUTH_CODE
-              // or https://localhost:5001/app/home/login?error=access_denied&state=STATE
-            } catch (e) {
-              self.message = e;
+            if (this.authenticated) {
+                router.push({ name: 'data-page' });
+            } else if (this.$route.path === '/app/home') {
+                this.signIn();
             }
-          })
-          .catch(function (error) {
-            console.log('line 138');
-            self.message = error.message;
-          });
-      },
-      clearToken() {
-        lsRemoveToken();
-        this.authenticated = false;
-      },
-    },
-  };
+        },
+        data() {
+            return {
+                dateLoaded: Date(),
+                message: null,
+                authenticated: Boolean,
+            };
+        },
+        methods: {
+            signIn() {
+                const self = this;
+                self.message = 'Signing in...';
 
-  const PageNotFoundComponent = {
-    template: `
+                axios
+                    // Get Spotify auth URL from API
+                    .get('auth')
+                    .then(function (response) {
+                        console.log('auth response:');
+                        console.log(response);
+                        try {
+                            // redirect to Spotify to sign in
+                            window.location.href = response.data;
+                            // redirect returns to https://localhost:5001/app/home/login?code=$AUTH_CODE
+                            // or https://localhost:5001/app/home/login?error=access_denied&state=STATE
+                        } catch (e) {
+                            self.message = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log('line 138');
+                        self.message = error.message;
+                    });
+            },
+            clearToken() {
+                lsRemoveToken();
+                this.authenticated = false;
+            },
+        },
+    };
+
+    const PageNotFoundComponent = {
+        template: `
                 <div class="alert alert-warning" role="alert">
                     <h4 class="alert-heading">404 Page Not Found</h4>
                     <p>Sorry, there's not a page at {{ this.$route.path }}</p>
                 </div>
                 `,
-  };
+    };
 
-  const LogoutComponent = {
-    template: `
+    const LogoutComponent = {
+        template: `
                 <div class="alert alert-info" role="alert">
                     <p>Logging out...</p>
                 </div>
                 `,
-    mounted() {
-      if (lsGetToken()) {
-        lsRemoveToken();
-      }
-      this.$router.push({ name: 'homepage' });
-    },
-  };
+        mounted() {
+            if (lsGetToken()) {
+                lsRemoveToken();
+            }
+            this.$router.push({ name: 'homepage' });
+        },
+    };
 
-  const LoginComponent = {
-    props: ['authCode', 'error', 'state'],
-    template: `
+    const LoginComponent = {
+        props: ['authCode', 'error', 'state'],
+        template: `
           <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
           <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
         `,
-    mounted() {
-      if (!!lsGetToken()) {
-        this.$router.push({ name: 'data-page' });
-      } else if (this.error) {
-        this.showErrorMessage(this.error);
-      } else if (this.authCode) {
-        this.getAccessToken(this.authCode, this.state);
-      } else {
-        throw new Error('Either `authCode` or `error` should be populated.');
-      }
-    },
-    data() {
-      return {
-        authMessage: null,
-        errorMessage: null,
-      };
-    },
-    methods: {
-      getAccessToken(code, state) {
-        this.authMessage = 'Getting authorization code...';
-        const self = this;
-
-        axios
-          .post('auth/token', {
-            code: code,
-            state: state,
-          })
-          .then(function (response) {
-            try {
-              self.authMessage = 'Logged in successfully!';
-              lsSetToken(response.data);
-              router.push({ name: 'data-page' });
-            } catch (e) {
-              self.errorMessage = e;
+        mounted() {
+            if (!!lsGetToken()) {
+                this.$router.push({ name: 'data-page' });
+            } else if (this.error) {
+                this.showErrorMessage(this.error);
+            } else if (this.authCode) {
+                this.getAccessToken(this.authCode, this.state);
+            } else {
+                throw new Error('Either `authCode` or `error` should be populated.');
             }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          });
-      },
-      showErrorMessage(error) {
-        this.errorMessage = 'Login failed: ' + error;
-      },
-    },
-  };
+        },
+        data() {
+            return {
+                authMessage: null,
+                errorMessage: null,
+            };
+        },
+        methods: {
+            getAccessToken(code, state) {
+                this.authMessage = 'Getting authorization code...';
+                const self = this;
 
-  const SpotifyDataComponent = {
-    template: `
+                axios
+                    .post('auth/token', {
+                        code: code,
+                        state: state,
+                    })
+                    .then(function (response) {
+                        try {
+                            self.authMessage = 'Logged in successfully!';
+                            lsSetToken(response.data);
+                            router.push({ name: 'data-page' });
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+            showErrorMessage(error) {
+                this.errorMessage = 'Login failed: ' + error;
+            },
+        },
+    };
+
+    const SpotifyDataComponent = {
+        template: `
           <div class="card">
           <div class="card-body">
             <h5 class="card-title">Data page</h5>
@@ -236,66 +236,66 @@
           <playlist-data></playlist-data>
           <user-data></user-data>
         `,
-    mounted() {
-      const token = lsGetToken();
+        mounted() {
+            const token = lsGetToken();
 
-      if (!token) {
-        console.log('User does not have a token. Going back to homepage.');
-        this.$router.push({ name: 'homepage' });
-      } else {
-        let dateNow = new Date();
-        let expirationDate = new Date(token.expiration);
+            if (!token) {
+                console.log('User does not have a token. Going back to homepage.');
+                this.$router.push({ name: 'homepage' });
+            } else {
+                let dateNow = new Date();
+                let expirationDate = new Date(token.expiration);
 
-        if (expirationDate > dateNow) {
-          this.userToken = token;
-        } else {
-          this.refreshToken();
-        }
-      }
-    },
-    data() {
-      return {
-        errorMessage: null,
-        userToken: {
-          accessToken: String,
-          refreshToken: String,
-          expiration: Date,
-          scopes: Array,
-        },
-      };
-    },
-    watch: {
-      userToken: function (val) {
-        axios.defaults.headers.common['Authorization'] = `Bearer ${ val.accessToken }`;
-      },
-    },
-    methods: {
-      refreshToken() {
-        const self = this;
-
-        axios
-          .post('auth/token/refresh', {
-            refreshToken: this.userToken.refreshToken,
-          })
-          .then(function (response) {
-            try {
-              self.userToken = response.data;
-              lsSetToken(response.data);
-            } catch (e) {
-              self.errorMessage = e;
+                if (expirationDate > dateNow) {
+                    this.userToken = token;
+                } else {
+                    this.refreshToken();
+                }
             }
-          })
-          .catch(function (error) {
-            this.errorMessage = 'Failed to refresh token';
-            self.errorMessage = error.message;
-            lsRemoveToken();
-          });
-      },
-    },
-  };
+        },
+        data() {
+            return {
+                errorMessage: null,
+                userToken: {
+                    accessToken: String,
+                    refreshToken: String,
+                    expiration: Date,
+                    scopes: Array,
+                },
+            };
+        },
+        watch: {
+            userToken: function (val) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${ val.accessToken }`;
+            },
+        },
+        methods: {
+            refreshToken() {
+                const self = this;
 
-  const CurrentUserComponent = {
-    template: `
+                axios
+                    .post('auth/token/refresh', {
+                        refreshToken: this.userToken.refreshToken,
+                    })
+                    .then(function (response) {
+                        try {
+                            self.userToken = response.data;
+                            lsSetToken(response.data);
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        this.errorMessage = 'Failed to refresh token';
+                        self.errorMessage = error.message;
+                        lsRemoveToken();
+                    });
+            },
+        },
+    };
+
+    const CurrentUserComponent = {
+        template: `
           <div class="card">
           <div class="card-body">
             <h5 class="card-title">
@@ -330,95 +330,95 @@
           </div>
           </div>
         `,
-    mounted() {
-      this.$nextTick(function () {
-        this.updatePlaylists();
-      });
-    },
-    data() {
-      return {
-        userProfile: null,
-        userPlaylists: null,
-        errorMessage: null,
-        successMessage: null,
-        displayObject: null,
-        offset: Number,
-        limit: Number,
-        playlistId: null,
-        isLoading: false,
-      };
-    },
-    methods: {
-      updatePlaylists() {
-        this.isLoading = true;
-        const self = this;
-        let postBody = {};
+        mounted() {
+            this.$nextTick(function () {
+                this.updatePlaylists();
+            });
+        },
+        data() {
+            return {
+                userProfile: null,
+                userPlaylists: null,
+                errorMessage: null,
+                successMessage: null,
+                displayObject: null,
+                offset: Number,
+                limit: Number,
+                playlistId: null,
+                isLoading: false,
+            };
+        },
+        methods: {
+            updatePlaylists() {
+                this.isLoading = true;
+                const self = this;
+                let postBody = {};
 
-        if (this.playlistId) {
-          postBody = {
-            limit: this.limit,
-          };
-        }
+                if (this.playlistId) {
+                    postBody = {
+                        limit: this.limit,
+                    };
+                }
 
-        axios
-          .post('user/playlists/', postBody)
-          .then(function (response) {
-            try {
-              self.displayObject = {};
-              self.successMessage = `Update Playlists call returned: ${ response.status } ${ response.statusText }`;
-              router.push({ name: 'stop-application' });
-            } catch (e) {
-              self.errorMessage = e;
-            }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          })
-          .finally(() => {
-            this.isLoading = false;
-          });
-      },
-      getUserProfile() {
-        const self = this;
+                axios
+                    .post('user/playlists/', postBody)
+                    .then(function (response) {
+                        try {
+                            self.displayObject = {};
+                            self.successMessage = `Update Playlists call returned: ${ response.status } ${ response.statusText }`;
+                            router.push({ name: 'stop-application' });
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    })
+                    .finally(() => {
+                        this.isLoading = false;
+                    });
+            },
+            getUserProfile() {
+                const self = this;
 
-        axios
-          .get('user')
-          .then(function (response) {
-            try {
-              self.userProfile = response.data;
-              self.displayObject = [self.userProfile];
-              self.successMessage = `Get Current User call returned: ${ response.status } ${ response.statusText }`;
-            } catch (e) {
-              self.errorMessage = e.message;
-            }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          });
-      },
-      getUserPlaylists() {
-        const self = this;
+                axios
+                    .get('user')
+                    .then(function (response) {
+                        try {
+                            self.userProfile = response.data;
+                            self.displayObject = [self.userProfile];
+                            self.successMessage = `Get Current User call returned: ${ response.status } ${ response.statusText }`;
+                        } catch (e) {
+                            self.errorMessage = e.message;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+            getUserPlaylists() {
+                const self = this;
 
-        axios
-          .get('user/playlists')
-          .then(function (response) {
-            try {
-              self.userPlaylists = response.data;
-              self.displayObject = self.userPlaylists;
-              self.successMessage = `Get User Playlists call returned: ${ response.status } ${ response.statusText } | Response contained ${ response.data.length } playlists.`;
-            } catch (e) {
-              self.errorMessage = e.message;
-            }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          });
-      },
-    },
-  };
+                axios
+                    .get('user/playlists')
+                    .then(function (response) {
+                        try {
+                            self.userPlaylists = response.data;
+                            self.displayObject = self.userPlaylists;
+                            self.successMessage = `Get User Playlists call returned: ${ response.status } ${ response.statusText } | Response contained ${ response.data.length } playlists.`;
+                        } catch (e) {
+                            self.errorMessage = e.message;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+        },
+    };
 
-  const StopApplicationTemplate = {
-    template: `<div class="card">
+    const StopApplicationTemplate = {
+        template: `<div class="card">
           <div class="card-body">
             <h5 class="card-title d-flex justify-content-center">
               Stop Application
@@ -432,37 +432,37 @@
             </div>
           </div>
           </div>`,
-    mounted() {
-      this.stopApp();
-    },
-    methods: {
-      data() {
-        return {
-          errorMessage: null,
-          statusMessage: null,
+        mounted() {
+            this.stopApp();
+        },
+        methods: {
+            data() {
+                return {
+                    errorMessage: null,
+                    statusMessage: null,
+                }
+            },
+            stopApp() {
+                this.statusMessage = 'Stopping application...';
+
+                axios
+                    .post('user/stop-application/', {})
+                    .then(function (response) {
+                        try {
+                            self.statusMessage = `Stop App call returned: ${ response.status } ${ response.statusText }`;
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
         }
-      },
-      stopApp() {
-        this.statusMessage = 'Stopping application...';
+    };
 
-        axios
-          .post('user/stop-application/', {})
-          .then(function (response) {
-            try {
-              self.statusMessage = `Stop App call returned: ${ response.status } ${ response.statusText }`;
-            } catch (e) {
-              self.errorMessage = e;
-            }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          });
-      },
-    }
-  };
-
-  const PlaylistDataComponent = {
-    template: `
+    const PlaylistDataComponent = {
+        template: `
           <div class="card">
           <div class="card-body">
             <h5 class="card-title">
@@ -488,36 +488,36 @@
           </div>
           </div>
         `,
-    data() {
-      return {
-        playlistId: null,
-        successMessage: null,
-        errorMessage: null,
-      };
-    },
-    methods: {
-      updateTracks() {
-        const self = this;
+        data() {
+            return {
+                playlistId: null,
+                successMessage: null,
+                errorMessage: null,
+            };
+        },
+        methods: {
+            updateTracks() {
+                const self = this;
 
-        axios
-          .post('playlists/tracks/' + this.playlistId, {})
-          .then(function (response) {
-            try {
-              self.successMessage = `Updated playlist ${ self.playlistId }!`;
-            } catch (e) {
-              self.errorMessage = e;
-            }
-          })
-          .catch(function (error) {
-            self.errorMessage = error.message;
-          });
-      },
-    },
-  };
+                axios
+                    .post('playlists/tracks/' + this.playlistId, {})
+                    .then(function (response) {
+                        try {
+                            self.successMessage = `Updated playlist ${ self.playlistId }!`;
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+        },
+    };
 
-  const ObjectPropertiesListComponent = {
-    props: ['obj'],
-    template: `
+    const ObjectPropertiesListComponent = {
+        props: ['obj'],
+        template: `
           <table class="table table-success table-striped table-bordered text-break">
           <tbody>
           <tr v-for="(value,name) in obj">
@@ -531,53 +531,53 @@
           </tbody>
           </table>
         `,
-  };
+    };
 
-  /*
-   * Create Routes and Router
-   */
-  const routes = [
-    {
-      path: '/app/home',
-      name: 'homepage',
-      component: RootComponent,
-      children: [
+    /*
+     * Create Routes and Router
+     */
+    const routes = [
         {
-          path: 'login',
-          name: 'login',
-          component: LoginComponent,
-          props: (route) => ({
-            authCode: route.query.code,
-            error: route.query.error,
-            state: route.query.state,
-          }),
+            path: '/app/home',
+            name: 'homepage',
+            component: RootComponent,
+            children: [
+                {
+                    path: 'login',
+                    name: 'login',
+                    component: LoginComponent,
+                    props: (route) => ({
+                        authCode: route.query.code,
+                        error: route.query.error,
+                        state: route.query.state,
+                    }),
+                },
+            ],
         },
-      ],
-    },
-    { path: '/app', redirect: { name: 'homepage' } },
-    {
-      path: '/app/data',
-      name: 'data-page',
-      component: SpotifyDataComponent,
-      props: true,
-    },
-    { path: '/stop-application', name: 'stop-application', component: StopApplicationTemplate },
-    { path: '/stop', name: 'stop-application', component: StopApplicationTemplate },
-    { path: '/logout', name: 'logout', component: LogoutComponent },
-    { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
-  ];
+        { path: '/app', redirect: { name: 'homepage' } },
+        {
+            path: '/app/data',
+            name: 'data-page',
+            component: SpotifyDataComponent,
+            props: true,
+        },
+        { path: '/stop-application', name: 'stop-application', component: StopApplicationTemplate },
+        { path: '/stop', name: 'stop-application', component: StopApplicationTemplate },
+        { path: '/logout', name: 'logout', component: LogoutComponent },
+        { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
+    ];
 
-  const router = VueRouter.createRouter({ history: VueRouter.createWebHistory(), routes });
+    const router = VueRouter.createRouter({ history: VueRouter.createWebHistory(), routes });
 
-  /*
-   * Create and mount App
-   */
-  const app = Vue.createApp({});
-  app.component('user-data', CurrentUserComponent);
-  app.component('playlist-data', PlaylistDataComponent);
-  app.component('obj-properties-list', ObjectPropertiesListComponent);
-  app.use(router);
-  app.mount('#app');
+    /*
+     * Create and mount App
+     */
+    const app = Vue.createApp({});
+    app.component('user-data', CurrentUserComponent);
+    app.component('playlist-data', PlaylistDataComponent);
+    app.component('obj-properties-list', ObjectPropertiesListComponent);
+    app.use(router);
+    app.mount('#app');
 </script>
 
 </html>
