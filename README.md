@@ -72,7 +72,7 @@ EOF
   - [ ] Add `.devcontainer`
   - [ ] Documentation/visualisations
   - [ ] Use Humanizer
-  - [ ] (maybe) put in Docker container
+  - [x] put in Docker container
   - [x] Automatically open URL, not Swagger Page
   - [x] `UrlUtility`: add case for WSL
 - SQLite
@@ -82,6 +82,9 @@ EOF
   - [ ] Schema visualisation
   - [ ] (maybe) Simplify Playlist tables (add all relevent data in table? - need to look into this)
 - CI/CD
-  - [ ] Add CI/CD pipline with GitHub Actions
-  - [ ] Build/format/test
+  - [x] Add CI/CD pipline with GitHub Actions
+  - [x] Build/format/test
+  - [x] Test
+  - [ ] dotnet format
   - [ ] Test coverage
+  - [ ] Add badges to README
