@@ -1,0 +1,16 @@
+services:
+  api:
+    build: .
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=https://+;http://+
+      - ASPNETCORE_HTTPS_PORT=5001
+      - ASPNETCORE_Kestrel__Certificates__Default__Password=blah-blah-blah
+      - ASPNETCORE_Kestrel__Certificates__Default__Path=/https/aspnetapp.pfx
+    ports:
+      - "5000:80"
+      - "5001:443"
+    volumes:
+      - ~/.microsoft/usersecrets/:/.microsoft/usersecrets:ro
+      - ~/.aspnet/https:/https:ro
+      - /home/ccb012100/playlister.db:/home/ccb012100/playlister.db:rw
