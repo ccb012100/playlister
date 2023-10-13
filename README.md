@@ -56,25 +56,34 @@ EOF
 ## TODO
 
 - [x] Move this file to the top level directory
-- UI
-  - [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
-- .NET
-  - Tests
-    - [ ] Integration
-    - [ ] Unit
-    - [ ] Property-based
-  - [ ] Add Polly Policy to attempt re-auths for 401s
-  - Spotify Access Token
-    - [ ] Validate that the `state` value matches the original value sent to user
-    - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
-  - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
-  - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
-  - [ ] Add `.devcontainer`
-  - [ ] Documentation/visualisations
-  - [ ] Use Humanizer
-  - [x] put in Docker container
-  - [x] Automatically open URL, not Swagger Page
-  - [x] `UrlUtility`: add case for WSL
+
+### Docker
+
+- [ ] FIXME: set secrets in app
+- [ ] FIXME: Open web browser when running from Docker container
+
+### UI
+
+- [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML)
+
+### .NET
+
+- Tests
+  - [ ] Integration
+  - [ ] Unit
+  - [ ] Property-based
+- [ ] Add Polly Policy to attempt re-auths for 401s
+- Spotify Access Token
+  - [ ] Validate that the `state` value matches the original value sent to user
+  - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+- [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
+- [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
+- [ ] Add `.devcontainer`
+- [ ] Documentation/visualisations
+- [ ] Use Humanizer
+- [x] put in Docker container
+- [x] Automatically open URL, not Swagger Page
+- [x] `UrlUtility`: add case for WSL
 - SQLite
   - [ ] Add a stored proc to cull the SQL tables
     - artists/albums/songs that have been removed from playlists and have no references

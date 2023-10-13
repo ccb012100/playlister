@@ -13,7 +13,6 @@ ClientApp/node_modules/
 
 playlister.sqlite
 playlister.db
-**/Logs/
-**/*.log
+Logs/
 
 *secrets.json
