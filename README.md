@@ -59,7 +59,7 @@ EOF
 
 ### Docker
 
-- [ ] FIXME: set secrets in app
+- [x] FIXME: set secrets in app
 - [ ] FIXME: Open web browser when running from Docker container
 
 ### UI
