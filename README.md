@@ -72,6 +72,7 @@ EOF
   - [ ] Integration
   - [ ] Unit
   - [ ] Property-based
+  - [ ] Codecov
 - [ ] Add Polly Policy to attempt re-auths for 401s
 - Spotify Access Token
   - [ ] Validate that the `state` value matches the original value sent to user
