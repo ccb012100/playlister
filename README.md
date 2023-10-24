@@ -68,6 +68,7 @@ EOF
 
 ### .NET
 
+- [ ] Remove `Database::ConnectionString` from `appsettings.json` and use Dotnet Secret Manager to set it
 - Tests
   - [ ] Integration
   - [ ] Unit
