@@ -1,5 +1,5 @@
 [package]
-name = "playlist-util-rs"
+name = "playlist-util"
 version = "0.1.0"
 edition = "2021"
 
