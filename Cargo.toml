@@ -2,8 +2,11 @@
 name = "playlist-util"
 version = "0.1.0"
 edition = "2021"
+description = "Used to search and sync playlists generated from <https://github.com/ccb012100/playlist-search> and <https://github.com/ccb012100/playlister>"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+clap = { version = "4.4.7", features = ["derive", "wrap_help"] }
 nu-ansi-term = "0.49.0"
+regex = "1.10.2"
