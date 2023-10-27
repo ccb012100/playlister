@@ -1,2 +1,2 @@
-# playlist-util-rs
-Rust utility for working with my Spotify album playlists
+# playlist-util
+CLI utility for working with my Spotify album playlists
