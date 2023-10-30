@@ -1,5 +1,6 @@
 use nu_ansi_term::{AnsiString, Color, AnsiStrings};
 
+#[allow(dead_code)]
 pub(crate) fn success_output(message: &str) {
     let message: &[AnsiString] = &[Color::Green.bold().paint(message)];
 
