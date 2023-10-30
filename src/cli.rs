@@ -1,4 +1,4 @@
-use clap::{arg, Parser, Subcommand};
+use clap::{arg, Parser, Subcommand, ValueEnum};
 use regex::Regex;
 #[derive(Parser)]
 #[command(about, version, arg_required_else_help = true)]
@@ -19,9 +19,11 @@ pub(crate) struct Cli {
 pub(crate) enum Commands {
     /// Search playlists
     Search {
-        /// Field to sort on; default is "Artist"
+        /// Field to sort on
         #[arg(short, long, value_name = "FIELD")]
-        sort: Option<String>,
+        #[arg(default_value_t = SortFields::Artists)]
+        #[clap(value_enum)]
+        sort: SortFields,
 
         /// Include Playlist names in search results
         #[arg(short, long)]
@@ -32,14 +34,13 @@ pub(crate) enum Commands {
     Sync {},
 }
 
-// TODO: how to set this as the allowed values for "sort"?
-// #[derive(Clone,Copy)]
-// enum SortFields {
-//     Artists,
-//     Album,
-//     Released,
-//     Added,
-// }
+#[derive(ValueEnum, Clone, Copy)]
+pub(crate) enum SortFields {
+    Artists,
+    Album,
+    Released,
+    Added,
+}
 
 pub(crate) fn db_is_valid(filename: &str) -> bool {
     Regex::new(r"(?im).+\.(?:sql|sqlite|sqlite3|db)$")
