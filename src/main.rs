@@ -1,14 +1,11 @@
 use std::process::exit;
 
 use clap::Parser;
-use cli::{file_name_is_valid, Cli, Commands};
+use cli::{get_path, Cli, Commands};
 use output::error_output;
 use search::SearchQuery;
 
-use crate::{
-    output::info_output,
-    search::SearchType,
-};
+use crate::{output::info_output, search::SearchType};
 
 mod cli;
 mod output;
@@ -17,10 +14,16 @@ mod search;
 fn main() {
     let cli = Cli::parse();
 
-    if !file_name_is_valid(&cli.file_name, cli.file_type) {
-        error_output(&format!("Filename {} is not a valid file.", cli.file_name));
-        exit(0)
-    }
+    let path = match get_path(&cli.file_name, cli.file_type) {
+        Ok(p) => p,
+        Err(err) => {
+            error_output(&format!(
+                "Unable to construct a Path from \"{}\":\n- {}",
+                cli.file_name, err
+            ));
+            exit(0)
+        }
+    };
 
     match &cli.command {
         Commands::Search {
@@ -36,7 +39,7 @@ fn main() {
                     cli::FileType::Db => SearchType::Db,
                     cli::FileType::Tsv => SearchType::Tsv,
                 },
-                file_name: cli.file_name.to_string(),
+                file: path,
                 include_playlist_name: *include_playlist_name,
                 sort: search::SortFields::from(*sort),
             };

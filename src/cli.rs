@@ -1,3 +1,8 @@
+use std::{
+    error::Error,
+    path::{Path, PathBuf},
+};
+
 use crate::search;
 use clap::{arg, Parser, Subcommand, ValueEnum};
 use regex::Regex;
@@ -63,13 +68,25 @@ impl From<SortFields> for search::SortFields {
     }
 }
 
-pub(crate) fn file_name_is_valid(file_name: &str, file_type: FileType) -> bool {
+pub(crate) fn get_path(
+    file_name: &str,
+    file_type: FileType,
+) -> Result<PathBuf, Box<dyn Error>> {
     let pattern = match file_type {
         FileType::Db => r"(?im).+\.(?:sql|sqlite|sqlite3|db)$",
         FileType::Tsv => r"(?im).+\.(?:tsv)$",
     };
 
-    Regex::new(pattern).unwrap().is_match(file_name)
+    // check if file name is valid
+    if !Regex::new(pattern)?.is_match(file_name) {
+        Err(format!("File name format \"{}\" is invalid.", { file_name }).into())
+    } else {
+        // check file exists
+        let exists = Path::new(file_name).try_exists()?;
 
-    // TODO: Verify file exists
+        match exists {
+            true => Ok(PathBuf::from(file_name)),
+            false => Err(format!("File {} does not exist", file_name).into()),
+        }
+    }
 }

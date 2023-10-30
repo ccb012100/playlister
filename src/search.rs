@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use crate::output::info_output;
 
 #[derive(Clone, Copy, Debug)]
@@ -22,7 +24,7 @@ pub(crate) struct SearchResults {}
 pub(crate) struct SearchQuery {
     pub term: String,
     pub search_type: SearchType,
-    pub file_name: String,
+    pub file: PathBuf,
     pub include_playlist_name: bool,
     pub sort: SortFields,
 }
