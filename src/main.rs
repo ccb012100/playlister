@@ -2,10 +2,9 @@ use std::process::exit;
 
 use clap::Parser;
 use cli::{get_path, Cli, Commands};
-use output::error_output;
 use search::SearchQuery;
 
-use crate::{output::info_output, search::SearchType};
+use crate::{output::Output, search::SearchType};
 
 mod cli;
 mod output;
@@ -17,7 +16,7 @@ fn main() {
     let path = match get_path(&cli.file_name, cli.file_type) {
         Ok(p) => p,
         Err(err) => {
-            error_output(&format!(
+            Output::error(&format!(
                 "Unable to construct a Path from \"{}\":\n- {}",
                 cli.file_name, err
             ));
@@ -30,11 +29,18 @@ fn main() {
             sort,
             include_playlist_name,
             term,
+            no_format,
         } => {
-            info_output("Searching...");
+            let search_term = term.join(" ");
+
+            Output::info(&format!("Searching for '{}'...", search_term));
+
+            if !matches!(sort, cli::SortFields::Artists) {
+                todo!()
+            }
 
             let query: SearchQuery = SearchQuery {
-                term: term.join(" "),
+                search_term: term.join(" "),
                 search_type: match &cli.file_type {
                     cli::FileType::Db => SearchType::Db,
                     cli::FileType::Tsv => SearchType::Tsv,
@@ -44,18 +50,23 @@ fn main() {
                 sort: search::SortFields::from(*sort),
             };
 
-            info_output(&format!("Search query: {:#?}", query));
+            Output::info(&format!("Search query: {:#?}", query));
 
             match search::search(&query) {
-                Ok(_results) => todo!(),
+                Ok(results) => match no_format {
+                    true => Output::search_results(results),
+                    false => Output::search_results_table(results),
+                },
                 Err(_err) => {
                     todo!()
                 }
             }
         }
         Commands::Sync {} => {
-            info_output("Syncing...");
+            Output::info("Syncing...");
             todo!()
         }
     }
+
+    Output::success("Done!")
 }
