@@ -1,7 +1,4 @@
-use std::{
-    error::Error,
-    path::{Path, PathBuf},
-};
+use std::{error::Error, path::PathBuf};
 
 use crate::search;
 use clap::{arg, Parser, Subcommand, ValueEnum};
@@ -39,8 +36,13 @@ pub(crate) enum Commands {
 
         /// Include Playlist names in search results
         #[arg(short, long)]
-        #[arg(default_value_t = false)]
+        #[arg(default_value_t = true)]
         include_playlist_name: bool,
+
+        /// Don't format output
+        #[arg(short, long)]
+        #[arg(default_value_t = false)]
+        no_format: bool,
 
         /// Search term
         term: Vec<String>,
@@ -53,7 +55,7 @@ pub(crate) enum Commands {
 pub(crate) enum SortFields {
     Artists,
     Album,
-    Released,
+    Year,
     Added,
 }
 
@@ -62,16 +64,13 @@ impl From<SortFields> for search::SortFields {
         match value {
             SortFields::Artists => search::SortFields::Artists,
             SortFields::Album => search::SortFields::Album,
-            SortFields::Released => search::SortFields::Released,
+            SortFields::Year => search::SortFields::Released,
             SortFields::Added => search::SortFields::Added,
         }
     }
 }
 
-pub(crate) fn get_path(
-    file_name: &str,
-    file_type: FileType,
-) -> Result<PathBuf, Box<dyn Error>> {
+pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf, Box<dyn Error>> {
     let pattern = match file_type {
         FileType::Db => r"(?im).+\.(?:sql|sqlite|sqlite3|db)$",
         FileType::Tsv => r"(?im).+\.(?:tsv)$",
@@ -81,11 +80,11 @@ pub(crate) fn get_path(
     if !Regex::new(pattern)?.is_match(file_name) {
         Err(format!("File name format \"{}\" is invalid.", { file_name }).into())
     } else {
-        // check file exists
-        let exists = Path::new(file_name).try_exists()?;
+        // check if file is exists
+        let path = PathBuf::from(file_name);
 
-        match exists {
-            true => Ok(PathBuf::from(file_name)),
+        match path.try_exists()? {
+            true => Ok(path),
             false => Err(format!("File {} does not exist", file_name).into()),
         }
     }
