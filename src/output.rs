@@ -44,14 +44,20 @@ impl Output {
             .load_preset(ASCII_BORDERS_ONLY_CONDENSED)
             .set_content_arrangement(ContentArrangement::DynamicFullWidth);
 
-        for result in &search_results.results {
-            let fields = result.split('\t').collect::<Vec<&str>>();
+        for album in &search_results.results {
+            let tracks = album.tracks.to_string();
+            let mut display_fields = vec![
+                &album.artists,
+                &album.album,
+                &tracks,
+                &album.year_released,
+                &album.date_added,
+            ];
 
-            let display_fields: &[&str] = if search_results.include_playlist_name {
-                &fields
-            } else {
-                &fields[..=4]
+            if search_results.include_playlist_name {
+                display_fields.push(&album.playlist)
             };
+
             table.add_row(display_fields);
         }
 
@@ -74,7 +80,7 @@ impl Output {
         match search_results.include_playlist_name {
             true => {
                 for result in &search_results.results {
-                    println!("{}", result);
+                    println!("{}", result.to_tsv(search_results.include_playlist_name));
                 }
             }
             false => todo!(),
