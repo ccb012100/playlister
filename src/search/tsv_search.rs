@@ -1,12 +1,10 @@
 use super::SearchQuery;
-use super::SearchResults;
+use super::{album::Album, SearchResults};
 use std::{
     fs::File,
     io::{self, BufRead, Error},
     str::FromStr,
 };
-
-use super::Album;
 
 pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults, Error> {
     let file = File::open(&query.file)?;
@@ -31,8 +29,9 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults, Error> {
         };
     }
 
+
     Ok(SearchResults {
-        results,
+        results: Album::sort_by_field(results, query.sort),
         search_term: query.search_term.clone(),
         include_playlist_name: query.include_playlist_name,
         sort: query.sort,

@@ -1,8 +1,7 @@
+use crate::search::SearchResults;
 use comfy_table::presets::ASCII_BORDERS_ONLY_CONDENSED;
 use comfy_table::*;
 use nu_ansi_term::{AnsiString, AnsiStrings, Color};
-
-use crate::search::SearchResults;
 
 pub(crate) struct Output();
 
