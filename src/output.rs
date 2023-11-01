@@ -33,49 +33,49 @@ impl Output {
         Self::print_message(message);
     }
 
-    pub(crate) fn search_results_table(search_results: SearchResults) {
-        let summary = format!(
-            "Found {} results for '{}', sort: {:?}",
-            search_results.results.len(),
-            search_results.search_term,
-            search_results.sort
-        );
-
-        match search_results.include_playlist_name {
-            true => {
-                let mut table = Table::new();
-                table
-                    .load_preset(ASCII_BORDERS_ONLY_CONDENSED)
-                    .set_content_arrangement(ContentArrangement::DynamicFullWidth);
-
-                search_results.results.into_iter().for_each(|result| {
-                    table.add_row(result.split('\t').collect::<Vec<&str>>());
-                });
-
-                // Right-align Tracks field
-                let column = table.column_mut(2).expect("Table has at least 4 columns");
-                column.set_cell_alignment(CellAlignment::Right);
-
-                println!("{table}");
-                Output::success(&summary);
-            }
-            false => todo!(),
+    pub(crate) fn search_results_table(search_results: &SearchResults) {
+        if search_results.results.is_empty() {
+            Self::no_results(search_results);
+            return;
         }
+
+        let mut table = Table::new();
+        table
+            .load_preset(ASCII_BORDERS_ONLY_CONDENSED)
+            .set_content_arrangement(ContentArrangement::DynamicFullWidth);
+
+        for result in &search_results.results {
+            let fields = result.split('\t').collect::<Vec<&str>>();
+
+            let display_fields: &[&str] = if search_results.include_playlist_name {
+                &fields
+            } else {
+                &fields[..=4]
+            };
+            table.add_row(display_fields);
+        }
+
+        // Right-align Tracks field
+        let column = table.column_mut(2).expect("Table has at least 4 columns");
+        column.set_cell_alignment(CellAlignment::Right);
+
+        println!("{table}");
+        Self::search_summary(search_results);
     }
 
-    pub(crate) fn search_results(search_results: SearchResults) {
-        Self::success(&format!(
-            "Found {} results for '{}', sort: {:?}",
-            search_results.results.len(),
-            search_results.search_term,
-            search_results.sort
-        ));
+    pub(crate) fn search_results(search_results: &SearchResults) {
+        if search_results.results.is_empty() {
+            Self::no_results(search_results);
+            return;
+        }
+
+        Self::search_summary(search_results);
 
         match search_results.include_playlist_name {
             true => {
-                search_results.results.into_iter().for_each(|result| {
+                for result in &search_results.results {
                     println!("{}", result);
-                });
+                }
             }
             false => todo!(),
         }
@@ -83,5 +83,36 @@ impl Output {
 
     fn print_message(message: &[AnsiString]) {
         println!("{}", AnsiStrings(message));
+    }
+
+    fn no_results(search_results: &SearchResults) {
+        assert!(search_results.results.is_empty());
+
+        let strings: &[AnsiString] = &[
+            Color::Fixed(208).paint("\t--- No results found for "),
+            Color::Fixed(205).bold().paint(&search_results.search_term),
+            Color::Fixed(208).paint(" ---\n"),
+        ];
+
+        print!("{}", AnsiStrings(strings));
+    }
+
+    fn search_summary(search_results: &SearchResults) {
+        assert!(!search_results.results.is_empty());
+
+        let strings: &[AnsiString] = &[
+            Color::Default.paint("\t--- "),
+            Color::Fixed(12)
+                .bold()
+                .paint(search_results.results.len().to_string()),
+            Color::Default.paint(" results found for "),
+            Color::Fixed(205).bold().paint(&search_results.search_term),
+            Color::Default.paint(", sort: "),
+            Color::Fixed(99)
+                .bold()
+                .paint(format!("{:?}", search_results.sort)),
+            Color::Default.paint(" ---\n"),
+        ];
+        print!("{}", AnsiStrings(strings));
     }
 }
