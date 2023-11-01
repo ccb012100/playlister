@@ -1,8 +1,7 @@
-use std::{error::Error, path::PathBuf};
-
 use crate::search;
 use clap::{arg, Parser, Subcommand, ValueEnum};
 use regex::Regex;
+use std::{error::Error, path::PathBuf};
 
 #[derive(Parser)]
 #[command(about, version, arg_required_else_help = true)]
@@ -64,7 +63,7 @@ impl From<SortFields> for search::SortFields {
         match value {
             SortFields::Artists => search::SortFields::Artists,
             SortFields::Album => search::SortFields::Album,
-            SortFields::Year => search::SortFields::Released,
+            SortFields::Year => search::SortFields::Year,
             SortFields::Added => search::SortFields::Added,
         }
     }

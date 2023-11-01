@@ -1,10 +1,8 @@
-use std::process::exit;
-
+use crate::{output::Output, search::SearchType};
 use clap::Parser;
 use cli::{get_path, Cli, Commands};
 use search::SearchQuery;
-
-use crate::{output::Output, search::SearchType};
+use std::process::exit;
 
 mod cli;
 mod output;
@@ -34,10 +32,6 @@ fn main() {
             let search_term = term.join(" ");
 
             Output::info(&format!("Searching for '{}'...", search_term));
-
-            if !matches!(sort, cli::SortFields::Artists) {
-                todo!()
-            }
 
             let query: SearchQuery = SearchQuery {
                 search_term: term.join(" "),

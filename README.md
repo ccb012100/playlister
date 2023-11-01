@@ -4,4 +4,5 @@ CLI utility for Syncing and Searching my Spotify album playlists created from [P
 
 ## TODO
 
+- Return Error if search term is empty
 - Use [unicase](https://github.com/seanmonstar/unicase/pull/52) once [this issue](https://github.com/seanmonstar/unicase/pull/52) to add `UniCase::contains()` is completed.
