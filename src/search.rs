@@ -1,11 +1,15 @@
 mod db_search;
 mod tsv_search;
 
-use std::{error::Error, path::PathBuf};
+use std::{
+    io::{Error, ErrorKind},
+    path::PathBuf,
+    str::FromStr,
+};
 
 use crate::output::Output;
 
-pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults, Box<dyn Error>> {
+pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults, Error> {
     match query.search_type {
         SearchType::Db => {
             Output::info("Searching DB...");
@@ -43,7 +47,7 @@ pub(crate) enum SortFields {
 
 #[derive(Debug, Clone)]
 pub(crate) struct SearchResults {
-    pub results: Vec<String>,
+    pub results: Vec<Album>,
     pub include_playlist_name: bool,
     pub sort: SortFields,
     pub search_term: String,
@@ -57,7 +61,7 @@ pub(crate) struct Album {
     // row[1]
     pub album: String,
     // row[2]
-    pub tracks: u8,
+    pub tracks: String,
     // row[3]
     pub year_released: String,
     // row[4]
@@ -66,24 +70,46 @@ pub(crate) struct Album {
     pub playlist: String,
 }
 
-impl Album {
-    fn is_valid(value: &str) -> bool {
-        let fields: Vec<&str> = value.split('\t').collect();
+impl FromStr for Album {
+    type Err = Error;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        let fields: Vec<&str> = s.split('\t').collect();
 
         if fields.len() != 6 {
-            Output::error(&format!(
-                "Value \"{}\" can not be split into 6 tab-separated values.",
-                value
+            return Err(Error::new(
+                ErrorKind::InvalidData,
+                format!("Value {} must contain 6 tab-separated fields", s),
             ));
-            return false;
         }
 
-        match str::parse::<u8>(fields[2]) {
-            Ok(_) => true,
-            Err(_) => {
-                Output::error(&format!("Value \"{}\" has an invalid track count.", value));
-                false
-            }
+        Ok(Album {
+            artists: fields[0].to_owned(),
+            album: fields[1].to_owned(),
+            tracks: fields[2].to_owned(),
+            year_released: fields[3].to_owned(),
+            date_added: fields[4].to_owned(),
+            playlist: fields[5].to_owned(),
+        })
+    }
+}
+
+impl Album {
+    pub(crate) fn to_tsv(&self, include_playlist_name: bool) -> String {
+        match include_playlist_name {
+            true => format!(
+                "{}\t{}\t{}\t{}\t{}\t{}",
+                self.artists,
+                self.album,
+                self.tracks,
+                self.year_released,
+                self.date_added,
+                self.playlist
+            ),
+            false => format!(
+                "{}\t{}\t{}\t{}\t{}",
+                self.artists, self.album, self.tracks, self.year_released, self.date_added,
+            ),
         }
     }
 }

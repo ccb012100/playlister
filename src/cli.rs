@@ -36,7 +36,7 @@ pub(crate) enum Commands {
 
         /// Include Playlist names in search results
         #[arg(short, long)]
-        #[arg(default_value_t = true)]
+        #[arg(default_value_t = false)]
         include_playlist_name: bool,
 
         /// Don't format output

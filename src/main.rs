@@ -54,8 +54,8 @@ fn main() {
 
             match search::search(&query) {
                 Ok(results) => match no_format {
-                    true => Output::search_results(results),
-                    false => Output::search_results_table(results),
+                    true => Output::search_results(&results),
+                    false => Output::search_results_table(&results),
                 },
                 Err(_err) => {
                     todo!()
