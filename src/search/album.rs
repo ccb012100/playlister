@@ -1,8 +1,7 @@
 use crate::search::SortFields;
-use std::{
-    io::{Error, ErrorKind},
-    str::FromStr,
-};
+use anyhow::anyhow;
+use anyhow::Result;
+use std::str::FromStr;
 
 #[derive(Debug, Clone)]
 pub(crate) struct Album {
@@ -21,16 +20,11 @@ pub(crate) struct Album {
 }
 
 impl FromStr for Album {
-    type Err = Error;
-
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
+    fn from_str(s: &str) -> Result<Self> {
         let fields: Vec<&str> = s.split('\t').collect();
 
         if fields.len() != 6 {
-            return Err(Error::new(
-                ErrorKind::InvalidData,
-                format!("Value {} must contain 6 tab-separated fields", s),
-            ));
+            return Err(anyhow!(format!("Value {} must contain 6 tab-separated fields", s)));
         }
 
         Ok(Album {
@@ -42,6 +36,8 @@ impl FromStr for Album {
             playlist: fields[5].to_owned(),
         })
     }
+
+    type Err = anyhow::Error;
 }
 
 impl Album {
