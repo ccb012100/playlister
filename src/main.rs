@@ -61,6 +61,8 @@ fn main() -> core::result::Result<ExitCode, Error> {
         }
     }
 
-    Output::success("Done!");
+    if cli.verbose {
+        Output::success("Done!");
+    }
     Ok(ExitCode::SUCCESS)
 }
