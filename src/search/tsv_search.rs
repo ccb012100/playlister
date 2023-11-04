@@ -23,6 +23,7 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
                 &query.file.file_name().unwrap().to_str().unwrap()
             )
         })?;
+
         // if the text contains the search term, parse it and add it to the matches
         if row.to_uppercase().contains(query_upper) {
             let album: Album = Album::from_str(&row)

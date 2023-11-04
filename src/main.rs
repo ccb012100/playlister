@@ -1,9 +1,9 @@
 use crate::{output::Output, search::SearchType};
+use anyhow::Error;
 use clap::Parser;
 use cli::{get_path, Cli, Commands};
 use search::SearchQuery;
-use std::{process::ExitCode, path::PathBuf};
-use anyhow::Error;
+use std::{path::PathBuf, process::ExitCode};
 
 mod cli;
 mod output;
@@ -23,7 +23,9 @@ fn main() -> core::result::Result<ExitCode, Error> {
         } => {
             let search_term = term.join(" ");
 
-            Output::info(&format!("Searching for '{}'...", search_term));
+            if cli.verbose {
+                Output::info(&format!("Searching for '{}'...", search_term));
+            }
 
             let query: SearchQuery = SearchQuery {
                 search_term: term.join(" "),
@@ -34,9 +36,12 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 file: path,
                 include_playlist_name: *include_playlist_name,
                 sort: search::SortFields::from(*sort),
+                verbose: cli.verbose,
             };
 
-            Output::info(&format!("Search query: {:#?}", query));
+            if cli.verbose {
+                Output::info(&format!("Search query: {:#?}", query));
+            }
 
             match search::search(&query) {
                 Ok(results) => match no_format {
@@ -49,7 +54,9 @@ fn main() -> core::result::Result<ExitCode, Error> {
             }
         }
         Commands::Sync {} => {
-            Output::info("Syncing...");
+            if cli.verbose {
+                Output::info("Syncing...");
+            }
             todo!()
         }
     }

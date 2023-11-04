@@ -9,13 +9,20 @@ use anyhow::Result;
 use std::path::PathBuf;
 
 pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
+    if query.verbose {
+        Output::info(&format!("Searching {:#?}", query));
+    }
     match query.search_type {
         SearchType::Db => {
-            Output::info("Searching DB...");
+            if query.verbose {
+                Output::info("Searching DB...");
+            }
             db_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
         SearchType::Tsv => {
-            Output::info("Searching TSV...");
+            if query.verbose {
+                Output::info("Searching TSV...");
+            }
             tsv_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
     }
@@ -23,19 +30,20 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
 
 #[derive(Debug, Clone)]
 pub(crate) struct SearchQuery {
-    pub search_term: String,
-    pub search_type: SearchType,
     pub file: PathBuf,
     pub include_playlist_name: bool,
+    pub search_term: String,
+    pub search_type: SearchType,
     pub sort: SortFields,
+    pub verbose: bool,
 }
 
 #[derive(Debug, Clone)]
 pub(crate) struct SearchResults {
-    pub results: Vec<Album>,
     pub include_playlist_name: bool,
-    pub sort: SortFields,
+    pub results: Vec<Album>,
     pub search_term: String,
+    pub sort: SortFields,
 }
 
 #[derive(Clone, Copy, Debug)]
@@ -46,8 +54,8 @@ pub(crate) enum SearchType {
 
 #[derive(Clone, Copy, Debug)]
 pub(crate) enum SortFields {
-    Artists,
-    Album,
-    Year,
     Added,
+    Album,
+    Artists,
+    Year,
 }

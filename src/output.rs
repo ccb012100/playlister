@@ -1,5 +1,4 @@
 use crate::search::SearchResults;
-use comfy_table::presets::ASCII_BORDERS_ONLY_CONDENSED;
 use comfy_table::*;
 use nu_ansi_term::{AnsiString, AnsiStrings, Color};
 
@@ -9,27 +8,27 @@ impl Output {
     pub(crate) fn success(message: &str) {
         let message: &[AnsiString] = &[Color::Green.bold().paint(message)];
 
-        Self::print_message(message);
+        Self::print_to_stdout(message);
     }
 
     pub(crate) fn info(message: &str) {
         let message: &[AnsiString] = &[Color::Blue.paint(message)];
 
-        Self::print_message(message);
+        Self::print_to_stdout(message);
     }
 
     #[allow(dead_code)]
     pub(crate) fn warn(message: &str) {
         let message: &[AnsiString] = &[Color::Yellow.paint(message)];
 
-        Self::print_message(message);
+        Self::print_to_stdout(message);
     }
 
     pub(crate) fn error(message: &str) {
         let message = format!("Error: {}", message);
         let message: &[AnsiString] = &[Color::Red.bold().paint(message)];
 
-        Self::print_message(message);
+        Self::print_to_stdout(message);
     }
 
     pub(crate) fn search_results_table(search_results: &SearchResults) {
@@ -40,7 +39,7 @@ impl Output {
 
         let mut table = Table::new();
         table
-            .load_preset(ASCII_BORDERS_ONLY_CONDENSED)
+            .load_preset(presets::UTF8_HORIZONTAL_ONLY)
             .set_content_arrangement(ContentArrangement::DynamicFullWidth);
 
         for album in &search_results.results {
@@ -76,18 +75,13 @@ impl Output {
 
         Self::search_summary(search_results);
 
-        match search_results.include_playlist_name {
-            true => {
-                for result in &search_results.results {
-                    println!("{}", result.to_tsv(search_results.include_playlist_name));
-                }
-            }
-            false => todo!(),
-        }
+        search_results.results.iter().for_each(|result| {
+            println!("{}", result.to_tsv(search_results.include_playlist_name));
+        });
     }
 
-    fn print_message(message: &[AnsiString]) {
-        println!("{}", AnsiStrings(message));
+    fn print_to_stdout(message: &[AnsiString]) {
+        eprintln!("{}", AnsiStrings(message));
     }
 
     fn no_results(search_results: &SearchResults) {
