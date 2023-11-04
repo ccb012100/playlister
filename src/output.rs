@@ -24,13 +24,6 @@ impl Output {
         Self::print_to_stdout(message);
     }
 
-    pub(crate) fn error(message: &str) {
-        let message = format!("Error: {}", message);
-        let message: &[AnsiString] = &[Color::Red.bold().paint(message)];
-
-        Self::print_to_stdout(message);
-    }
-
     pub(crate) fn search_results_table(search_results: &SearchResults) {
         if search_results.results.is_empty() {
             Self::no_results(search_results);

@@ -24,23 +24,51 @@ impl FromStr for Album {
         let fields: Vec<&str> = s.split('\t').collect();
 
         if fields.len() != 6 {
-            return Err(anyhow!(format!("Value {} must contain 6 tab-separated fields", s)));
+            return Err(anyhow!(format!(
+                "Value {} must contain 6 tab-separated fields",
+                s
+            )));
         }
 
-        Ok(Album {
-            artists: fields[0].to_owned(),
-            album: fields[1].to_owned(),
-            tracks: fields[2].to_owned(),
-            year_released: fields[3].to_owned(),
-            date_added: fields[4].to_owned(),
-            playlist: fields[5].to_owned(),
-        })
+        let artists = fields[0];
+        let album = fields[1];
+        let tracks = fields[2];
+        let year_released = fields[3];
+        let date_added = fields[4];
+        let playlist = fields[5];
+
+        Ok(Album::new(
+            album,
+            artists,
+            date_added,
+            playlist,
+            tracks,
+            year_released,
+        ))
     }
 
     type Err = anyhow::Error;
 }
 
 impl Album {
+    pub(crate) fn new(
+        album: &str,
+        artists: &str,
+        date_added: &str,
+        playlist: &str,
+        tracks: &str,
+        year_released: &str,
+    ) -> Self {
+        Album {
+            album: album.to_owned(),
+            artists: artists.to_owned(),
+            date_added: date_added.to_owned(),
+            playlist: playlist.to_owned(),
+            tracks: tracks.to_owned(),
+            year_released: year_released.to_owned(),
+        }
+    }
+
     pub(crate) fn to_tsv(&self, include_playlist_name: bool) -> String {
         match include_playlist_name {
             true => format!(

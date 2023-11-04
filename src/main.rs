@@ -16,10 +16,10 @@ fn main() -> core::result::Result<ExitCode, Error> {
 
     match &cli.command {
         Commands::Search {
-            sort,
             include_playlist_name,
-            term,
             no_format,
+            sort,
+            term,
         } => {
             let search_term = term.join(" ");
 
@@ -48,8 +48,8 @@ fn main() -> core::result::Result<ExitCode, Error> {
                     true => Output::search_results(&results),
                     false => Output::search_results_table(&results),
                 },
-                Err(_err) => {
-                    todo!()
+                Err(err) => {
+                    return Err(err);
                 }
             }
         }
