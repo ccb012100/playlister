@@ -1,19 +1,26 @@
 use crate::search;
+use anyhow::{anyhow, Result};
 use clap::{arg, Parser, Subcommand, ValueEnum};
 use regex::Regex;
-use std::{error::Error, path::PathBuf};
+use std::path::PathBuf;
 
 #[derive(Parser)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
+    /// Increase message output; useful for debugging
+    #[arg(long)]
+    #[arg(default_value_t = false)]
+    pub(crate) verbose: bool,
+
+    /// File type to perform action against
     #[clap(value_enum)]
-    pub file_type: FileType,
+    pub(crate) file_type: FileType,
 
     /// File to use
-    pub file_name: String,
+    pub(crate) file_name: String,
 
     #[command(subcommand)]
-    pub command: Commands,
+    pub(crate) command: Commands,
 }
 
 #[derive(ValueEnum, Clone, Copy, Debug)]
@@ -69,22 +76,25 @@ impl From<SortFields> for search::SortFields {
     }
 }
 
-pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf, Box<dyn Error>> {
+pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> {
     let pattern = match file_type {
         FileType::Db => r"(?im).+\.(?:sql|sqlite|sqlite3|db)$",
         FileType::Tsv => r"(?im).+\.(?:tsv)$",
     };
 
-    // check if file name is valid
-    if !Regex::new(pattern)?.is_match(file_name) {
-        Err(format!("File name format \"{}\" is invalid.", { file_name }).into())
-    } else {
-        // check if file is exists
-        let path = PathBuf::from(file_name);
+    // check file name validity
+    match !Regex::new(pattern)?.is_match(file_name) {
+        true => Err(anyhow!(format!("File name format \"{}\" is invalid.", {
+            file_name
+        }))),
+        false => {
+            // check if file is exists
+            let path = PathBuf::from(file_name);
 
-        match path.try_exists()? {
-            true => Ok(path),
-            false => Err(format!("File {} does not exist", file_name).into()),
+            match path.try_exists()? {
+                true => Ok(path),
+                false => Err(anyhow!(format!("File {} does not exist", file_name))),
+            }
         }
     }
 }

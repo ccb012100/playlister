@@ -4,17 +4,19 @@ mod tsv_search;
 
 use self::album::Album;
 use crate::output::Output;
-use std::{io::Error, path::PathBuf};
+use anyhow::Context;
+use anyhow::Result;
+use std::path::PathBuf;
 
-pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults, Error> {
+pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
     match query.search_type {
         SearchType::Db => {
             Output::info("Searching DB...");
-            db_search::search(query)
+            db_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
         SearchType::Tsv => {
             Output::info("Searching TSV...");
-            tsv_search::search(query)
+            tsv_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
     }
 }
