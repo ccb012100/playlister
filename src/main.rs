@@ -2,25 +2,17 @@ use crate::{output::Output, search::SearchType};
 use clap::Parser;
 use cli::{get_path, Cli, Commands};
 use search::SearchQuery;
-use std::process::exit;
+use std::{process::ExitCode, path::PathBuf};
+use anyhow::Error;
 
 mod cli;
 mod output;
 mod search;
 
-fn main() {
+fn main() -> core::result::Result<ExitCode, Error> {
     let cli = Cli::parse();
 
-    let path = match get_path(&cli.file_name, cli.file_type) {
-        Ok(p) => p,
-        Err(err) => {
-            Output::error(&format!(
-                "Unable to construct a Path from \"{}\":\n- {}",
-                cli.file_name, err
-            ));
-            exit(0)
-        }
-    };
+    let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
 
     match &cli.command {
         Commands::Search {
@@ -62,5 +54,6 @@ fn main() {
         }
     }
 
-    Output::success("Done!")
+    Output::success("Done!");
+    Ok(ExitCode::SUCCESS)
 }
