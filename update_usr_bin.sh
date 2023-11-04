@@ -10,6 +10,6 @@ if [[ -f "$util" ]]; then
     rm "$util"
 fi
 
-cp "$scriptdir"/target/release/playlist-util "$util"
+cp -uv "$scriptdir"/target/release/playlist-util "$util"
 
-echo "$util" updated
+echo DONE
