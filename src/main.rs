@@ -16,6 +16,7 @@ fn main() -> core::result::Result<ExitCode, Error> {
 
     match &cli.command {
         Commands::Search {
+            include_header,
             include_playlist_name,
             no_format,
             sort,
@@ -34,6 +35,7 @@ fn main() -> core::result::Result<ExitCode, Error> {
                     cli::FileType::Tsv => SearchType::Tsv,
                 },
                 file: path,
+                include_header: *include_header,
                 include_playlist_name: *include_playlist_name,
                 sort: search::SortFields::from(*sort),
                 verbose: cli.verbose,

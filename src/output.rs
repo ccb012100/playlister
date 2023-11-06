@@ -31,9 +31,20 @@ impl Output {
         }
 
         let mut table = Table::new();
+
         table
             .load_preset(presets::UTF8_HORIZONTAL_ONLY)
             .set_content_arrangement(ContentArrangement::DynamicFullWidth);
+
+        if search_results.include_header {
+            let mut header: Vec<&str> = vec!["Artists", "Album", "Tracks", "Year", "Date Added"];
+
+            if search_results.include_playlist_name{
+                header.push("Playlist");
+            }
+
+            table.set_header(header);
+        }
 
         for album in &search_results.results {
             let tracks = album.tracks.to_string();

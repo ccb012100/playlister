@@ -36,6 +36,7 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
     Ok(SearchResults {
         results: Album::sort_by_field(results, query.sort),
         search_term: query.search_term.clone(),
+        include_header: query.include_header,
         include_playlist_name: query.include_playlist_name,
         sort: query.sort,
     })

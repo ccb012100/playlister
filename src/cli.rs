@@ -41,14 +41,19 @@ pub(crate) enum Commands {
         sort: SortFields,
 
         /// Include Playlist names in search results
-        #[arg(short, long)]
+        #[arg(long)]
         #[arg(default_value_t = false)]
         include_playlist_name: bool,
 
         /// Don't format output
-        #[arg(short, long)]
+        #[arg(long)]
         #[arg(default_value_t = false)]
         no_format: bool,
+
+        /// Include header row in output
+        #[arg(long)]
+        #[arg(default_value_t = false)]
+        include_header: bool,
 
         /// Search term
         term: Vec<String>,

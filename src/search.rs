@@ -31,6 +31,7 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
 #[derive(Debug, Clone)]
 pub(crate) struct SearchQuery {
     pub file: PathBuf,
+    pub include_header: bool,
     pub include_playlist_name: bool,
     pub search_term: String,
     pub search_type: SearchType,
@@ -40,6 +41,7 @@ pub(crate) struct SearchQuery {
 
 #[derive(Debug, Clone)]
 pub(crate) struct SearchResults {
+    pub include_header: bool,
     pub include_playlist_name: bool,
     pub results: Vec<Album>,
     pub search_term: String,
