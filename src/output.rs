@@ -37,13 +37,9 @@ impl Output {
             .set_content_arrangement(ContentArrangement::DynamicFullWidth);
 
         if search_results.include_header {
-            let mut header: Vec<&str> = vec!["Artists", "Album", "Tracks", "Year", "Date Added"];
-
-            if search_results.include_playlist_name{
-                header.push("Playlist");
-            }
-
-            table.set_header(header);
+            table.set_header(Row::from(Self::get_header_fields(
+                search_results.include_playlist_name,
+            )));
         }
 
         for album in &search_results.results {
@@ -78,6 +74,12 @@ impl Output {
         }
 
         Self::search_summary(search_results);
+
+        if search_results.include_header {
+            let fields: Vec<&str> = Self::get_header_fields(search_results.include_playlist_name);
+
+            println!("{}", fields.join("\t"));
+        }
 
         search_results.results.iter().for_each(|result| {
             println!("{}", result.to_tsv(search_results.include_playlist_name));
@@ -117,5 +119,20 @@ impl Output {
             Color::Default.paint(" ---\n"),
         ];
         print!("{}", AnsiStrings(strings));
+    }
+
+    fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
+        if include_playlist {
+            vec![
+                "Artists",
+                "Album",
+                "Tracks",
+                "Year",
+                "Date Added",
+                "Playlist",
+            ]
+        } else {
+            vec!["Artists", "Album", "Tracks", "Year", "Date Added"]
+        }
     }
 }
