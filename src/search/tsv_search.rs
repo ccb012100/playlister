@@ -7,8 +7,8 @@ use std::{
     str::FromStr,
 };
 
-pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
-    let file: File = File::open(&query.file)
+pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
+    let file: File = File::open(query.file)
         .with_context(|| format!("Failed to open File from PathBuf {:#?}", &query.file))?;
 
     let lines = io::BufReader::new(file).lines();
@@ -35,7 +35,7 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
 
     Ok(SearchResults {
         results: Album::sort_by_field(results, query.sort),
-        search_term: query.search_term.clone(),
+        search_term: query.search_term,
         include_header: query.include_header,
         include_playlist_name: query.include_playlist_name,
         sort: query.sort,

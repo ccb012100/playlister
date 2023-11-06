@@ -8,7 +8,7 @@ use anyhow::Context;
 use anyhow::Result;
 use std::path::PathBuf;
 
-pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
+pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
     if query.verbose {
         Output::info(&format!("Searching {:#?}", query));
     }
@@ -29,22 +29,22 @@ pub(crate) fn search(query: &SearchQuery) -> Result<SearchResults> {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct SearchQuery {
-    pub file: PathBuf,
+pub(crate) struct SearchQuery<'a> {
+    pub file: &'a PathBuf,
     pub include_header: bool,
     pub include_playlist_name: bool,
-    pub search_term: String,
+    pub search_term: &'a str,
     pub search_type: SearchType,
     pub sort: SortFields,
     pub verbose: bool,
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct SearchResults {
+pub(crate) struct SearchResults<'a> {
     pub include_header: bool,
     pub include_playlist_name: bool,
     pub results: Vec<Album>,
-    pub search_term: String,
+    pub search_term: &'a str,
     pub sort: SortFields,
 }
 

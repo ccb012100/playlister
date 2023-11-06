@@ -29,12 +29,12 @@ fn main() -> core::result::Result<ExitCode, Error> {
             }
 
             let query: SearchQuery = SearchQuery {
-                search_term: term.join(" "),
+                search_term: &term.join(" "),
                 search_type: match &cli.file_type {
                     cli::FileType::Db => SearchType::Db,
                     cli::FileType::Tsv => SearchType::Tsv,
                 },
-                file: path,
+                file: &path,
                 include_header: *include_header,
                 include_playlist_name: *include_playlist_name,
                 sort: search::SortFields::from(*sort),

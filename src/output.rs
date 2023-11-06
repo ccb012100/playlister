@@ -95,7 +95,7 @@ impl Output {
 
         let strings: &[AnsiString] = &[
             Color::Fixed(208).paint("\t--- No results found for "),
-            Color::Fixed(205).bold().paint(&search_results.search_term),
+            Color::Fixed(205).bold().paint(search_results.search_term),
             Color::Fixed(208).paint(" ---\n"),
         ];
 
@@ -111,7 +111,7 @@ impl Output {
                 .bold()
                 .paint(search_results.results.len().to_string()),
             Color::Default.paint(" results found for "),
-            Color::Fixed(205).bold().paint(&search_results.search_term),
+            Color::Fixed(205).bold().paint(search_results.search_term),
             Color::Default.paint(", sort: "),
             Color::Fixed(99)
                 .bold()
