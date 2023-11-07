@@ -10,6 +10,9 @@ mod output;
 mod search;
 
 fn main() -> core::result::Result<ExitCode, Error> {
+    #[cfg(windows)]
+    ansi_term::enable_ansi_support();
+
     let cli = Cli::parse();
 
     let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
