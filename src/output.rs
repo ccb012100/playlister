@@ -44,16 +44,23 @@ impl Output {
 
         for album in &search_results.results {
             let tracks = album.tracks.to_string();
-            let mut display_fields = vec![
-                &album.artists,
-                &album.album,
-                &tracks,
-                &album.year_released,
-                &album.date_added,
-            ];
 
-            if search_results.include_playlist_name {
-                display_fields.push(&album.playlist)
+            let display_fields = match search_results.include_playlist_name {
+                true => vec![
+                    &album.artists,
+                    &album.album,
+                    &tracks,
+                    &album.year_released,
+                    &album.date_added,
+                    &album.playlist,
+                ],
+                false => vec![
+                    &album.artists,
+                    &album.album,
+                    &tracks,
+                    &album.year_released,
+                    &album.date_added,
+                ],
             };
 
             table.add_row(display_fields);
