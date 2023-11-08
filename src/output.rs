@@ -8,20 +8,20 @@ impl Output {
     pub(crate) fn success(message: &str) {
         let message: &[AnsiString] = &[Color::Green.bold().paint(message)];
 
-        Self::print_to_stdout(message);
+        Self::print_to_stderr(message);
     }
 
     pub(crate) fn info(message: &str) {
         let message: &[AnsiString] = &[Color::Blue.paint(message)];
 
-        Self::print_to_stdout(message);
+        Self::print_to_stderr(message);
     }
 
     #[allow(dead_code)]
     pub(crate) fn warn(message: &str) {
         let message: &[AnsiString] = &[Color::Yellow.paint(message)];
 
-        Self::print_to_stdout(message);
+        Self::print_to_stderr(message);
     }
 
     pub(crate) fn search_results_table(search_results: &SearchResults) {
@@ -93,7 +93,7 @@ impl Output {
         });
     }
 
-    fn print_to_stdout(message: &[AnsiString]) {
+    fn print_to_stderr(message: &[AnsiString]) {
         eprintln!("{}", AnsiStrings(message));
     }
 
