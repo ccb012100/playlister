@@ -11,7 +11,7 @@ mod search;
 
 fn main() -> core::result::Result<ExitCode, Error> {
     #[cfg(windows)]
-    ansi_term::enable_ansi_support();
+    nu_ansi_term::enable_ansi_support();
 
     let cli = Cli::parse();
 
