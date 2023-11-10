@@ -1,7 +1,7 @@
 use crate::{output::Output, search::SearchType};
 use anyhow::Error;
 use clap::Parser;
-use cli::{get_path, Cli, Commands};
+use cli::{get_path, Cli, Subcommands};
 use log::{debug, info, LevelFilter};
 use search::SearchQuery;
 use std::{path::PathBuf, process::ExitCode};
@@ -29,7 +29,7 @@ fn main() -> core::result::Result<ExitCode, Error> {
     let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
 
     match &cli.command {
-        Commands::Search {
+        Subcommands::Search {
             include_header,
             include_playlist_name,
             no_format,
@@ -57,7 +57,7 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 false => Output::search_results_table(&results),
             }
         }
-        Commands::Sync {} => {
+        Subcommands::Sync {} => {
             info!("Syncing...");
             todo!()
         }

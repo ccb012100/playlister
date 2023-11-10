@@ -25,7 +25,7 @@ pub(crate) struct Cli {
     pub(crate) file_name: String,
 
     #[command(subcommand)]
-    pub(crate) command: Commands,
+    pub(crate) command: Subcommands,
 }
 
 #[derive(ValueEnum, Clone, Copy, Debug)]
@@ -36,7 +36,7 @@ pub(crate) enum FileType {
 }
 
 #[derive(Subcommand, Debug)]
-pub(crate) enum Commands {
+pub(crate) enum Subcommands {
     /// Search playlists
     Search {
         /// Field to sort on

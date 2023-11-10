@@ -10,7 +10,7 @@ pub(crate) struct Output();
 impl Output {
     pub(crate) fn search_results_table(search_results: &SearchResults) {
         if search_results.results.is_empty() {
-            Self::no_results(search_results);
+            no_results(search_results);
             return;
         }
 
@@ -21,7 +21,7 @@ impl Output {
             .set_content_arrangement(ContentArrangement::DynamicFullWidth);
 
         if search_results.include_header {
-            table.set_header(Row::from(Self::get_header_fields(
+            table.set_header(Row::from(get_header_fields(
                 search_results.include_playlist_name,
             )));
         }
@@ -55,22 +55,22 @@ impl Output {
         column.set_cell_alignment(CellAlignment::Right);
 
         println!("{table}");
-        Self::search_summary(search_results);
+        search_summary(search_results);
     }
 
     pub(crate) fn search_results(search_results: &SearchResults) {
         debug!("search_results called with {:#?}", search_results);
         if search_results.results.is_empty() {
-            Self::no_results(search_results);
+            no_results(search_results);
             return;
         }
 
-        Self::search_summary(search_results);
+        search_summary(search_results);
 
         if search_results.include_header {
             println!(
                 "{}",
-                Self::get_header_fields(search_results.include_playlist_name).join("\t")
+                get_header_fields(search_results.include_playlist_name).join("\t")
             );
         }
 
@@ -85,55 +85,55 @@ impl Output {
             .unwrap();
         });
     }
+}
 
-    fn no_results(search_results: &SearchResults) {
-        assert!(search_results.results.is_empty());
+fn no_results(search_results: &SearchResults) {
+    assert!(search_results.results.is_empty());
 
-        let strings: &[AnsiString] = &[
-            Color::Fixed(208).paint("\t--- No results found for "),
-            Color::Fixed(205).bold().paint(search_results.search_term),
-            Color::Fixed(208).paint(" ---\n"),
-        ];
+    let strings: &[AnsiString] = &[
+        Color::Fixed(208).paint("\t--- No results found for "),
+        Color::Fixed(205).bold().paint(search_results.search_term),
+        Color::Fixed(208).paint(" ---\n"),
+    ];
 
-        Self::print_stderr(strings)
-    }
+    print_stderr(strings)
+}
 
-    fn search_summary(search_results: &SearchResults) {
-        assert!(!search_results.results.is_empty());
+fn search_summary(search_results: &SearchResults) {
+    assert!(!search_results.results.is_empty());
 
-        let strings: &[AnsiString] = &[
-            Color::Default.paint("\t--- "),
-            Color::Fixed(12)
-                .bold()
-                .paint(search_results.results.len().to_string()),
-            Color::Default.paint(" results found for "),
-            Color::Fixed(205).bold().paint(search_results.search_term),
-            Color::Default.paint(", sort: "),
-            Color::Fixed(99)
-                .bold()
-                .paint(format!("{:?}", search_results.sort)),
-            Color::Default.paint(" ---\n"),
-        ];
+    let strings: &[AnsiString] = &[
+        Color::Default.paint("\t--- "),
+        Color::Fixed(12)
+            .bold()
+            .paint(search_results.results.len().to_string()),
+        Color::Default.paint(" results found for "),
+        Color::Fixed(205).bold().paint(search_results.search_term),
+        Color::Default.paint(", sort: "),
+        Color::Fixed(99)
+            .bold()
+            .paint(format!("{:?}", search_results.sort)),
+        Color::Default.paint(" ---\n"),
+    ];
 
-        Self::print_stderr(strings);
-    }
+    print_stderr(strings);
+}
 
-    fn print_stderr(message: &[AnsiString]) {
-        eprintln!("{}", AnsiStrings(message));
-    }
+fn print_stderr(message: &[AnsiString]) {
+    eprintln!("{}", AnsiStrings(message));
+}
 
-    fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
-        if include_playlist {
-            vec![
-                "Artists",
-                "Album",
-                "Tracks",
-                "Year",
-                "Date Added",
-                "Playlist",
-            ]
-        } else {
-            vec!["Artists", "Album", "Tracks", "Year", "Date Added"]
-        }
+fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
+    if include_playlist {
+        vec![
+            "Artists",
+            "Album",
+            "Tracks",
+            "Year",
+            "Date Added",
+            "Playlist",
+        ]
+    } else {
+        vec!["Artists", "Album", "Tracks", "Year", "Date Added"]
     }
 }
