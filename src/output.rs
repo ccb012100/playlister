@@ -73,8 +73,15 @@ impl Output {
             println!("{}", fields.join("\t"));
         }
 
+        let mut lock = io::stderr().lock();
+
         search_results.results.iter().for_each(|result| {
-            println!("{}", result.to_tsv(search_results.include_playlist_name));
+            writeln!(
+                lock,
+                "{}",
+                result.to_tsv(search_results.include_playlist_name)
+            )
+            .unwrap();
         });
     }
 
