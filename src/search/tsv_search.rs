@@ -1,6 +1,7 @@
 use super::SearchQuery;
 use super::{album::Album, SearchResults};
 use anyhow::{Context, Result};
+use log::debug;
 use std::{
     fs::File,
     io::{self, BufRead},
@@ -8,8 +9,9 @@ use std::{
 };
 
 pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
+    debug!("search called with: {:#?}", query);
     let file: File = File::open(query.file)
-        .with_context(|| format!("Failed to open File from PathBuf {:#?}", &query.file))?;
+        .with_context(|| format!("Failed to open File from PathBuf: {:#?}", &query.file))?;
 
     let lines = io::BufReader::new(file).lines();
 
@@ -32,6 +34,8 @@ pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>
             results.push(album);
         }
     }
+
+    debug!("Found {} matches.", results.len());
 
     Ok(SearchResults {
         results: Album::sort_by_field(results, query.sort),

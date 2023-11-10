@@ -3,26 +3,21 @@ mod db_search;
 mod tsv_search;
 
 use self::album::Album;
-use crate::output::Output;
 use anyhow::Context;
 use anyhow::Result;
+use log::{debug, info};
 use std::path::PathBuf;
 
 pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
-    if query.verbose {
-        Output::info(&format!("Searching {:#?}", query));
-    }
+    debug!("search called with: {:#?}", query);
+
     match query.search_type {
         SearchType::Db => {
-            if query.verbose {
-                Output::info("Searching DB...");
-            }
+            info!("Searching DB...");
             db_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
         SearchType::Tsv => {
-            if query.verbose {
-                Output::info("Searching TSV...");
-            }
+            info!("Searching TSV...");
             tsv_search::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
     }
@@ -36,7 +31,6 @@ pub(crate) struct SearchQuery<'a> {
     pub search_term: &'a str,
     pub search_type: SearchType,
     pub sort: SortFields,
-    pub verbose: bool,
 }
 
 #[derive(Debug, Clone)]

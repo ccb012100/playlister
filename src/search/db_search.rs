@@ -1,13 +1,9 @@
-use std::io::Error;
-
-use crate::output::Output;
-
 use super::{SearchQuery, SearchResults};
+use log::debug;
+use std::io::Error;
 
 #[allow(unused_variables)]
 pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults, Error> {
-    if query.verbose {
-        Output::info(&format!("Searching DB: {:#?}", query));
-    }
+    debug!("Searching DB: {:#?}", query);
     todo!()
 }
