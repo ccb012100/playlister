@@ -1,29 +1,13 @@
+use std::io::{self, Write};
+
 use crate::search::SearchResults;
 use comfy_table::*;
+use log::debug;
 use nu_ansi_term::{AnsiString, AnsiStrings, Color};
 
 pub(crate) struct Output();
 
 impl Output {
-    pub(crate) fn success(message: &str) {
-        let message: &[AnsiString] = &[Color::Green.bold().paint(message)];
-
-        Self::print_to_stderr(message);
-    }
-
-    pub(crate) fn info(message: &str) {
-        let message: &[AnsiString] = &[Color::Blue.paint(message)];
-
-        Self::print_to_stderr(message);
-    }
-
-    #[allow(dead_code)]
-    pub(crate) fn warn(message: &str) {
-        let message: &[AnsiString] = &[Color::Yellow.paint(message)];
-
-        Self::print_to_stderr(message);
-    }
-
     pub(crate) fn search_results_table(search_results: &SearchResults) {
         if search_results.results.is_empty() {
             Self::no_results(search_results);
@@ -75,6 +59,7 @@ impl Output {
     }
 
     pub(crate) fn search_results(search_results: &SearchResults) {
+        debug!("search_results called with {:#?}", search_results);
         if search_results.results.is_empty() {
             Self::no_results(search_results);
             return;

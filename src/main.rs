@@ -2,6 +2,7 @@ use crate::{output::Output, search::SearchType};
 use anyhow::Error;
 use clap::Parser;
 use cli::{get_path, Cli, Commands};
+use log::{debug, info, LevelFilter};
 use search::SearchQuery;
 use std::{path::PathBuf, process::ExitCode};
 
@@ -10,10 +11,20 @@ mod output;
 mod search;
 
 fn main() -> core::result::Result<ExitCode, Error> {
-    #[cfg(windows)]
-    nu_ansi_term::enable_ansi_support();
-
     let cli = Cli::parse();
+
+    let log_level = if cli.vv {
+        LevelFilter::Debug
+    } else if cli.verbose {
+        LevelFilter::Info
+    } else {
+        LevelFilter::Warn
+    };
+
+    env_logger::Builder::new().filter_level(log_level).init();
+
+    debug!("logging initialized");
+    debug!("parsed Cli: {:#?}", &cli);
 
     let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
 
@@ -25,11 +36,7 @@ fn main() -> core::result::Result<ExitCode, Error> {
             sort,
             term,
         } => {
-            let search_term = term.join(" ");
-
-            if cli.verbose {
-                Output::info(&format!("Searching for '{}'...", search_term));
-            }
+            info!("Searching...");
 
             let query: SearchQuery = SearchQuery {
                 search_term: &term.join(" "),
@@ -41,33 +48,21 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 include_header: *include_header,
                 include_playlist_name: *include_playlist_name,
                 sort: search::SortFields::from(*sort),
-                verbose: cli.verbose,
             };
 
-            if cli.verbose {
-                Output::info(&format!("Search query: {:#?}", query));
-            }
+            let results: search::SearchResults<'_> = search::search(&query)?;
 
-            match search::search(&query) {
-                Ok(results) => match no_format {
-                    true => Output::search_results(&results),
-                    false => Output::search_results_table(&results),
-                },
-                Err(err) => {
-                    return Err(err);
-                }
+            match no_format {
+                true => Output::search_results(&results),
+                false => Output::search_results_table(&results),
             }
         }
         Commands::Sync {} => {
-            if cli.verbose {
-                Output::info("Syncing...");
-            }
+            info!("Syncing...");
             todo!()
         }
     }
 
-    if cli.verbose {
-        Output::success("Done!");
-    }
+    info!("Done!");
     Ok(ExitCode::SUCCESS)
 }

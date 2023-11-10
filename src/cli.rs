@@ -1,16 +1,21 @@
 use crate::search;
 use anyhow::{anyhow, Result};
 use clap::{arg, Parser, Subcommand, ValueEnum};
+use log::debug;
 use regex::Regex;
 use std::path::PathBuf;
 
-#[derive(Parser)]
+#[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
-    /// Increase message output; useful for debugging
+    /// Enable INFO logging
     #[arg(long)]
     #[arg(default_value_t = false)]
     pub(crate) verbose: bool,
+
+    /// Enable DEBUG logging
+    #[arg(long)]
+    pub(crate) vv: bool,
 
     /// File type to perform action against
     #[clap(value_enum)]
@@ -30,7 +35,7 @@ pub(crate) enum FileType {
     Tsv,
 }
 
-#[derive(Subcommand)]
+#[derive(Subcommand, Debug)]
 pub(crate) enum Commands {
     /// Search playlists
     Search {
@@ -81,25 +86,33 @@ impl From<SortFields> for search::SortFields {
     }
 }
 
+/// Parse `file_name` and return it as PathBuf
 pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> {
+    debug!("get_path called with: {}, {:#?}", file_name, file_type);
+
     let pattern = match file_type {
         FileType::Db => r"(?im).+\.(?:sql|sqlite|sqlite3|db)$",
         FileType::Tsv => r"(?im).+\.(?:tsv)$",
     };
 
     // check file name validity
-    match !Regex::new(pattern)?.is_match(file_name) {
-        true => Err(anyhow!(format!("File name format \"{}\" is invalid.", {
-            file_name
-        }))),
-        false => {
-            // check if file is exists
+    match Regex::new(pattern)?.is_match(file_name) {
+        true => {
             let path = PathBuf::from(file_name);
 
             match path.try_exists()? {
                 true => Ok(path),
-                false => Err(anyhow!(format!("File {} does not exist", file_name))),
+                false => {
+                    let err_msg = format!("File \"{}\" does not exist", file_name);
+                    debug!("{}", err_msg);
+                    Err(anyhow!(err_msg))
+                }
             }
+        }
+        false => {
+            let err_msg = format!("File name format \"{}\" is invalid.", { file_name });
+            debug!("{}", err_msg);
+            Err(anyhow!(err_msg))
         }
     }
 }
