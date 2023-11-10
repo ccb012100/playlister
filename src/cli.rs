@@ -8,14 +8,14 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
-    /// Enable INFO logging
+    /// Enable DEBUG logging
     #[arg(long)]
     #[arg(default_value_t = false)]
     pub(crate) verbose: bool,
 
-    /// Enable DEBUG logging
+    /// Enable INFO logging
     #[arg(long)]
-    pub(crate) vv: bool,
+    pub(crate) v: bool,
 
     /// File type to perform action against
     #[clap(value_enum)]

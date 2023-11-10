@@ -13,9 +13,9 @@ mod search;
 fn main() -> core::result::Result<ExitCode, Error> {
     let cli = Cli::parse();
 
-    let log_level = if cli.vv {
+    let log_level = if cli.verbose {
         LevelFilter::Debug
-    } else if cli.verbose {
+    } else if cli.v {
         LevelFilter::Info
     } else {
         LevelFilter::Warn
