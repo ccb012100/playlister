@@ -68,9 +68,10 @@ impl Output {
         Self::search_summary(search_results);
 
         if search_results.include_header {
-            let fields: Vec<&str> = Self::get_header_fields(search_results.include_playlist_name);
-
-            println!("{}", fields.join("\t"));
+            println!(
+                "{}",
+                Self::get_header_fields(search_results.include_playlist_name).join("\t")
+            );
         }
 
         let mut lock = io::stderr().lock();
@@ -85,10 +86,6 @@ impl Output {
         });
     }
 
-    fn print_to_stderr(message: &[AnsiString]) {
-        eprintln!("{}", AnsiStrings(message));
-    }
-
     fn no_results(search_results: &SearchResults) {
         assert!(search_results.results.is_empty());
 
@@ -98,7 +95,7 @@ impl Output {
             Color::Fixed(208).paint(" ---\n"),
         ];
 
-        print!("{}", AnsiStrings(strings));
+        Self::print_stderr(strings)
     }
 
     fn search_summary(search_results: &SearchResults) {
@@ -117,7 +114,12 @@ impl Output {
                 .paint(format!("{:?}", search_results.sort)),
             Color::Default.paint(" ---\n"),
         ];
-        print!("{}", AnsiStrings(strings));
+
+        Self::print_stderr(strings);
+    }
+
+    fn print_stderr(message: &[AnsiString]) {
+        eprintln!("{}", AnsiStrings(message));
     }
 
     fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
