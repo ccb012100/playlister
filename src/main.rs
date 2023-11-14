@@ -1,4 +1,4 @@
-use crate::{output::Output, search::SearchType};
+use crate::{cli::LogLevel, output::Output, search::SearchType};
 use anyhow::Error;
 use clap::Parser;
 use cli::{get_path, Cli, Subcommands};
@@ -13,12 +13,13 @@ mod search;
 fn main() -> core::result::Result<ExitCode, Error> {
     let cli = Cli::parse();
 
-    let log_level = if cli.verbose {
-        LevelFilter::Debug
-    } else if cli.v {
-        LevelFilter::Info
-    } else {
-        LevelFilter::Warn
+    let log_level = match cli.verbose {
+        LogLevel::Debug => LevelFilter::Debug,
+        LogLevel::Error => LevelFilter::Error,
+        LogLevel::Info => LevelFilter::Info,
+        LogLevel::Warn => LevelFilter::Warn,
+        LogLevel::Off => LevelFilter::Off,
+        LogLevel::Trace => LevelFilter::Trace,
     };
 
     env_logger::Builder::new().filter_level(log_level).init();

@@ -8,14 +8,12 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
-    /// Enable DEBUG logging
-    #[arg(long)]
-    #[arg(default_value_t = false)]
-    pub(crate) verbose: bool,
-
-    /// Enable INFO logging
-    #[arg(long)]
-    pub(crate) v: bool,
+    /// Set logging level; if only the flag is supplied, it will set LogLevel::Debug
+    #[arg(long, global = true, value_name = "LogLevel")]
+    #[arg(default_value_t = LogLevel::Warn)]
+    #[arg(default_missing_value = "debug", num_args = 0..=1, require_equals = true)]
+    #[clap(value_enum)]
+    pub(crate) verbose: LogLevel,
 
     /// File type to perform action against
     #[clap(value_enum)]
@@ -115,4 +113,20 @@ pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> 
             Err(anyhow!(err_msg))
         }
     }
+}
+
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum LogLevel {
+    /// Info
+    Info,
+    /// Debug
+    Debug,
+    /// Warn
+    Warn,
+    /// Error
+    Error,
+    /// Trace
+    Trace,
+    /// Off
+    Off,
 }
