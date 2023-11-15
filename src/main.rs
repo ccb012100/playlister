@@ -1,4 +1,4 @@
-use crate::{output::Output, search::SearchType};
+use crate::{cli::LogLevel, output::Output, search::SearchType};
 use anyhow::Error;
 use clap::Parser;
 use cli::{get_path, Cli, Subcommands};
@@ -13,12 +13,13 @@ mod search;
 fn main() -> core::result::Result<ExitCode, Error> {
     let cli = Cli::parse();
 
-    let log_level = if cli.verbose {
-        LevelFilter::Debug
-    } else if cli.v {
-        LevelFilter::Info
-    } else {
-        LevelFilter::Warn
+    let log_level = match cli.verbose {
+        LogLevel::Debug => LevelFilter::Debug,
+        LogLevel::Error => LevelFilter::Error,
+        LogLevel::Info => LevelFilter::Info,
+        LogLevel::Warn => LevelFilter::Warn,
+        LogLevel::Off => LevelFilter::Off,
+        LogLevel::Trace => LevelFilter::Trace,
     };
 
     env_logger::Builder::new().filter_level(log_level).init();
@@ -26,21 +27,23 @@ fn main() -> core::result::Result<ExitCode, Error> {
     debug!("logging initialized");
     debug!("parsed Cli: {:#?}", &cli);
 
-    let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
-
     match &cli.command {
         Subcommands::Search {
             include_header,
             include_playlist_name,
+            file_name,
+            file_type,
             no_format,
             sort,
             term,
         } => {
             info!("Searching...");
 
+            let path: PathBuf = get_path(file_name, file_type)?;
+
             let query: SearchQuery = SearchQuery {
                 search_term: &term.join(" "),
-                search_type: match &cli.file_type {
+                search_type: match &file_type {
                     cli::FileType::Db => SearchType::Db,
                     cli::FileType::Tsv => SearchType::Tsv,
                 },
@@ -57,8 +60,13 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 false => Output::search_results_table(&results),
             }
         }
-        Subcommands::Sync {} => {
+        Subcommands::Sync {
+            file_name,
+            file_type,
+        } => {
             info!("Syncing...");
+
+            let _path: PathBuf = get_path(file_name, file_type)?;
             todo!()
         }
     }

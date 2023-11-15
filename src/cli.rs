@@ -8,34 +8,26 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
-    /// Enable DEBUG logging
-    #[arg(long)]
-    #[arg(default_value_t = false)]
-    pub(crate) verbose: bool,
-
-    /// Enable INFO logging
-    #[arg(long)]
-    pub(crate) v: bool,
-
-    /// File type to perform action against
+    /// Set logging level; if only the flag is supplied, it will set LogLevel::Debug
+    #[arg(long, global = true, value_name = "LogLevel")]
+    #[arg(default_value_t = LogLevel::Warn)]
+    #[arg(default_missing_value = "debug", num_args = 0..=1, require_equals = true)]
     #[clap(value_enum)]
-    pub(crate) file_type: FileType,
-
-    /// File to use
-    pub(crate) file_name: String,
+    pub(crate) verbose: LogLevel,
 
     #[command(subcommand)]
     pub(crate) command: Subcommands,
 }
 
-#[derive(ValueEnum, Clone, Copy, Debug)]
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum FileType {
     /// SQLite database file (file name = [*.sql|*.sqlite|*.sqlite3|*.db]).
     Db,
+    /// TSV file (file name = *.tsv)
     Tsv,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Clone)]
 pub(crate) enum Subcommands {
     /// Search playlists
     Search {
@@ -60,14 +52,28 @@ pub(crate) enum Subcommands {
         #[arg(default_value_t = false)]
         include_header: bool,
 
+        /// File type to perform action against
+        #[clap(value_enum)]
+        file_type: FileType,
+
         /// Search term
         term: Vec<String>,
+
+        /// File to use
+        file_name: String,
     },
     /// Sync playlists
-    Sync {},
+    Sync {
+        /// File type to perform action against
+        #[clap(value_enum)]
+        file_type: FileType,
+
+        /// File to use
+        file_name: String,
+    },
 }
 
-#[derive(ValueEnum, Clone, Copy, Debug)]
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum SortFields {
     Artists,
     Album,
@@ -87,7 +93,7 @@ impl From<SortFields> for search::SortFields {
 }
 
 /// Parse `file_name` and return it as PathBuf
-pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> {
+pub(crate) fn get_path(file_name: &str, file_type: &FileType) -> Result<PathBuf> {
     debug!("get_path called with: {}, {:#?}", file_name, file_type);
 
     let pattern = match file_type {
@@ -115,4 +121,20 @@ pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> 
             Err(anyhow!(err_msg))
         }
     }
+}
+
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum LogLevel {
+    /// Info
+    Info,
+    /// Debug
+    Debug,
+    /// Warn
+    Warn,
+    /// Error
+    Error,
+    /// Trace
+    Trace,
+    /// Off
+    Off,
 }
