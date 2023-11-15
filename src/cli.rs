@@ -31,6 +31,16 @@ pub(crate) enum FileType {
 pub(crate) enum Subcommands {
     /// Search playlists
     Search {
+        /// File type to perform action against
+        #[clap(value_enum)]
+        file_type: FileType,
+
+        /// File to use
+        file_name: String,
+
+        /// Search term
+        term: Vec<String>,
+
         /// Field to sort on
         #[arg(short, long, value_name = "FIELD")]
         #[arg(default_value_t = SortFields::Artists)]
@@ -51,16 +61,6 @@ pub(crate) enum Subcommands {
         #[arg(long)]
         #[arg(default_value_t = false)]
         include_header: bool,
-
-        /// File type to perform action against
-        #[clap(value_enum)]
-        file_type: FileType,
-
-        /// Search term
-        term: Vec<String>,
-
-        /// File to use
-        file_name: String,
     },
     /// Sync playlists
     Sync {
