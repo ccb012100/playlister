@@ -27,21 +27,23 @@ fn main() -> core::result::Result<ExitCode, Error> {
     debug!("logging initialized");
     debug!("parsed Cli: {:#?}", &cli);
 
-    let path: PathBuf = get_path(&cli.file_name, cli.file_type)?;
-
     match &cli.command {
         Subcommands::Search {
             include_header,
             include_playlist_name,
+            file_name,
+            file_type,
             no_format,
             sort,
             term,
         } => {
             info!("Searching...");
 
+            let path: PathBuf = get_path(file_name, file_type)?;
+
             let query: SearchQuery = SearchQuery {
                 search_term: &term.join(" "),
-                search_type: match &cli.file_type {
+                search_type: match &file_type {
                     cli::FileType::Db => SearchType::Db,
                     cli::FileType::Tsv => SearchType::Tsv,
                 },
@@ -58,8 +60,13 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 false => Output::search_results_table(&results),
             }
         }
-        Subcommands::Sync {} => {
+        Subcommands::Sync {
+            file_name,
+            file_type,
+        } => {
             info!("Syncing...");
+
+            let _path: PathBuf = get_path(file_name, file_type)?;
             todo!()
         }
     }

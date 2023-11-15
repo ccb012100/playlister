@@ -1,17 +1,22 @@
-use std::io::{self, Write};
-
 use crate::search::SearchResults;
 use comfy_table::*;
 use log::debug;
 use nu_ansi_term::{AnsiString, AnsiStrings, Color};
+use std::io::{self, stdout, IsTerminal, Write};
 
 pub(crate) struct Output();
 
 impl Output {
+    // Print search results to stdout
     pub(crate) fn search_results_table(search_results: &SearchResults) {
         if search_results.results.is_empty() {
             no_results(search_results);
             return;
+        }
+
+        // print without formatting if not a tty
+        if !stdout().is_terminal() {
+            search_summary(search_results)
         }
 
         let mut table = Table::new();
@@ -58,6 +63,7 @@ impl Output {
         search_summary(search_results);
     }
 
+    /// print search results to stdout with no formatting
     pub(crate) fn search_results(search_results: &SearchResults) {
         debug!("search_results called with {:#?}", search_results);
         if search_results.results.is_empty() {
@@ -67,14 +73,16 @@ impl Output {
 
         search_summary(search_results);
 
+        let mut lock = io::stdout().lock();
+
         if search_results.include_header {
-            println!(
+            writeln!(
+                lock,
                 "{}",
                 get_header_fields(search_results.include_playlist_name).join("\t")
-            );
+            )
+            .expect("writeln shouldn't fail");
         }
-
-        let mut lock = io::stderr().lock();
 
         search_results.results.iter().for_each(|result| {
             writeln!(
@@ -87,6 +95,7 @@ impl Output {
     }
 }
 
+/// Print message for empty search results to stderr
 fn no_results(search_results: &SearchResults) {
     assert!(search_results.results.is_empty());
 
@@ -99,6 +108,7 @@ fn no_results(search_results: &SearchResults) {
     print_stderr(strings)
 }
 
+/// Print summary of search to stderr
 fn search_summary(search_results: &SearchResults) {
     assert!(!search_results.results.is_empty());
 
@@ -119,10 +129,12 @@ fn search_summary(search_results: &SearchResults) {
     print_stderr(strings);
 }
 
+/// print to stderr
 fn print_stderr(message: &[AnsiString]) {
     eprintln!("{}", AnsiStrings(message));
 }
 
+/// get the search results headers
 fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
     if include_playlist {
         vec![

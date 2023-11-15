@@ -15,25 +15,19 @@ pub(crate) struct Cli {
     #[clap(value_enum)]
     pub(crate) verbose: LogLevel,
 
-    /// File type to perform action against
-    #[clap(value_enum)]
-    pub(crate) file_type: FileType,
-
-    /// File to use
-    pub(crate) file_name: String,
-
     #[command(subcommand)]
     pub(crate) command: Subcommands,
 }
 
-#[derive(ValueEnum, Clone, Copy, Debug)]
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum FileType {
     /// SQLite database file (file name = [*.sql|*.sqlite|*.sqlite3|*.db]).
     Db,
+    /// TSV file (file name = *.tsv)
     Tsv,
 }
 
-#[derive(Subcommand, Debug)]
+#[derive(Subcommand, Debug, Clone)]
 pub(crate) enum Subcommands {
     /// Search playlists
     Search {
@@ -58,14 +52,28 @@ pub(crate) enum Subcommands {
         #[arg(default_value_t = false)]
         include_header: bool,
 
+        /// File type to perform action against
+        #[clap(value_enum)]
+        file_type: FileType,
+
         /// Search term
         term: Vec<String>,
+
+        /// File to use
+        file_name: String,
     },
     /// Sync playlists
-    Sync {},
+    Sync {
+        /// File type to perform action against
+        #[clap(value_enum)]
+        file_type: FileType,
+
+        /// File to use
+        file_name: String,
+    },
 }
 
-#[derive(ValueEnum, Clone, Copy, Debug)]
+#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub(crate) enum SortFields {
     Artists,
     Album,
@@ -85,7 +93,7 @@ impl From<SortFields> for search::SortFields {
 }
 
 /// Parse `file_name` and return it as PathBuf
-pub(crate) fn get_path(file_name: &str, file_type: FileType) -> Result<PathBuf> {
+pub(crate) fn get_path(file_name: &str, file_type: &FileType) -> Result<PathBuf> {
     debug!("get_path called with: {}, {:#?}", file_name, file_type);
 
     let pattern = match file_type {
