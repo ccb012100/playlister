@@ -46,6 +46,9 @@ cat <<EOF > secrets.json
   "Spotify": {
     "ClientId": "<ID>",
     "ClientSecret": "<SECRET>",
+    "Database": {
+      "ConnectionString": "<PATH_TO_SQLITE_DATABASE>"
+    }
   }
 }
 EOF
