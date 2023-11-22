@@ -11,7 +11,7 @@ RUN dotnet restore
 # copy everything else and build app
 COPY . ./
 WORKDIR /source/Playlister
-RUN dotnet publish -c release --no-restore -o /app
+RUN dotnet publish --configuration release --no-restore -o /app
 
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:7.0
