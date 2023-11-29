@@ -1,4 +1,4 @@
-use super::{SearchQuery, SearchResults};
+use super::data::{SearchQuery, SearchResults};
 use log::debug;
 use std::io::Error;
 

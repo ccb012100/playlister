@@ -1,4 +1,4 @@
-use crate::search::SearchResults;
+use crate::search::data::SearchResults;
 use comfy_table::*;
 use log::debug;
 use nu_ansi_term::{AnsiString, AnsiStrings, Color};
