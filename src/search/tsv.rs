@@ -1,5 +1,5 @@
 use super::SearchQuery;
-use super::{album::Album, SearchResults};
+use super::{data::Album, SearchResults};
 use anyhow::{Context, Result};
 use log::debug;
 use std::{

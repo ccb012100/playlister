@@ -8,15 +8,17 @@ use std::path::PathBuf;
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
 pub(crate) struct Cli {
-    /// Set logging level; if only the flag is supplied, it will set LogLevel::Debug
-    #[arg(long, global = true, value_name = "LogLevel")]
-    #[arg(default_value_t = LogLevel::Warn)]
-    #[arg(default_missing_value = "debug", num_args = 0..=1, require_equals = true)]
-    #[clap(value_enum)]
-    pub(crate) verbose: LogLevel,
+    /// Set verbosity
+    #[arg(
+        long,
+        short = 'v',
+        action = clap::ArgAction::Count,
+        global = true
+    )]
+    pub(crate) verbose: u8,
 
     #[command(subcommand)]
-    pub(crate) command: Subcommands,
+    pub(crate) subcommand: Subcommands,
 }
 
 #[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
@@ -81,13 +83,13 @@ pub(crate) enum SortFields {
     Added,
 }
 
-impl From<SortFields> for search::SortFields {
+impl From<SortFields> for search::data::SortFields {
     fn from(value: SortFields) -> Self {
         match value {
-            SortFields::Artists => search::SortFields::Artists,
-            SortFields::Album => search::SortFields::Album,
-            SortFields::Year => search::SortFields::Year,
-            SortFields::Added => search::SortFields::Added,
+            SortFields::Artists => search::data::SortFields::Artists,
+            SortFields::Album => search::data::SortFields::Album,
+            SortFields::Year => search::data::SortFields::Year,
+            SortFields::Added => search::data::SortFields::Added,
         }
     }
 }
@@ -121,20 +123,4 @@ pub(crate) fn get_path(file_name: &str, file_type: &FileType) -> Result<PathBuf>
             Err(anyhow!(err_msg))
         }
     }
-}
-
-#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum LogLevel {
-    /// Info
-    Info,
-    /// Debug
-    Debug,
-    /// Warn
-    Warn,
-    /// Error
-    Error,
-    /// Trace
-    Trace,
-    /// Off
-    Off,
 }

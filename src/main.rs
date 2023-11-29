@@ -1,9 +1,11 @@
-use crate::{cli::LogLevel, output::Output, search::SearchType};
+use crate::{
+    output::Output,
+    search::data::{SearchQuery, SearchType},
+};
 use anyhow::Error;
 use clap::Parser;
 use cli::{get_path, Cli, Subcommands};
 use log::{debug, info, LevelFilter};
-use search::SearchQuery;
 use std::{path::PathBuf, process::ExitCode};
 
 mod cli;
@@ -13,21 +15,15 @@ mod search;
 fn main() -> core::result::Result<ExitCode, Error> {
     let cli = Cli::parse();
 
-    let log_level = match cli.verbose {
-        LogLevel::Debug => LevelFilter::Debug,
-        LogLevel::Error => LevelFilter::Error,
-        LogLevel::Info => LevelFilter::Info,
-        LogLevel::Warn => LevelFilter::Warn,
-        LogLevel::Off => LevelFilter::Off,
-        LogLevel::Trace => LevelFilter::Trace,
-    };
+    initialize_logger(&cli.verbose);
 
-    env_logger::Builder::new().filter_level(log_level).init();
-
-    debug!("logging initialized");
     debug!("parsed Cli: {:#?}", &cli);
 
-    match &cli.command {
+    parse_cli_command(&cli.subcommand)
+}
+
+fn parse_cli_command(subcommand: &Subcommands) -> Result<ExitCode, Error> {
+    match subcommand {
         Subcommands::Search {
             include_header,
             include_playlist_name,
@@ -50,10 +46,10 @@ fn main() -> core::result::Result<ExitCode, Error> {
                 file: &path,
                 include_header: *include_header,
                 include_playlist_name: *include_playlist_name,
-                sort: search::SortFields::from(*sort),
+                sort: search::data::SortFields::from(*sort),
             };
 
-            let results: search::SearchResults<'_> = search::search(&query)?;
+            let results: search::data::SearchResults<'_> = search::search(&query)?;
 
             match no_format {
                 true => Output::search_results(&results),
@@ -71,6 +67,19 @@ fn main() -> core::result::Result<ExitCode, Error> {
         }
     }
 
-    info!("Done!");
     Ok(ExitCode::SUCCESS)
+}
+
+fn initialize_logger(verbosity: &u8) {
+    let log_level = match &verbosity {
+        0 => LevelFilter::Error,
+        1 => LevelFilter::Warn,
+        2 => LevelFilter::Info,
+        3 => LevelFilter::Debug,
+        4..=std::u8::MAX => LevelFilter::Trace,
+    };
+
+    env_logger::Builder::new().filter_level(log_level).init();
+
+    info!("logging initialized at level {}", log_level);
 }

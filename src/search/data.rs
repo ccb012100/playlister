@@ -1,7 +1,39 @@
-use crate::search::SortFields;
 use anyhow::anyhow;
 use anyhow::Result;
-use std::str::FromStr;
+use std::{str::FromStr, path::PathBuf};
+
+#[derive(Debug, Clone)]
+pub(crate) struct SearchQuery<'a> {
+    pub file: &'a PathBuf,
+    pub include_header: bool,
+    pub include_playlist_name: bool,
+    pub search_term: &'a str,
+    pub search_type: SearchType,
+    pub sort: SortFields,
+}
+
+#[derive(Debug, Clone)]
+pub(crate) struct SearchResults<'a> {
+    pub include_header: bool,
+    pub include_playlist_name: bool,
+    pub results: Vec<Album>,
+    pub search_term: &'a str,
+    pub sort: SortFields,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum SearchType {
+    Db,
+    Tsv,
+}
+
+#[derive(Clone, Copy, Debug)]
+pub(crate) enum SortFields {
+    Added,
+    Album,
+    Artists,
+    Year,
+}
 
 #[derive(Debug, Clone)]
 pub(crate) struct Album {
