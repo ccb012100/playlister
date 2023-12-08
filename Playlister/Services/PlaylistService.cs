@@ -82,7 +82,10 @@ namespace Playlister.Services
             Playlist? cachedPlaylist = GetFromCache(playlist.Id);
 
             // return without processing if the DB version matches the command version
-            if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId)
+            if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId
+                /*  If the counts are different then they've gotten out of sync,
+                 *  usually because tracks have been deleted from the playlist */
+                && cachedPlaylist.Count == playlist.Count)
             {
                 _logger.LogDebug("{Playlist} is unchanged since the last update", playlist);
                 return false;
@@ -117,7 +120,7 @@ namespace Playlister.Services
                 ct
             );
 
-            var playlist = playlistObject.ToPlaylist();
+            Playlist playlist = playlistObject.ToPlaylist();
 
             if (IsChanged(playlist))
                 await UpdatePlaylistAsync(
@@ -155,7 +158,8 @@ namespace Playlister.Services
             );
 
             // We want to get all items so that they can be inserted into the repository in a single Transaction
-            // TODO: this causes perf issues on the largest playlists; should update to only grab changes dated after the last sync
+            /* TODO: this causes perf issues on the largest playlists;
+             * should update this to only grab changes dated after the last sync */
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
