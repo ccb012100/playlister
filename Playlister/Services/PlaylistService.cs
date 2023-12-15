@@ -86,6 +86,7 @@ namespace Playlister.Services
             if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId
                 /*  If the counts are different then they've gotten out of sync,
                  *  usually because tracks have been deleted from the playlist */
+                // FIXME: this doesn't seem to be working - need to debug the actual Count values
                 && cachedPlaylist.Count == playlist.Count)
             {
                 _logger.LogDebug("{Playlist} is unchanged since the last update", playlist);
