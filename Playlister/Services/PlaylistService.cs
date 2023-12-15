@@ -71,7 +71,7 @@ namespace Playlister.Services
                 .ToImmutableArray();
             _logger.LogInformation("Found {Length} changed playlists", changedPlaylists.Length);
 
-            foreach (Playlist pl in changedPlaylists)
+            foreach (Playlist pl in changedPlaylists.AsParallel())
             {
                 await UpdatePlaylistAsync(accessToken, pl, 0, 50, ct);
             }
