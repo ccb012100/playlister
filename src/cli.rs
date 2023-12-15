@@ -81,6 +81,7 @@ pub(crate) enum SortFields {
     Album,
     Year,
     Added,
+    Playlist
 }
 
 impl From<SortFields> for search::data::SortFields {
@@ -90,6 +91,7 @@ impl From<SortFields> for search::data::SortFields {
             SortFields::Album => search::data::SortFields::Album,
             SortFields::Year => search::data::SortFields::Year,
             SortFields::Added => search::data::SortFields::Added,
+            SortFields::Playlist => search::data::SortFields::Playlist
         }
     }
 }

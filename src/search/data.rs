@@ -1,6 +1,6 @@
 use anyhow::anyhow;
 use anyhow::Result;
-use std::{str::FromStr, path::PathBuf};
+use std::{path::PathBuf, str::FromStr};
 
 #[derive(Debug, Clone)]
 pub(crate) struct SearchQuery<'a> {
@@ -32,6 +32,7 @@ pub(crate) enum SortFields {
     Added,
     Album,
     Artists,
+    Playlist,
     Year,
 }
 
@@ -183,6 +184,22 @@ impl Album {
                         &b.album,
                         &b.year_released,
                         &b.playlist,
+                    ))
+            }),
+            SortFields::Playlist => albums.sort_by(|a, b| {
+                (
+                    &a.playlist,
+                    &a.artists,
+                    &a.album,
+                    &a.year_released,
+                    &a.date_added,
+                )
+                    .cmp(&(
+                        &b.playlist,
+                        &b.artists,
+                        &b.album,
+                        &b.year_released,
+                        &b.date_added,
                     ))
             }),
         }
