@@ -81,7 +81,7 @@ namespace Playlister.Controllers
             var sw = new Stopwatch();
             sw.Start();
 
-            var total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+            int total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
             sw.Stop();
 
             _logger.LogInformation(

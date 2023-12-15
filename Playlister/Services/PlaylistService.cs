@@ -157,9 +157,11 @@ namespace Playlister.Services
                 ct
             );
 
+            /* NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
+             * the thousands; I would like to update this to only grab changes made after the last sync, but the
+             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering */
+
             // We want to get all items so that they can be inserted into the repository in a single Transaction
-            /* TODO: this causes perf issues on the largest playlists;
-             * should update this to only grab changes dated after the last sync */
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
