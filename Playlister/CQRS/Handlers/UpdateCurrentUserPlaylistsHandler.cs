@@ -44,17 +44,20 @@ namespace Playlister.CQRS.Handlers
                 await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct)!
             ).ToImmutableArray();
 
-            double elapsedMs = sw.Elapsed.TotalMilliseconds;
+            double getPlaylist_elapsedMs = sw.Elapsed.TotalMilliseconds;
             _logger.LogInformation(
                 "\n=> {DateTime}: It took {Elapsed}ms to get the current user's playlists.\n",
                 DateTime.Now.ToLocalTime(),
-                elapsedMs
+                getPlaylist_elapsedMs
             );
 
             await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
 
             sw.Stop();
-            _logger.LogInformation("\n=> {DateTime}: It took {Elapsed}ms to update the current user's playlists", DateTime.Now.ToLocalTime(), sw.ElapsedMilliseconds - elapsedMs);
+
+            double updatePlaylist_elapsedMs = sw.Elapsed.TotalMilliseconds - getPlaylist_elapsedMs;
+
+            _logger.LogInformation("\n=> {DateTime}: It took {Elapsed}ms to update the current user's playlists", DateTime.Now.ToLocalTime(), updatePlaylist_elapsedMs.ToString("N5"));
 
             return playlists.Length;
         }

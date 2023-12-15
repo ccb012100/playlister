@@ -69,6 +69,7 @@ namespace Playlister.Services
             ImmutableArray<Playlist> changedPlaylists = playlists
                 .Where(IsChanged)
                 .ToImmutableArray();
+
             _logger.LogInformation("Found {Length} changed playlists", changedPlaylists.Length);
 
             foreach (Playlist pl in changedPlaylists.AsParallel())
@@ -91,13 +92,14 @@ namespace Playlister.Services
                 return false;
             }
 
-            _logger.LogInformation("{msg}", LogInfoMessage(playlist, cachedPlaylist));
+            _logger.LogInformation("{}", LogInfoMessage(playlist, cachedPlaylist));
 
             return true;
 
             static string LogInfoMessage(Playlist playlist, Playlist? cachedPlaylist)
             {
                 StringBuilder sb = new();
+
                 sb.AppendLine($"{playlist} has changed since the last update:");
                 sb.AppendLine($"\tSnapshotId:         {playlist.SnapshotId ?? "null"}");
                 sb.AppendLine(
@@ -180,7 +182,7 @@ namespace Playlister.Services
                 "\n=> Updated playlist {PlaylistId} (\"{PlaylistName}\").\nTotal time: {Elapsed}ms\n",
                 playlist.Id,
                 playlist.Name,
-                sw.ElapsedMilliseconds
+                sw.Elapsed.TotalMilliseconds
             );
         }
 
