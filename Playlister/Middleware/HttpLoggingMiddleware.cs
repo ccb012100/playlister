@@ -11,8 +11,11 @@ namespace Playlister.Middleware
 {
     /// <summary>
     /// Logs HTTP requests.
-    /// Use on RefitApi registration to see Request/Response info for easier debugging.
-    /// Adapted from https://github.com/reactiveui/refit/issues/258#issuecomment-243394076
+    /// Used on `RefitApi` registration to see Request/Response info for easier debugging.
+    /// Adapted from <https://github.com/reactiveui/refit/issues/258#issuecomment-243394076>.
+    /// To avoid performance impact, it's configured in
+    /// <see cref="Extensions.StartupExtensions.AddHttpLoggingMiddleware"/> to only be added on Startup when
+    /// <see cref="Configuration.DebuggingOptions.UseHttpLoggingMiddleware"/> is set to `true`.
     /// </summary>
 
     public class HttpLoggingMiddleware : DelegatingHandler
@@ -35,7 +38,7 @@ namespace Playlister.Middleware
 
             using (HttpRequestMessage req = request)
             {
-                var id = Guid.NewGuid().ToString();
+                string id = Guid.NewGuid().ToString();
                 msg = $"[{id} -  Request]";
 
                 _logger.LogDebug("{Msg}========Start==========", msg);
@@ -54,7 +57,7 @@ namespace Playlister.Middleware
                     req.RequestUri.Host
                 );
 
-                foreach (var (key, value) in req.Headers)
+                foreach ((string key, IEnumerable<string> value) in req.Headers)
                 {
                     _logger.LogDebug(
                         "{Msg} {HeaderKey}: {HeaderValue}",
@@ -66,7 +69,7 @@ namespace Playlister.Middleware
 
                 if (req.Content is not null)
                 {
-                    foreach (var (key, value) in req.Content.Headers)
+                    foreach ((string key, IEnumerable<string> value) in req.Content.Headers)
                     {
                         _logger.LogDebug(
                             "{Msg} {HeaderKey}: {HeaderValue}",
@@ -113,7 +116,7 @@ namespace Playlister.Middleware
                 );
             }
 
-            foreach (var (key, value) in resp.Headers)
+            foreach ((string key, IEnumerable<string> value) in resp.Headers)
             {
                 _logger.LogDebug(
                     "{Msg} {HeaderKey}: {HeaderValue}",
@@ -123,7 +126,7 @@ namespace Playlister.Middleware
                 );
             }
 
-            foreach (var (key, value) in resp.Content.Headers)
+            foreach ((string key, IEnumerable<string> value) in resp.Content.Headers)
             {
                 _logger.LogDebug(
                     "{Msg} {HeaderKey}: {HeaderValue}",

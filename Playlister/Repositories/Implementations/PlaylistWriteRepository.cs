@@ -68,7 +68,7 @@ namespace Playlister.Repositories.Implementations
                 newTracks.Length,
                 playlist.Id,
                 playlist.Name,
-                sw.ElapsedMilliseconds
+                sw.Elapsed.TotalMilliseconds
             );
 
             static async Task UpsertPlaylist(

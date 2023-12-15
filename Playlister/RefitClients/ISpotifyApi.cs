@@ -33,8 +33,8 @@ namespace Playlister.RefitClients
         /// </summary>
         /// <param name="token"></param>
         /// <param name="offset">The index of the first item to return.</param>
-        /// <param name="limit"></param>
-        /// <param name="ct">The maximum number of items to return.</param>
+        /// <param name="limit">The maximum number of items to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.</param>
+        /// <param name="ct"></param>
         /// <returns></returns>
         [Get("/me/playlists?market=from_token")]
         Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync([Authorize] string token, int? offset,
