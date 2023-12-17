@@ -1,9 +1,16 @@
-use crate::search;
-use anyhow::{anyhow, Result};
-use clap::{arg, Parser, Subcommand, ValueEnum};
-use log::debug;
-use regex::Regex;
+use crate::{cli::subcommands::FileType, search};
+use crate::{
+    output::Output,
+    search::data::{SearchQuery, SearchType},
+};
+use clap::arg;
+use clap::Parser;
+use log::{info, LevelFilter};
 use std::path::PathBuf;
+
+use subcommands::Subcommands;
+
+mod subcommands;
 
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
@@ -18,111 +25,69 @@ pub(crate) struct Cli {
     pub(crate) verbose: u8,
 
     #[command(subcommand)]
-    pub(crate) subcommand: Subcommands,
+    pub(crate) subcommand: subcommands::Subcommands,
 }
 
-#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum FileType {
-    /// SQLite database file (file name = [*.sql|*.sqlite|*.sqlite3|*.db]).
-    Db,
-    /// TSV file (file name = *.tsv)
-    Tsv,
-}
+impl Cli {
+    pub(crate) fn run_subcommand(&self) -> Result<(), anyhow::Error> {
+        match &self.subcommand {
+            Subcommands::Search {
+                include_header,
+                include_playlist_name,
+                file_name,
+                file_type,
+                no_format,
+                sort,
+                term,
+            } => {
+                info!("Searching...");
 
-#[derive(Subcommand, Debug, Clone)]
-pub(crate) enum Subcommands {
-    /// Search playlists
-    Search {
-        /// File type to perform action against
-        #[clap(value_enum)]
-        file_type: FileType,
+                let path: PathBuf = file_type.get_path(file_name)?;
 
-        /// File to use
-        file_name: String,
+                let query: SearchQuery = SearchQuery {
+                    search_term: &term.join(" "),
+                    search_type: match &file_type {
+                        FileType::Sqlite => SearchType::Sqlite,
+                        FileType::Tsv => SearchType::Tsv,
+                    },
+                    file: &path,
+                    include_header: *include_header,
+                    include_playlist_name: *include_playlist_name,
+                    sort: search::data::SortFields::from(*sort),
+                };
 
-        /// Search term
-        term: Vec<String>,
+                let results: search::data::SearchResults<'_> = search::search(&query)?;
 
-        /// Field to sort on
-        #[arg(short, long, value_name = "FIELD")]
-        #[arg(default_value_t = SortFields::Artists)]
-        #[clap(value_enum)]
-        sort: SortFields,
-
-        /// Include Playlist names in search results
-        #[arg(long)]
-        #[arg(default_value_t = false)]
-        include_playlist_name: bool,
-
-        /// Don't format output
-        #[arg(long)]
-        #[arg(default_value_t = false)]
-        no_format: bool,
-
-        /// Include header row in output
-        #[arg(long)]
-        #[arg(default_value_t = false)]
-        include_header: bool,
-    },
-    /// Sync playlists
-    Sync {
-        /// File type to perform action against
-        #[clap(value_enum)]
-        file_type: FileType,
-
-        /// File to use
-        file_name: String,
-    },
-}
-
-#[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum SortFields {
-    Artists,
-    Album,
-    Year,
-    Added,
-    Playlist
-}
-
-impl From<SortFields> for search::data::SortFields {
-    fn from(value: SortFields) -> Self {
-        match value {
-            SortFields::Artists => search::data::SortFields::Artists,
-            SortFields::Album => search::data::SortFields::Album,
-            SortFields::Year => search::data::SortFields::Year,
-            SortFields::Added => search::data::SortFields::Added,
-            SortFields::Playlist => search::data::SortFields::Playlist
-        }
-    }
-}
-
-/// Parse `file_name` and return it as PathBuf
-pub(crate) fn get_path(file_name: &str, file_type: &FileType) -> Result<PathBuf> {
-    debug!("get_path called with: {}, {:#?}", file_name, file_type);
-
-    let pattern = match file_type {
-        FileType::Db => r"(?im).+\.(?:sql|sqlite|sqlite3|db)$",
-        FileType::Tsv => r"(?im).+\.(?:tsv)$",
-    };
-
-    // check file name validity
-    match Regex::new(pattern)?.is_match(file_name) {
-        true => {
-            let path = PathBuf::from(file_name);
-
-            match path.try_exists()? {
-                true => Ok(path),
-                false => {
-                    let err_msg = format!("File \"{}\" does not exist", file_name);
-                    debug!("{}", err_msg);
-                    Err(anyhow!(err_msg))
+                match no_format {
+                    true => Output::search_results(&results),
+                    false => Output::search_results_table(&results),
                 }
+
+                Ok(())
+            }
+            Subcommands::Sync {
+                file_name,
+                file_type,
+            } => {
+                info!("Syncing...");
+
+                let _path: PathBuf = file_type.get_path(file_name)?;
+                todo!()
             }
         }
-        false => {
-            let err_msg = format!("File name format \"{}\" is invalid.", { file_name });
-            debug!("{}", err_msg);
-            Err(anyhow!(err_msg))
-        }
+    }
+
+    pub(crate) fn initialize_logger(&self) {
+        let log_level = match self.verbose {
+            0 => LevelFilter::Error,
+            1 => LevelFilter::Warn,
+            2 => LevelFilter::Info,
+            3 => LevelFilter::Debug,
+            4..=std::u8::MAX => LevelFilter::Trace,
+        };
+
+        env_logger::Builder::new().filter_level(log_level).init();
+
+        info!("logging initialized at level {}", log_level);
     }
 }
