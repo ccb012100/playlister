@@ -8,8 +8,10 @@ use std::{
     str::FromStr,
 };
 
+/// Search a `.tsv` file
 pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
     debug!("search called with: {:#?}", query);
+
     let file: File = File::open(query.file)
         .with_context(|| format!("Failed to open File from PathBuf: {:#?}", &query.file))?;
 

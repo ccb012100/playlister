@@ -1,5 +1,5 @@
 pub(crate) mod data;
-mod db;
+mod sqlite;
 mod tsv;
 
 use anyhow::Context;
@@ -12,9 +12,9 @@ pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>
     debug!("search called with: {:#?}", query);
 
     match query.search_type {
-        SearchType::Db => {
-            info!("Searching DB...");
-            db::search(query).with_context(|| format!("Search failed: {:#?}", query))
+        SearchType::Sqlite => {
+            info!("Searching SQLite DB...");
+            sqlite::search(query).with_context(|| format!("Search failed: {:#?}", query))
         }
         SearchType::Tsv => {
             info!("Searching TSV...");
