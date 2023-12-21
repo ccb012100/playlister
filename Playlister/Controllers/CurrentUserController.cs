@@ -54,7 +54,7 @@ namespace Playlister.Controllers
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
-            var sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
 
             IEnumerable<Playlist> lists = await _mediator.Send(
@@ -63,9 +63,9 @@ namespace Playlister.Controllers
 
             sw.Stop();
             _logger.LogInformation(
-                "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
+                "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed} ms",
                 lists.Count(),
-                sw.Elapsed
+                sw.Elapsed.TotalMilliseconds
             );
 
             return Ok(lists);
@@ -78,7 +78,7 @@ namespace Playlister.Controllers
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
-            var sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
 
             int total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
@@ -96,12 +96,13 @@ namespace Playlister.Controllers
         ///     Update list of current user's playlists.
         /// </summary>
         /// <returns></returns>
+        // TODO: move this to a more appropriate controller
         [HttpPost("stop-application")]
         public ActionResult StopApplication()
         {
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(250);
+                Thread.Sleep(1000);
                 _appLifetime.StopApplication();
             });
             return NoContent();

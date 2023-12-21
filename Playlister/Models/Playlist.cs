@@ -24,6 +24,13 @@ namespace Playlister.Models
         /// </summary>
         public int Count { get; init; }
 
+        /// <summary>
+        /// Number of unique tracks in the playlist (i.e. without duplicates)
+        /// </summary>
+        public int CountUnique { get; init; }
+
         public override string ToString() => $"Playlist `{Id}` (\"{Name}\")";
+
+        public string LoggingTag { get => $"[{ToString()}]"; }
     }
 }

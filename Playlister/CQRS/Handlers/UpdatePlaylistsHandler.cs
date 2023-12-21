@@ -24,8 +24,8 @@ namespace Playlister.CQRS.Handlers
         /// <returns>Number of playlists handled</returns>
         public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
         {
-            await _playlistService.UpdatePlaylistsAsync(command.AccessToken,
-                command.Playlists.Select(p => p.ToPlaylist()), ct);
+            await Task.Run(() => _playlistService.UpdatePlaylists(command.AccessToken,
+                    command.Playlists.Select(p => p.ToPlaylist()), ct), ct);
 
             return new Unit();
         }

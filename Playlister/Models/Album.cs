@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
@@ -57,10 +58,10 @@ namespace Playlister.Models
         }
 
         /// <summary>
-        /// Get a pairing of each artist's TrackId with the album's TrackId.
+        /// Gets a pairing of the Album's Id with <see cref="Album.Artists"/>'s Id
         /// </summary>
-        /// <returns>Collection of album id, artist id tuples.</returns>
-        public IEnumerable<object> GetAlbumArtistPairings() =>
-            Artists.Select(x => new { AlbumId = Id, ArtistId = x.Id });
+        /// <returns><see cref="AlbumArtistPair"/> for every <see cref="Artist"/> in <see cref="Album.Artists"/></returns>
+        public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings() =>
+            Artists.Select(x => new AlbumArtistPair(AlbumId: Id, ArtistId: x.Id)).ToImmutableArray();
     }
 }

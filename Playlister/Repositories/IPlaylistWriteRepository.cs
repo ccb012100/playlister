@@ -15,5 +15,12 @@ namespace Playlister.Repositories
         /// <param name="ct"></param>
         /// <returns></returns>
         Task UpsertAsync(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct);
+
+        /// <summary>
+        ///
+        /// </summary>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct);
     }
 }

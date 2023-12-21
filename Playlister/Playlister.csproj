@@ -29,6 +29,7 @@
         <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0" />
         <PackageReference Include="SQLite" Version="3.13.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
+        <PackageReference Include="System.Linq.Async" Version="6.0.1" />
     </ItemGroup>
 
     <ItemGroup>
@@ -54,6 +55,14 @@
       <EmbeddedResource Remove="Playlister\**" />
       <None Remove="Logs\**" />
       <None Remove="Playlister\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Remove="Data\Fm20231219AddPlaylistTrackPrimaryKey.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="Data\add_playlist_track_primary_key.sql" />
     </ItemGroup>
 
     <ItemGroup>

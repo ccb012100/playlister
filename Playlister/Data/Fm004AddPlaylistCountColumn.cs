@@ -2,8 +2,8 @@ using FluentMigrator;
 
 namespace Playlister.Data
 {
-    [Migration(20210708)]
-    public class Fm20210708AddPlaylistCountColumn : AutoReversingMigration
+    [Migration(004, description: "Add 'count' columne to the Playlist table")]
+    public class Fm004AddPlaylistCountColumn : AutoReversingMigration
     {
         public override void Up()
         {

@@ -9,7 +9,6 @@ using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;
-using Playlister.Repositories;
 
 namespace Playlister.CQRS.Handlers
 {

@@ -332,7 +332,7 @@
         `,
         mounted() {
             this.$nextTick(function () {
-                this.updatePlaylists();
+                // this.updatePlaylists();
             });
         },
         data() {
@@ -438,8 +438,8 @@
         methods: {
             data() {
                 return {
-                    errorMessage: null,
-                    statusMessage: null,
+                    errorMessage: "[unset]",
+                    statusMessage: "[unset]",
                 }
             },
             stopApp() {

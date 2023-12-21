@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Threading;
 using System.Threading.Tasks;
 using Playlister.CQRS.Commands;
@@ -23,12 +24,14 @@ namespace Playlister.Services
         /// <param name="playlists">The playlists to update. These are directly compared to the versions in the database, so the caller should be providing current versions retrieved from Spotify's API.</param>
         /// <param name="ct"></param>
         /// <returns></returns>
-        Task UpdatePlaylistsAsync(string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct);
+        Task UpdatePlaylists(string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct);
 
         /// <summary>
         /// The full lists of playlists for the current user.
         /// </summary>
         /// <returns></returns>
-        Task<IEnumerable<Playlist>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct);
+        Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct);
+
+        Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct);
     }
 }
