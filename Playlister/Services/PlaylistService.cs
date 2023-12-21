@@ -76,7 +76,21 @@ namespace Playlister.Services
 
             sw.Stop();
 
-            _logger.LogInformation("It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists", sw.Elapsed.TotalSeconds.ToString("N4"), s_updatedPlaylistsCache.Items.Count);
+            if (s_updatedPlaylistsCache.Items.Any())
+            {
+                _logger.LogInformation(
+                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
+                    sw.Elapsed.TotalSeconds.ToString("N4"),
+                    s_updatedPlaylistsCache.Items.Count
+                );
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "There were no changed playlists found. Time elapsed: {Elapsed} seconds",
+                    sw.Elapsed.TotalSeconds.ToString("N4")
+                );
+            }
         }
 
         /// <summary>
