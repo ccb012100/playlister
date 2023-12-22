@@ -14,25 +14,6 @@ CREATE TABLE IF NOT EXISTS "PlaylistTrack"(
   CONSTRAINT "fk_playlisttrack_playlistid" FOREIGN KEY("playlist_id") REFERENCES "Playlist"("id")
 );
 
-CREATE INDEX "IX_PlaylistTrack_added_at" ON "PlaylistTrack"("added_at" DESC);
-CREATE INDEX "IX_PlaylistTrack_album_id" ON "PlaylistTrack"("album_id" ASC);
-CREATE INDEX "IX_PlaylistTrack_playlist_id" ON "PlaylistTrack"(
-  "playlist_id" ASC
-);
-CREATE INDEX "IX_PlaylistTrack_playlist_snapshot_id" ON "PlaylistTrack"(
-  "playlist_snapshot_id" ASC
-);
-
-CREATE TRIGGER playlist_track_modified
-    after update
-    on PlaylistTrack
-begin
-    update PlaylistTrack
-    set modified_at = current_timestamp
-    where track_id = new.track_id
-      and playlist_id = new.playlist_id;
-end;
-
 INSERT INTO PlaylistTrack SELECT * FROM PlaylistTrack_old;
 
 DROP TABLE PlaylistTrack_old;
