@@ -60,9 +60,9 @@ namespace Playlister.Repositories.Implementations
             }
 
             _logger.LogInformation(
-                "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed} ms",
+                "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
                 deleted,
-                sw.Elapsed.TotalMilliseconds
+                sw.Elapsed.ToLogString()
             );
         }
 
@@ -99,10 +99,10 @@ namespace Playlister.Repositories.Implementations
                 sw.Stop();
 
                 _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} tracks. Total time: {Elapsed} ms",
+                    "{PlaylistTag} Upserted {Upserted} tracks. Total time: {Elapsed}",
                     playlist.LoggingTag,
                     items.Length,
-                    sw.Elapsed.TotalMilliseconds
+                    sw.Elapsed.ToLogString()
                 );
             }
             catch (SqliteException)

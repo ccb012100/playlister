@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Commands;
+using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
@@ -80,15 +81,15 @@ namespace Playlister.Services
             {
                 _logger.LogInformation(
                     "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
-                    sw.Elapsed.TotalSeconds.ToString("N4"),
+                    sw.Elapsed.ToLogString(),
                     s_updatedPlaylistsCache.Items.Count
                 );
             }
             else
             {
                 _logger.LogInformation(
-                    "There were no changed playlists found. Time elapsed: {Elapsed} seconds",
-                    sw.Elapsed.TotalSeconds.ToString("N4")
+                    "There were no changed playlists found. Time elapsed: {Elapsed}",
+                    sw.Elapsed.ToLogString()
                 );
             }
         }
@@ -187,9 +188,11 @@ namespace Playlister.Services
                 ct
             );
 
-            /* NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
+            /*
+             * NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
              * the thousands; I would like to update this to only grab changes made after the last sync, but the
-             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering */
+             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
+             */
 
             /*
              * PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
@@ -214,7 +217,7 @@ namespace Playlister.Services
 
             playlist = playlist with { CountUnique = uniqueTracks.Length };
 
-            _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} (out of {Count}) unique tracks", playlist.LoggingTag, uniqueTracks.Length, playlist.Count);
+            _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})", playlist.LoggingTag, uniqueTracks.Length, playlist.Count);
 
             await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
 
@@ -226,9 +229,9 @@ namespace Playlister.Services
             sw.Stop();
 
             _logger.LogInformation(
-                "{PlaylistTag} Updated playlist. Total time: {Elapsed} ms\n",
+                "{PlaylistTag} Updated playlist. Total time: {Elapsed}\n",
                 playlist.LoggingTag,
-                sw.Elapsed.TotalMilliseconds
+                sw.Elapsed.ToLogString()
             );
         }
 
@@ -280,7 +283,7 @@ namespace Playlister.Services
         private static bool HasAllTracks(Playlist playlist)
         {
             bool found = s_missingTracksCache.Items.ContainsKey(playlist.Id);
-            // if the playlist isn't in the cache, it has all itstracks
+            // if the playlist isn't in the cache, it has all its tracks
             return !found;
         }
 

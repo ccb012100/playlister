@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
@@ -63,9 +64,9 @@ namespace Playlister.Controllers
 
             sw.Stop();
             _logger.LogInformation(
-                "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed} ms",
+                "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
                 lists.Count(),
-                sw.Elapsed.TotalMilliseconds
+                sw.Elapsed.ToLogString()
             );
 
             return Ok(lists);
@@ -87,7 +88,7 @@ namespace Playlister.Controllers
             _logger.LogInformation(
                 "Updated current user's {Total} playlists. Total time: {Elapsed}",
                 total,
-                sw.Elapsed
+                sw.Elapsed.ToLogString()
             );
             return NoContent();
         }
