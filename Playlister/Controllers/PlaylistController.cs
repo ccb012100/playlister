@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -7,16 +8,24 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken, ApiController, Route("api/playlists")]
+    [ValidateToken, ApiController, Route("api/playlists/{playlistId}")]
     public class PlaylistController : BaseController
     {
         public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility)
             : base(mediator, tokenUtility) { }
 
-        [HttpPost("tracks/{playlistId}")]
+        [HttpPost("tracks")]
         public async Task<ActionResult> UpdateTracks(string playlistId)
         {
             await _mediator.Send(new UpdatePlaylistCommand(AccessToken, playlistId));
+
+            return NoContent();
+        }
+
+        [HttpPost("sync")]
+        public async Task<ActionResult> SyncPlaylist(string playlistId)
+        {
+            await _mediator.Send(new SyncPlaylistCommand(AccessToken, playlistId));
 
             return NoContent();
         }

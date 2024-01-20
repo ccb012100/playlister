@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
@@ -54,7 +55,7 @@ namespace Playlister.Controllers
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
-            var sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
 
             IEnumerable<Playlist> lists = await _mediator.Send(
@@ -65,7 +66,7 @@ namespace Playlister.Controllers
             _logger.LogInformation(
                 "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
                 lists.Count(),
-                sw.Elapsed
+                sw.Elapsed.ToLogString()
             );
 
             return Ok(lists);
@@ -78,7 +79,7 @@ namespace Playlister.Controllers
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
-            var sw = new Stopwatch();
+            Stopwatch sw = new();
             sw.Start();
 
             int total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
@@ -87,7 +88,7 @@ namespace Playlister.Controllers
             _logger.LogInformation(
                 "Updated current user's {Total} playlists. Total time: {Elapsed}",
                 total,
-                sw.Elapsed
+                sw.Elapsed.ToLogString()
             );
             return NoContent();
         }
@@ -96,12 +97,13 @@ namespace Playlister.Controllers
         ///     Update list of current user's playlists.
         /// </summary>
         /// <returns></returns>
+        // TODO: move this to a more appropriate controller
         [HttpPost("stop-application")]
         public ActionResult StopApplication()
         {
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(250);
+                Thread.Sleep(1000);
                 _appLifetime.StopApplication();
             });
             return NoContent();

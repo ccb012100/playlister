@@ -1,7 +1,6 @@
-using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -132,7 +131,8 @@ namespace Playlister
         private void OnStarted(ILogger logger)
         {
             logger.LogInformation("{Namespace} Started", _namespace);
-            UrlUtility.OpenUrl("https://localhost:5001/app/home");
+
+            UrlUtility.OpenUrl("https://localhost:5001/app/home", logger);
         }
 
         private void OnStopping(ILogger logger) =>

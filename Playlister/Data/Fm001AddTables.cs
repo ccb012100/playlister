@@ -2,8 +2,8 @@ using FluentMigrator;
 
 namespace Playlister.Data
 {
-    [Migration(20210618)]
-    public class Fm20210618AddPlaylistTable : AutoReversingMigration
+    [Migration(001, description: "Add the tables to the database")]
+    public class Fm001AddPlaylistTable : AutoReversingMigration
     {
         public override void Up()
         {

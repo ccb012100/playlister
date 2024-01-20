@@ -11,5 +11,11 @@ namespace Playlister.Repositories
         /// </summary>
         /// <returns></returns>
         Task<IEnumerable<Playlist>> GetAllAsync();
+
+        /// <summary>
+        /// Get Playlists whose PlaylistTrack count is less than their <see cref="Playlist.Count"/> property.
+        /// </summary>
+        /// <returns>List of Playlist Ids</returns>
+        Task<IEnumerable<(string, int)>> GetPlaylistsWithMissingTracksAsync();
     }
 }

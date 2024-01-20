@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Playlister.CQRS.Commands;
+using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
@@ -15,9 +15,11 @@ using Playlister.Utilities;
 
 namespace Playlister.Services
 {
-    public class PlaylistService : IPlaylistService
+    public partial class PlaylistService : IPlaylistService
     {
         private static readonly CacheObject<Playlist> s_playlistCache = new();
+        private static readonly CacheObject<string> s_missingTracksCache = new();
+        private static readonly CacheObject<string> s_updatedPlaylistsCache = new();
         private readonly ISpotifyApiService _api;
         private readonly ILogger<PlaylistService> _logger;
         private readonly IPlaylistReadRepository _readRepository;
@@ -35,10 +37,10 @@ namespace Playlister.Services
             _api = api;
             _logger = logger;
 
-            s_playlistCache.Initialize(PopulateCache);
+            s_playlistCache.Initialize(PopulateCaches);
         }
-
-        public async Task<IEnumerable<Playlist>> GetCurrentUserPlaylistsAsync(
+        #region public
+        public async Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(
             string accessToken,
             CancellationToken ct
         )
@@ -57,63 +59,64 @@ namespace Playlister.Services
                 lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
             }
 
-            return lists;
+            return lists.ToImmutableArray();
         }
 
-        public async Task UpdatePlaylistsAsync(
+        public async Task UpdatePlaylists(
             string accessToken,
             IEnumerable<Playlist> playlists,
             CancellationToken ct
         )
         {
-            ImmutableArray<Playlist> changedPlaylists = playlists
-                .Where(IsChanged)
-                .ToImmutableArray();
+            Stopwatch sw = Stopwatch.StartNew();
 
-            _logger.LogInformation("Found {Length} changed playlists", changedPlaylists.Length);
-
-            foreach (Playlist pl in changedPlaylists.AsParallel())
+            foreach (Playlist playlist in playlists.AsParallel())
             {
-                await UpdatePlaylistAsync(accessToken, pl, 0, 50, ct);
-            }
-        }
-
-        private bool IsChanged(Playlist playlist)
-        {
-            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
-
-            // return without processing if the DB version matches the command version
-            if (cachedPlaylist is not null && cachedPlaylist.SnapshotId == playlist.SnapshotId
-                /*  If the counts are different then they've gotten out of sync,
-                 *  usually because tracks have been deleted from the playlist */
-                // FIXME: this doesn't seem to be working - need to debug the actual Count values
-                && cachedPlaylist.Count == playlist.Count)
-            {
-                _logger.LogDebug("{Playlist} is unchanged since the last update", playlist);
-                return false;
+                await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
             }
 
-            _logger.LogInformation("{}", LogInfoMessage(playlist, cachedPlaylist));
+            sw.Stop();
 
-            return true;
-
-            static string LogInfoMessage(Playlist playlist, Playlist? cachedPlaylist)
+            if (s_updatedPlaylistsCache.Items.Any())
             {
-                StringBuilder sb = new();
-
-                sb.AppendLine($"{playlist} has changed since the last update:");
-                sb.AppendLine($"\tSnapshotId:         {playlist.SnapshotId ?? "null"}");
-                sb.AppendLine(
-                    cachedPlaylist is null
-                        ? "\tCached SnapshotId:  [No cached version]"
-                        : $"\tCached SnapshotId:  {cachedPlaylist.SnapshotId ?? "null"}"
+                _logger.LogInformation(
+                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
+                    sw.Elapsed.ToLogString(),
+                    s_updatedPlaylistsCache.Items.Count
                 );
-
-                return sb.ToString();
+            }
+            else
+            {
+                _logger.LogInformation(
+                    "There were no changed playlists found. Time elapsed: {Elapsed}",
+                    sw.Elapsed.ToLogString()
+                );
             }
         }
 
-        #region UpdatePlaylist
+        /// <summary>
+        /// Sync the specified playlist.
+        /// This will do a full sync, even if the snapshot Id has not changed since the last update.
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="playlists"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        public async Task SyncPlaylist(
+            SyncPlaylistCommand command,
+            CancellationToken ct
+        )
+        {
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(
+                command.AccessToken,
+                command.PlaylistId,
+                ct
+            );
+
+            Playlist playlist = playlistObject.ToPlaylist();
+
+            await UpdatePlaylistAsync(command.AccessToken, playlist, 0, 50, ct);
+        }
 
         public async Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct)
         {
@@ -125,30 +128,55 @@ namespace Playlister.Services
 
             Playlist playlist = playlistObject.ToPlaylist();
 
-            if (IsChanged(playlist))
-                await UpdatePlaylistAsync(
-                    command.AccessToken,
-                    playlist,
-                    command.Offset,
-                    command.Limit,
-                    ct
-                );
+            await UpdatePlaylistAsync(
+                command.AccessToken,
+                playlist,
+                command.Offset,
+                command.Limit,
+                ct
+            );
         }
 
+        public async Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+        {
+            _logger.LogDebug("Deleting orphaned PlaylistTracks...");
+
+            await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
+        }
+        #endregion
+
+        /// <summary>
+        /// Update the data for the specified Playlist
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="playlist"></param>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="ct"></param>
+        /// <param name="forceSync">If <see langword="true"/>, sync the playlist regardless of whether it's changed since the last sync</param>
+        /// <returns></returns>
         private async Task UpdatePlaylistAsync(
             string accessToken,
             Playlist playlist,
             int offset,
             int limit,
-            CancellationToken ct
+            CancellationToken ct,
+            bool forceSync = false
         )
         {
-            _logger.LogInformation(
-                "Updating playlist {PlaylistId} (\"{PlaylistName}\")...",
-                playlist.Id,
-                playlist.Name
+            _logger.LogDebug(
+                "{Playlist} Updating playlist...",
+                playlist.LoggingTag
             );
-            var sw = new Stopwatch();
+
+            if (!forceSync && IsCurrent(playlist) && HasAllTracks(playlist))
+            {
+                _logger.LogDebug("{PlaylistTag} playlist is up-to-date. Skipping sync.", playlist.LoggingTag);
+
+                return;
+            }
+
+            Stopwatch sw = new();
             sw.Start();
 
             // get first page of playlist items
@@ -160,11 +188,18 @@ namespace Playlister.Services
                 ct
             );
 
-            /* NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
+            /*
+             * NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
              * the thousands; I would like to update this to only grab changes made after the last sync, but the
-             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering */
+             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
+             */
 
-            // We want to get all items so that they can be inserted into the repository in a single Transaction
+            /*
+             * PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
+             *       Then grab those pages in parallel and combine into a single collection.
+             */
+
+            // We want to get all the items for the playlist so that they can be inserted into the repository in a single Transaction
             List<PlaylistItem> allItems = page.Items.ToList();
 
             while (page.Next is not null)
@@ -173,21 +208,84 @@ namespace Playlister.Services
                 allItems.AddRange(page.Items);
             }
 
-            await _writeRepository.UpsertAsync(playlist, allItems, ct);
+            if (allItems.Count != playlist.Count)
+            {
+                _logger.LogWarning("{PlaylistTag} The number of tracks returned from the API does not match Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}", playlist.LoggingTag, playlist.Count, allItems.Count);
+            }
+
+            ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(x => new DistinctPlaylistTrack(PlaylistId: playlist.Id, TrackId: x.Track.Id, AddedAt: x.AddedAt)).ToImmutableArray();
+
+            playlist = playlist with { CountUnique = uniqueTracks.Length };
+
+            _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})", playlist.LoggingTag, uniqueTracks.Length, playlist.Count);
+
+            await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
 
             // only cache after data has been written to database
             Cache(playlist);
+            CacheUpdatedPlaylist(playlist);
+            DecacheMissingTracks(playlist);
 
             sw.Stop();
+
             _logger.LogInformation(
-                "\n=> Updated playlist {PlaylistId} (\"{PlaylistName}\").\nTotal time: {Elapsed}ms\n",
-                playlist.Id,
-                playlist.Name,
-                sw.Elapsed.TotalMilliseconds
+                "{PlaylistTag} Updated playlist. Total time: {Elapsed}\n",
+                playlist.LoggingTag,
+                sw.Elapsed.ToLogString()
             );
         }
 
-        #endregion
+        /// <summary>
+        /// Indicates whether the database needs to be synced with Spotify for the specified Playlist
+        /// </summary>
+        /// <param name="playlist"></param>
+        /// <returns></returns>
+        private bool IsCurrent(Playlist playlist)
+        {
+            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
+
+            if (cachedPlaylist is null) // If the playlist isn't in the cache, then we haven't synced it before
+            {
+                _logger.LogDebug("{PlaylistTag} was not found in the cache:\n\tSnapshotId:\t{SnapshotId}", playlist.LoggingTag, playlist.SnapshotId);
+
+                return false;
+            }
+            else if (cachedPlaylist.SnapshotId != playlist.SnapshotId)
+            {
+                _logger.LogInformation(
+                    "{PlaylistTag} has changed since the last update:\n\tSnapshotId:         {SnapshotId}\n\tCached SnapshotId:  {CachedSnapshotId}",
+                    playlist.LoggingTag,
+                    playlist.SnapshotId,
+                    cachedPlaylist.SnapshotId
+                );
+
+                return false;
+            }
+
+            // if the SnapshotIds match, it hasn't changed since the last sync
+            _logger.LogDebug("{PlaylistTag} is unchanged since the last sync", playlist.LoggingTag);
+
+            return true;
+        }
+
+        /// <summary>
+        /// Indicates whether the database contains all the PlaylistTracks for the specified Playlist.
+        /// If they do not match, it's most likely because there have been tracks deleted from the Playlist in Spotify.
+        /// Note that we're using a simple heuristic based on count of PlaylistTracks in the database; it's possible for the count to be the same but the tracks aren't the correct ones, but that would be a bug in the syncing logic that this does not (and should not) account for.
+        /// </summary>
+        /// <remarks>
+        /// Right now, this can't be hooked into the normal Playlist update logic because we don't store duplicates in
+        /// Playlists and Spotify's definition of a "duplicate" is not entirely clear (singles seem to be treated as a
+        /// duplicate of the album track in at least some cases).
+        /// </remarks>
+        /// <param name="playlist"></param>
+        /// <returns><see langword="false""/> if the number of <see cref="PlaylistTrack"/>s for <paramref name="playlist"/> in the database is less than its <see cref="Playlist.Count"/> property; Otherwise, <see langword="true""/></returns>
+        private static bool HasAllTracks(Playlist playlist)
+        {
+            bool found = s_missingTracksCache.Items.ContainsKey(playlist.Id);
+            // if the playlist isn't in the cache, it has all its tracks
+            return !found;
+        }
 
         #region cache
 
@@ -199,34 +297,102 @@ namespace Playlister.Services
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist
             );
 
-            _logger.LogDebug("Added playlist to cache: {Playlist}", JsonUtility.PrettyPrint(pl));
+            _logger.LogDebug("{PlaylistTag} Added playlist to the cache: {Playlist}", playlist.LoggingTag, JsonUtility.PrettyPrint(pl));
         }
 
         private Playlist? GetFromCache(string id)
         {
-            _ = s_playlistCache.Items.TryGetValue(id, out Playlist? playlist);
-            _logger.LogDebug(
-                "Result of getting playlist {Id} from cache: {playlist}",
-                id,
-                JsonUtility.PrettyPrint(playlist)
-            );
+            bool found = s_playlistCache.Items.TryGetValue(id, out Playlist? playlist);
+
+            if (found)
+            {
+                _logger.LogDebug("Found playlist {PlaylistId} in the cache: {Playlist}", id, JsonUtility.PrettyPrint(playlist));
+            }
+            else
+            {
+                _logger.LogDebug("Playlist {PlaylistId} was not present in the cache", id);
+            }
+
             return playlist;
         }
 
-        private async Task PopulateCache()
+        private void CacheMissingTracks((string, int) playlistWithCount)
         {
-            IEnumerable<Playlist> playlists = await _readRepository.GetAllAsync();
+            (string playlistId, int count) = playlistWithCount;
 
-            _logger.LogDebug("Populating Playlist cache...");
-            foreach (Playlist? playlist in playlists)
-                Cache(playlist);
-
-            _logger.LogDebug(
-                "Cache populated: {CacheItems}",
-                JsonUtility.PrettyPrint(s_playlistCache.Items)
+            string cacheItem = s_missingTracksCache.Items.AddOrUpdate(
+                playlistId,
+                count.ToString(),
+                (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : count.ToString()
             );
+
+            _logger.LogDebug("Added playlist {PlaylistId} to the MissingTracks cache; Count = {Count}", playlistId, cacheItem);
         }
 
+        private void DecacheMissingTracks(Playlist playlist)
+        {
+            if (s_missingTracksCache.Items.Remove(playlist.Id, out string? _))
+            {
+                _logger.LogDebug("{PlaylistTag} Removed playlist from the MissingTracks cache", playlist.LoggingTag);
+            }
+            else
+            {
+                _logger.LogDebug("{PlaylistTag} Playlist was not present in the MissingTracks cache", playlist.LoggingTag);
+            }
+        }
+
+        private void CacheUpdatedPlaylist(Playlist playlist)
+        {
+            bool added = s_updatedPlaylistsCache.Items.TryAdd(playlist.Id, playlist.Id);
+
+            if (added)
+            {
+                _logger.LogDebug("{PlaylistTag} Added playlist to the UpdatedPlaylists cache", playlist.LoggingTag);
+            }
+            else
+            {
+                _logger.LogWarning("{PlaylistTag} Playlist was already in the UpdatedPlaylists cache", playlist.LoggingTag);
+            }
+        }
+
+        /// <summary>
+        /// Populate <see cref="s_playlistCache"/> and <see cref="s_missingTracksCache"/>
+        /// </summary>
+        /// <returns></returns>
+        private async Task PopulateCaches()
+        {
+            List<Task> tasks = new() { PopulatePlaylistCache(), PopulateMissingTracksCache() };
+
+            await Task.WhenAll(tasks);
+
+            async Task PopulatePlaylistCache()
+            {
+                _logger.LogDebug("Populating Playlist cache...");
+
+                IEnumerable<Playlist> playlists = await _readRepository.GetAllAsync();
+
+                playlists.AsParallel().ForAll(Cache);
+
+                _logger.LogDebug(
+                    "Playlist cache populated: {CacheItems}",
+                    JsonUtility.PrettyPrint(s_playlistCache.Items)
+                );
+            }
+
+            async Task PopulateMissingTracksCache()
+            {
+                _logger.LogDebug("Populating MissingTracks cache...");
+
+                IEnumerable<(string, int)> missingTracks = await _readRepository.GetPlaylistsWithMissingTracksAsync();
+
+                missingTracks.AsParallel().ForAll(CacheMissingTracks);
+
+                _logger.LogDebug(
+                    "MissingTracks cache populated: {CacheItems}",
+                    JsonUtility.PrettyPrint(s_missingTracksCache.Items)
+                );
+            }
+        }
         #endregion
     }
 }

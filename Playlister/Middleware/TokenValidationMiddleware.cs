@@ -1,4 +1,3 @@
-using System;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using MediatR;
@@ -6,11 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
-using Playlister.CQRS.Commands;
-using Playlister.Models;
-using Playlister.Repositories;
-using Playlister.Utilities;
-using Refit;
 
 namespace Playlister.Middleware
 {

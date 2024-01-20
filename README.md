@@ -77,7 +77,7 @@ EOF
   - [ ] Property-based
 - [ ] Add Polly Policy to attempt re-auths for 401s
 - [ ] Upgrade to .NET 8
-    - [ ] Swap out Polly for Microsoft.Extensions.Http.Resilience
+  - [ ] Swap out Polly for Microsoft.Extensions.Http.Resilience
 - Spotify Access Token
   - [ ] Validate that the `state` value matches the original value sent to user
   - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API

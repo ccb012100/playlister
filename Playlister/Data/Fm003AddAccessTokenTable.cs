@@ -2,8 +2,8 @@ using FluentMigrator;
 
 namespace Playlister.Data
 {
-    [Migration(20210622)]
-    public class Fm202010622AddAccessTokenTable : AutoReversingMigration
+    [Migration(003, description: "Add AccessToken table")]
+    public class Fm003AddAccessTokenTable : AutoReversingMigration
     {
         public override void Up()
         {

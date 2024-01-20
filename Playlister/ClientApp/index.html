@@ -330,11 +330,11 @@
           </div>
           </div>
         `,
-        mounted() {
-            this.$nextTick(function () {
-                this.updatePlaylists();
-            });
-        },
+        // mounted() {
+        //    this.$nextTick(function () {
+        //        this.updatePlaylists();
+        //    });
+        // },
         data() {
             return {
                 userProfile: null,
@@ -438,8 +438,8 @@
         methods: {
             data() {
                 return {
-                    errorMessage: null,
-                    statusMessage: null,
+                    errorMessage: "[unset]",
+                    statusMessage: "[unset]",
                 }
             },
             stopApp() {
@@ -484,6 +484,12 @@
                   Update Playlist
                 </button>
               </div>
+              <div class="col p-2">
+                <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
+                        class="btn btn-primary p-2 align-center">
+                  Sync Playlist
+                </button>
+              </div>
             </div>
           </div>
           </div>
@@ -500,7 +506,23 @@
                 const self = this;
 
                 axios
-                    .post('playlists/tracks/' + this.playlistId, {})
+                    .post(`playlists/${ this.playlistId }/tracks`, {})
+                    .then(function (response) {
+                        try {
+                            self.successMessage = `Updated playlist ${ self.playlistId }!`;
+                        } catch (e) {
+                            self.errorMessage = e;
+                        }
+                    })
+                    .catch(function (error) {
+                        self.errorMessage = error.message;
+                    });
+            },
+            syncPlaylist() {
+                const self = this;
+
+                axios
+                    .post(`playlists/${ this.playlistId }/sync`, {})
                     .then(function (response) {
                         try {
                             self.successMessage = `Updated playlist ${ self.playlistId }!`;
