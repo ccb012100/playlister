@@ -94,28 +94,17 @@ namespace Playlister.Services
             }
         }
 
-        /// <summary>
-        /// Sync the specified playlist.
-        /// This will do a full sync, even if the snapshot Id has not changed since the last update.
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <param name="playlists"></param>
-        /// <param name="ct"></param>
-        /// <returns></returns>
-        public async Task SyncPlaylist(
-            SyncPlaylistCommand command,
+        public async Task SyncPlaylistAsync(
+            string accessToken,
+            string playlistId,
             CancellationToken ct
         )
         {
-            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(
-                command.AccessToken,
-                command.PlaylistId,
-                ct
-            );
+            SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
 
             Playlist playlist = playlistObject.ToPlaylist();
 
-            await UpdatePlaylistAsync(command.AccessToken, playlist, 0, 50, ct);
+            await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
         }
 
         public async Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct)

@@ -33,5 +33,14 @@ namespace Playlister.Services
         Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct);
 
         Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct);
+
+        /// <summary>
+        /// Sync the specified playlist.
+        /// This will do a full sync, even if the snapshot Id has not changed since the last update.
+        /// </summary>
+        /// <param name="playlists"></param>
+        /// <param name="ct"></param>
+        /// <returns></returns>
+        Task SyncPlaylistAsync(string accessToken, string playlistId, CancellationToken ct);
     }
 }
