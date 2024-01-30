@@ -39,7 +39,7 @@ namespace Playlister.CQRS.Handlers
             ImmutableArray<Playlist> playlists =
                 await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct)!;
 
-            await _playlistService.UpdatePlaylists(command.AccessToken, playlists, ct);
+            await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
             await _playlistService.DeleteOrphanedPlaylistTracksAsync(ct);
 
             return playlists.Length;

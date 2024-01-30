@@ -6,18 +6,8 @@ namespace Playlister.CQRS.Commands
     /// <summary>
     /// Request to Sync the Playlist data stored in the database.
     /// </summary>
-    public record SyncPlaylistCommand : IRequest<Unit>
+    public record SyncPlaylistCommand(string AccessToken, string PlaylistId) : IRequest<Unit>
     {
-        public SyncPlaylistCommand(string accessToken, string playlistId)
-        {
-            AccessToken = accessToken;
-            PlaylistId = playlistId;
-        }
-
-        public string AccessToken { get; }
-
-        public string PlaylistId { get; }
-
         /// <summary>
         /// The index of the first track to return.
         /// Default: <c>0</c> (the first object). Maximum offset: <c>100.000</c>.
