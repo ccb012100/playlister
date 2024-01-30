@@ -62,7 +62,7 @@ namespace Playlister.Services
             return lists.ToImmutableArray();
         }
 
-        public async Task UpdatePlaylists(
+        public async Task UpdatePlaylistsAsync(
             string accessToken,
             IEnumerable<Playlist> playlists,
             CancellationToken ct
