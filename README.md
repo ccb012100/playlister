@@ -58,7 +58,7 @@ EOF
 
 ## TODO
 
-- [x] Move this file to the top level directory
+- [ ] Sync "liked" albums/songs
 
 ### Docker
 
