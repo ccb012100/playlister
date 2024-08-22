@@ -1,4 +1,5 @@
 use anyhow::{Context, Result};
+use log::debug;
 use std::{
     fs::OpenOptions,
     io::{BufRead, BufReader, Write},
@@ -9,10 +10,12 @@ use std::{
 use crate::sync::data::AlbumTsv;
 
 pub fn get_last_album_added(file: &Path) -> Result<AlbumTsv> {
-    let open_file = OpenOptions::new()
-        .read(true)
-        .open(file)
-        .with_context(|| format!("❌ Failed to open file from PathBuf for reading: {:#?} ❌", &file))?;
+    let open_file = OpenOptions::new().read(true).open(file).with_context(|| {
+        format!(
+            "❌ Failed to open file from PathBuf for reading: {:#?} ❌",
+            &file
+        )
+    })?;
 
     let lines: Vec<_> = BufReader::new(open_file)
         .lines()
@@ -30,23 +33,39 @@ pub fn get_last_album_added(file: &Path) -> Result<AlbumTsv> {
 ///
 /// This does not assume any sort order to `albums`.
 pub fn add_albums_to_file(albums: Vec<AlbumTsv>, file: &Path) -> Result<()> {
+    debug!(
+        "🪵 add_albums_to_file called with: albums={:#?} file={:#?}",
+        albums, file
+    );
     debug_assert!(!albums.is_empty());
 
     let mut open_file = OpenOptions::new()
         .append(true)
         .open(file)
-        .with_context(|| format!("❌ Failed to open file from PathBuf for writing: {:#?} ❌", &file))?;
+        .with_context(|| {
+            format!(
+                "❌ Failed to open file from PathBuf for writing: {:#?} ❌",
+                &file
+            )
+        })?;
 
     let mut sorted = albums.clone();
+
     sorted.sort_by(|a, b| {
         a.0.split('\t').collect::<Vec<&str>>()[4].cmp(b.0.split('\t').collect::<Vec<&str>>()[4])
     });
+
+    debug!("sorted albums: {:#?}", sorted);
 
     for s in &sorted {
         writeln!(open_file, "{}", s.0)?;
     }
 
-    println!("\n📝 Wrote {} albums to file {} 📝", sorted.len(), file.display());
+    println!(
+        "\n📝 Wrote {} albums to file {} 📝",
+        sorted.len(),
+        file.display()
+    );
 
     Ok(())
 }

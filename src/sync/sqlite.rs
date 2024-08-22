@@ -1,6 +1,7 @@
 use std::path::Path;
 
 use anyhow::Result;
+use log::debug;
 use rusqlite::{Connection, OpenFlags};
 
 use crate::sync::data::DateAdded;
@@ -8,6 +9,10 @@ use crate::sync::data::DateAdded;
 use super::data::{Album, AlbumArtist, AlbumName, AlbumTsv, Playlist, ReleaseYear, TrackCount};
 
 pub fn get_the_most_recent_starred_albums(db: &Path, offset: usize) -> Result<Vec<AlbumTsv>> {
+    debug!(
+        "🪵 get_the_most_recent_starred_albums called with db={:#?}, offset={}",
+        db, offset
+    );
     let limit = 25;
 
     let conn = Connection::open_with_flags(
