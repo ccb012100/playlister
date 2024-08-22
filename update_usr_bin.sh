@@ -10,6 +10,8 @@ if [[ -f "$util" ]]; then
     rm "$util"
 fi
 
+echo ''
+
 cp -uv "$scriptdir"/target/release/playlist-util "$util"
 
-echo DONE
+echo -e '\n✔ DONE'
