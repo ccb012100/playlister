@@ -21,7 +21,7 @@ pub(crate) fn sync(source: &Path, destination: &Path) -> Result<()> {
     })?;
 
     println!(
-        "\nlast album added to {:#?}:\n\n\t<{}>",
+        "\nlast album added to {:#?}:\n\n\t{}",
         destination, last_added_to_tsv
     );
 
@@ -48,7 +48,7 @@ pub(crate) fn sync(source: &Path, destination: &Path) -> Result<()> {
 
         for a in starred_albums {
             if a == last_added_to_tsv {
-                debug!("\n🪵 Found match: <{:#?}> 🔍", a);
+                debug!("\n🪵 Found match: {:#?} 🔍", a);
                 found_match = true;
                 break;
             }
