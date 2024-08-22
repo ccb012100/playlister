@@ -1,4 +1,8 @@
-use crate::{cli::subcommands::FileType, search};
+use crate::{
+    cli::subcommands::FileType,
+    search,
+    sync::{self},
+};
 use crate::{
     output::search::SearchOutput,
     search::data::{SearchQuery, SearchType},
@@ -69,13 +73,23 @@ impl Cli {
                 Ok(())
             }
             Subcommands::Sync {
-                file_name,
-                file_type,
+                source,
+                destination,
             } => {
-                info!("Syncing...");
+                info!("ℹ️ Syncing...");
 
-                let _path: PathBuf = file_type.get_path(file_name)?;
-                todo!()
+                let source_path: PathBuf = FileType::Sqlite.get_path(source)?;
+                let destination_path: PathBuf = FileType::Tsv.get_path(destination)?;
+
+                sync::sync(&source_path, &destination_path).with_context(|| {
+                    format!(
+                        "❌ Syncing {:#?} to {:#?} failed! ❌",
+                        source_path, destination_path
+                    )
+                })?;
+
+                println!("\n✔️ Sync complete! ✔️");
+                Ok(())
             }
         }
     }

@@ -10,7 +10,9 @@ fi
 cargo build || exit 1
 
 echo sorted_albums "$term"
-target/debug/playlist-util tsv ~/bin/albums/sorted_albums.tsv search "$term" || exit 1
+time target/debug/playlist-util search tsv ~/bin/albums/sorted_albums.tsv "$term" || exit
 
 echo all_albums "$term"
-target/debug/playlist-util tsv ~/bin/albums/all_albums.tsv search --include-playlist-name "$term"
+time target/debug/playlist-util search tsv ~/bin/albums/starred_albums.tsv --include-playlist-name "$term"
+
+# time target/debug/playlist-util sync --source ~/playlister.db --destination ~/bin/albums/starred_albums.tsv

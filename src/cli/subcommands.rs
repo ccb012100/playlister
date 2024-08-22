@@ -42,12 +42,13 @@ pub(crate) enum Subcommands {
     },
     /// Sync playlists
     Sync {
-        /// File type to perform action against
-        #[clap(value_enum)]
-        file_type: FileType,
+        /// The full path of the sqlite file to sync from
+        #[arg(short, long)]
+        source: String,
 
-        /// File to use
-        file_name: String,
+        /// The full path of the tsv file to sync to
+        #[arg(short, long)]
+        destination: String,
     },
 }
 #[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
