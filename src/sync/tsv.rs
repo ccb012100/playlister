@@ -1,4 +1,5 @@
-use anyhow::{Context, Result};
+use crate::sync::anyhow;
+use anyhow::{self, Context, Result};
 use log::debug;
 use std::{
     fs::OpenOptions,
@@ -37,7 +38,12 @@ pub fn add_albums_to_file(albums: Vec<AlbumTsv>, file: &Path) -> Result<()> {
         "🪵 add_albums_to_file called with: albums={:#?} file={:#?}",
         albums, file
     );
-    debug_assert!(!albums.is_empty());
+
+    if albums.is_empty() {
+        return Err(anyhow!(
+            "\n❌ add_albums_to_file called with empty albums vector! ❌"
+        ));
+    }
 
     let mut open_file = OpenOptions::new()
         .append(true)
