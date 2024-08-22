@@ -48,6 +48,10 @@ pub(crate) fn sync(source: &Path, destination: &Path) -> Result<()> {
             albums_to_add.push(a);
         }
 
+        if found_match {
+            break;
+        }
+
         starred_albums =
             sqlite::get_the_most_recent_starred_albums(source, offset).with_context(|| {
                 format!(
