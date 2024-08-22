@@ -3,16 +3,18 @@ use super::{data::Album, SearchResults};
 use anyhow::{Context, Result};
 use log::debug;
 use std::{
-    fs::File,
+    fs::{File, OpenOptions},
     io::{self, BufRead},
     str::FromStr,
 };
 
 /// Search a `.tsv` file
 pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
-    debug!("search called with: {:#?}", query);
+    debug!("🪵 search called with: {:#?}", query);
 
-    let file: File = File::open(query.file)
+    let file: File = OpenOptions::new()
+        .read(true)
+        .open(query.file)
         .with_context(|| format!("Failed to open File from PathBuf: {:#?}", &query.file))?;
 
     let lines = io::BufReader::new(file).lines();
@@ -37,7 +39,7 @@ pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>
         }
     }
 
-    debug!("Found {} matches.", results.len());
+    debug!("🪵 Found {} matches.", results.len());
 
     Ok(SearchResults {
         results: Album::sort_by_field(results, query.sort),

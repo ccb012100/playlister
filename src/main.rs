@@ -12,7 +12,7 @@ fn main() -> Result<(), Error> {
 
     cli.initialize_logger();
 
-    debug!("parsed Cli: {:#?}", &cli);
+    debug!("🪵 parsed Cli: {:#?}", &cli);
 
     cli.run_subcommand()
 }

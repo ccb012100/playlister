@@ -4,7 +4,7 @@ set -Eeou pipefail
 if [[ $# -gt 0 ]]; then
     term="$*"
 else
-    term="hammond"
+    term="'Nuff"
 fi
 
 cargo build || exit 1

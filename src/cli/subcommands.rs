@@ -100,15 +100,15 @@ impl FileType {
                 match path.try_exists()? {
                     true => Ok(path),
                     false => {
-                        let err_msg = format!("File \"{}\" does not exist", file_name);
-                        debug!("{}", err_msg);
+                        let err_msg = format!("❌ File \"{}\" does not exist ❌", file_name);
+                        debug!("🪵 {}", err_msg);
                         Err(anyhow!(err_msg))
                     }
                 }
             }
             false => {
-                let err_msg = format!("File name format \"{}\" is invalid.", { file_name });
-                debug!("{}", err_msg);
+                let err_msg = format!("❌ File name format \"{}\" is invalid ❌", { file_name });
+                debug!("🪵 {}", err_msg);
                 Err(anyhow!(err_msg))
             }
         }

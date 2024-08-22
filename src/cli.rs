@@ -1,8 +1,10 @@
 use crate::{cli::subcommands::FileType, search};
 use crate::{
-    output::Output,
+    output::search::SearchOutput,
     search::data::{SearchQuery, SearchType},
 };
+
+use anyhow::Context;
 use clap::arg;
 use clap::Parser;
 use log::{info, LevelFilter};
@@ -40,7 +42,7 @@ impl Cli {
                 sort,
                 term,
             } => {
-                info!("Searching...");
+                info!("ℹ️ Searching...");
 
                 let path: PathBuf = file_type.get_path(file_name)?;
 
@@ -56,11 +58,12 @@ impl Cli {
                     sort: search::data::SortFields::from(*sort),
                 };
 
-                let results: search::data::SearchResults<'_> = search::search(&query)?;
+                let results: search::data::SearchResults<'_> = search::search(&query)
+                    .with_context(|| format!("❌ Search failed: {:#?} ❌", query))?;
 
                 match no_format {
-                    true => Output::search_results(&results),
-                    false => Output::search_results_table(&results),
+                    true => SearchOutput::search_results(&results),
+                    false => SearchOutput::search_results_table(&results),
                 }
 
                 Ok(())
@@ -88,6 +91,6 @@ impl Cli {
 
         env_logger::Builder::new().filter_level(log_level).init();
 
-        info!("logging initialized at level {}", log_level);
+        info!("ℹ️ logging initialized at level {}", log_level);
     }
 }
