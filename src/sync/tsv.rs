@@ -64,7 +64,7 @@ pub fn add_albums_to_file(albums: Vec<AlbumTsv>, file: &Path) -> Result<()> {
     debug!("sorted albums: {:#?}", sorted);
 
     for s in &sorted {
-        writeln!(open_file, "{}", s.0)?;
+        write!(open_file, "\n{}", s.0)?;
     }
 
     println!(
