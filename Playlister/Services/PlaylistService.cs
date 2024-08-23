@@ -110,8 +110,10 @@ namespace Playlister.Services
                     playlist.LoggingTag, playlist.Count, allItems.Count);
             }
 
+            string playlistId = playlist.Id;
+
             ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(x =>
-                    new DistinctPlaylistTracks.DistinctPlaylistTrack(playlist.Id, x.Track.Id, x.AddedAt))
+                    new DistinctPlaylistTracks.DistinctPlaylistTrack(playlistId, x.Track.Id, x.AddedAt))
                 .ToImmutableArray();
 
             playlist = playlist with { CountUnique = uniqueTracks.Length };
