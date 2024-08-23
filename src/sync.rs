@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Context, Ok, Result};
-use data::AlbumTsv;
+use data::Album;
 use log::debug;
 use std::path::Path;
 
@@ -25,35 +25,36 @@ pub(crate) fn sync(source: &Path, destination: &Path) -> Result<()> {
         destination, last_added_to_tsv
     );
 
-    let mut starred_albums: Vec<AlbumTsv> = sqlite::get_the_most_recent_starred_albums(source, 0)
+    let mut starred_albums: Vec<Album> = sqlite::get_the_most_recent_starred_albums(source, 0)
         .with_context(|| {
-        format!(
-            "❌ Failed to get the most recent starred albums: {:#?} ❌",
-            destination
-        )
-    })?;
+            format!(
+                "❌ Failed to get the most recent starred albums: {:#?} ❌",
+                destination
+            )
+        })?;
 
     debug!(
         "🪵 most recent starred albums, offset=0: {:#?}",
         starred_albums
     );
 
-    let mut albums_to_add: Vec<AlbumTsv> = Vec::new();
+    let mut albums_to_add: Vec<Album> = Vec::new();
     let mut offset = 0;
     let mut found_match = false;
     let max_starred_albums_to_fetch = 100;
+    let last_album_added = last_added_to_tsv.to_album();
 
     while !found_match && !starred_albums.is_empty() && offset < max_starred_albums_to_fetch {
         offset += starred_albums.len();
 
-        for a in starred_albums {
-            if a == last_added_to_tsv {
-                debug!("\n🪵 Found match: {:#?} 🔍", a);
+        for album in starred_albums {
+            if album == last_album_added {
+                debug!("\n🪵 Found match: {:#?} 🔍", album);
                 found_match = true;
                 break;
             }
 
-            albums_to_add.push(a);
+            albums_to_add.push(album);
         }
 
         if found_match {
