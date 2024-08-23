@@ -5,15 +5,13 @@ using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
 
-
 #pragma warning disable 8618
 
 namespace Playlister.Models
 {
     public record Album
     {
-        [JsonPropertyName("album_type")]
-        public string AlbumType { get; init; }
+        [JsonPropertyName("album_type")] public string AlbumType { get; init; }
 
         public IEnumerable<Artist> Artists { get; init; }
 
@@ -22,7 +20,7 @@ namespace Playlister.Models
         public string Name { get; init; }
 
         /// <summary>
-        /// The date the album was first released, for example “1981-12-15”. Depending on the precision, it might be shown as “1981” or “1981-12”.
+        ///     The date the album was first released, for example “1981-12-15”. Depending on the precision, it might be shown as “1981” or “1981-12”.
         /// </summary>
         [JsonPropertyName("release_date")]
         public string ReleaseDate { get; init; }
@@ -30,8 +28,7 @@ namespace Playlister.Models
         [JsonPropertyName("release_date_precision")]
         public string ReleaseDatePrecision { get; init; }
 
-        [JsonPropertyName("total_tracks")]
-        public int TotalTracks { get; init; }
+        [JsonPropertyName("total_tracks")] public int TotalTracks { get; init; }
 
         [JsonPropertyName("date_of_release")]
         public DateTime DateOfRelease
@@ -58,10 +55,10 @@ namespace Playlister.Models
         }
 
         /// <summary>
-        /// Gets a pairing of the Album's Id with <see cref="Album.Artists"/>'s Id
+        ///     Gets a pairing of the Album's Id with <see cref="Album.Artists" />'s Id
         /// </summary>
-        /// <returns><see cref="AlbumArtistPair"/> for every <see cref="Artist"/> in <see cref="Album.Artists"/></returns>
+        /// <returns><see cref="AlbumArtistPair" /> for every <see cref="Artist" /> in <see cref="Album.Artists" /></returns>
         public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings() =>
-            Artists.Select(x => new AlbumArtistPair(AlbumId: Id, ArtistId: x.Id)).ToImmutableArray();
+            Artists.Select(x => new AlbumArtistPair(Id, x.Id)).ToImmutableArray();
     }
 }

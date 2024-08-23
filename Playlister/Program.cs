@@ -12,22 +12,16 @@ namespace Playlister
 {
     public static class Program
     {
-        public static void Main(string[] args)
-        {
-            CreateWebHostBuilder(args).Build().Run();
-        }
+        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
 
-        internal static IWebHostBuilder CreateWebHostBuilder(string[] args)
-        {
-            return WebHost
+        internal static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost
                 .CreateDefaultBuilder(args)
                 .ConfigureLogging(
-                    (context, builder) =>
-                    { builder.AddFile(context.Configuration.GetSection("Logging")); }
+                    (context, builder) => { builder.AddFile(context.Configuration.GetSection("Logging")); }
                 )
                 .UseKestrel(LogDevelopmentConfiguration)
                 .UseStartup<Startup>();
-        }
 
         private static void LogDevelopmentConfiguration(
             WebHostBuilderContext context,
@@ -40,7 +34,9 @@ namespace Playlister
                 IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
 
                 if (bool.Parse(printEnv.Value!))
-                { ShowConfig(context.Configuration); }
+                {
+                    ShowConfig(context.Configuration);
+                }
             }
         }
 

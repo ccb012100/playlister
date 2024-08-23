@@ -22,9 +22,14 @@ namespace Playlister.Utilities
         public string GetAccessTokenFromCurrentHttpContext()
         {
             if (_contextAccessor is null)
+            {
                 throw new InvalidOperationException("IHttpContextAccessor is null");
+            }
+
             if (_contextAccessor.HttpContext is null)
+            {
                 throw new InvalidOperationException("httpContext");
+            }
 
             if (
                 !AuthenticationHeaderValue.TryParse(
@@ -45,6 +50,7 @@ namespace Playlister.Utilities
                 );
 
             _logger.LogDebug("Found access token {Token} on HttpContext", token);
+
             return token;
         }
     }

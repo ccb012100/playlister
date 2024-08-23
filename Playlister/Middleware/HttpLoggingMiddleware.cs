@@ -10,22 +10,20 @@ using Microsoft.Extensions.Logging;
 namespace Playlister.Middleware
 {
     /// <summary>
-    /// Logs HTTP requests.
-    /// Used on `RefitApi` registration to see Request/Response info for easier debugging.
-    /// Adapted from <https://github.com/reactiveui/refit/issues/258#issuecomment-243394076>.
-    /// To avoid performance impact, it's configured in
-    /// <see cref="Extensions.StartupExtensions.AddHttpLoggingMiddleware"/> to only be added on Startup when
-    /// <see cref="Configuration.DebuggingOptions.UseHttpLoggingMiddleware"/> is set to `true`.
+    ///     Logs HTTP requests.
+    ///     Used on `RefitApi` registration to see Request/Response info for easier debugging.
+    ///     Adapted from [https://github.com/reactiveui/refit/issues/258#issuecomment-243394076].
+    ///     To avoid performance impact, it's configured in
+    ///     <see cref="Extensions.StartupExtensions.AddHttpLoggingMiddleware" /> to only be added on Startup when
+    ///     <see cref="Configuration.DebuggingOptions.UseHttpLoggingMiddleware" /> is set to `true`.
     /// </summary>
-
     public class HttpLoggingMiddleware : DelegatingHandler
     {
         private readonly ILogger<HttpLoggingMiddleware> _logger;
 
-        public HttpLoggingMiddleware(ILogger<HttpLoggingMiddleware> logger)
-        {
-            _logger = logger;
-        }
+        private readonly string[] _types = { "html", "text", "xml", "json", "txt", "x-www-form-urlencoded" };
+
+        public HttpLoggingMiddleware(ILogger<HttpLoggingMiddleware> logger) => _logger = logger;
 
         protected override async Task<HttpResponseMessage> SendAsync(
             HttpRequestMessage request,
@@ -33,6 +31,7 @@ namespace Playlister.Middleware
         )
         {
             string? msg;
+
             HttpResponseMessage? response,
                 resp;
 
@@ -42,6 +41,7 @@ namespace Playlister.Middleware
                 msg = $"[{id} -  Request]";
 
                 _logger.LogDebug("{Msg}========Start==========", msg);
+
                 _logger.LogDebug(
                     "{Msg} {Method} {PathAndQuery} {Scheme}/{Version}",
                     msg,
@@ -50,6 +50,7 @@ namespace Playlister.Middleware
                     req.RequestUri.Scheme,
                     req.Version
                 );
+
                 _logger.LogDebug(
                     "{Msg} Host: {Scheme}://{Host}",
                     msg,
@@ -107,7 +108,7 @@ namespace Playlister.Middleware
                 resp = response;
 
                 _logger.LogDebug(
-                    "{Msg} {scheme}/{version} {StatusCode} {ReasonPhrase}",
+                    "{Msg} {Scheme}/{Version} {StatusCode} {ReasonPhrase}",
                     msg,
                     req.RequestUri.Scheme.ToUpper(),
                     resp.Version,
@@ -152,18 +153,9 @@ namespace Playlister.Middleware
             }
 
             _logger.LogDebug("{Msg}==========End==========", msg);
+
             return response;
         }
-
-        private readonly string[] _types =
-        {
-            "html",
-            "text",
-            "xml",
-            "json",
-            "txt",
-            "x-www-form-urlencoded"
-        };
 
         private bool IsTextBasedContentType(HttpHeaders headers)
         {

@@ -6,12 +6,15 @@ namespace Playlister.Models
 {
     public class CacheObject<T>
     {
-        public bool Initialized { get; set; }
+        private bool Initialized { get; set; }
         public ConcurrentDictionary<string, T> Items { get; } = new();
 
-        public async void Initialize(Func<Task> initializationFn)
+        public async Task Initialize(Func<Task> initializationFn)
         {
-            if (Initialized) return;
+            if (Initialized)
+            {
+                return;
+            }
 
             await initializationFn();
 

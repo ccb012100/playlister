@@ -9,7 +9,7 @@ namespace Playlister.RefitClients
     public interface ISpotifyApi
     {
         /// <summary>
-        /// Get detailed profile information about the current user (including the current user’s username).
+        ///     Get detailed profile information about the current user (including the current user’s username).
         /// </summary>
         /// <param name="token"></param>
         /// <param name="ct"></param>
@@ -18,7 +18,7 @@ namespace Playlister.RefitClients
         Task<PrivateUserObject> GetCurrentUserAsync([Authorize] string token, CancellationToken ct);
 
         /// <summary>
-        /// Get playlist.
+        ///     Get playlist.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="playlistId">Spotify Id of the playlist</param>
@@ -29,7 +29,7 @@ namespace Playlister.RefitClients
             CancellationToken ct);
 
         /// <summary>
-        /// Get a list of the playlists owned or followed by the current Spotify user.
+        ///     Get a list of the playlists owned or followed by the current Spotify user.
         /// </summary>
         /// <param name="token"></param>
         /// <param name="offset">The index of the first item to return.</param>
@@ -41,9 +41,9 @@ namespace Playlister.RefitClients
             int? limit, CancellationToken ct);
 
         /// <summary>
-        /// Get full details of the items of a playlist owned by a Spotify user.
-        /// Applying the fields query
-        /// <c>fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))</c>
+        ///     Get full details of the items of a playlist owned by a Spotify user.
+        ///     Applying the fields query
+        ///     <c>fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))</c>
         /// </summary>
         /// <param name="token"></param>
         /// <param name="playlistId">Playlist's Spotify Id</param>

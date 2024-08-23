@@ -6,7 +6,7 @@ namespace Playlister.Models.SpotifyApi
     public record ExternalUrlObject
     {
         /// <summary>
-        /// The Spotify URL for the object.
+        ///     The Spotify URL for the object.
         /// </summary>
         public Uri Spotify { get; init; }
     }

@@ -9,7 +9,7 @@ namespace Playlister.Extensions
     public static class IDbConnectionExtensions
     {
         /// <summary>
-        /// Run a parameterized query that upserts <paramref name="items"/>
+        ///     Run a parameterized query that upserts <paramref name="items" />
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="items"></param>
@@ -18,10 +18,10 @@ namespace Playlister.Extensions
         /// <param name="dbTxn"></param>
         /// <returns>The number of items affected</returns>
         public static async Task UpsertAsync<T>(this IDbConnection conn,
-               string sqlQuery,
-               ImmutableArray<T> items,
-               IDbTransaction dbTxn
-           )
+            string sqlQuery,
+            ImmutableArray<T> items,
+            IDbTransaction dbTxn
+        )
         {
             Debug.Assert(!items.IsDefaultOrEmpty);
             Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
@@ -32,7 +32,7 @@ namespace Playlister.Extensions
         }
 
         /// <summary>
-        /// Run a parameterized query that upserts <paramref name="item"/>
+        ///     Run a parameterized query that upserts <paramref name="item" />
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
@@ -41,10 +41,10 @@ namespace Playlister.Extensions
         /// <param name="dbTxn"></param>
         /// <returns></returns>
         public static async Task UpsertAsync<T>(this IDbConnection conn,
-               string sqlQuery,
-               T item,
-               IDbTransaction dbTxn
-           )
+            string sqlQuery,
+            T item,
+            IDbTransaction dbTxn
+        )
         {
             Debug.Assert(item is not null);
             Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
@@ -54,9 +54,8 @@ namespace Playlister.Extensions
             await conn.ExecuteAsync(sqlQuery, item, dbTxn);
         }
 
-
         /// <summary>
-        /// Run a parameterized query that returns an int
+        ///     Run a parameterized query that returns an int
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <param name="conn"></param>
@@ -69,7 +68,7 @@ namespace Playlister.Extensions
             string sqlQuery,
             ImmutableArray<T> items,
             IDbTransaction dbTxn
-           )
+        )
         {
             Debug.Assert(!items.IsDefaultOrEmpty);
             Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
@@ -80,7 +79,7 @@ namespace Playlister.Extensions
         }
 
         /// <summary>
-        /// Run a query that returns an int
+        ///     Run a query that returns an int
         /// </summary>
         /// <param name="conn"></param>
         /// <param name="sqlQuery"></param>
@@ -90,7 +89,7 @@ namespace Playlister.Extensions
             this IDbConnection conn,
             string sqlQuery,
             IDbTransaction dbTxn
-           )
+        )
         {
             Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
             Debug.Assert(conn is not null);

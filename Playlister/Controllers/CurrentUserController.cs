@@ -21,8 +21,8 @@ namespace Playlister.Controllers
     [Route("api/user")]
     public class CurrentUserController : BaseController
     {
-        private readonly ILogger<CurrentUserController> _logger;
         private readonly IHostApplicationLifetime _appLifetime;
+        private readonly ILogger<CurrentUserController> _logger;
 
         public CurrentUserController(
             IMediator mediator,
@@ -63,6 +63,7 @@ namespace Playlister.Controllers
             );
 
             sw.Stop();
+
             _logger.LogInformation(
                 "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
                 lists.Count(),
@@ -90,6 +91,7 @@ namespace Playlister.Controllers
                 total,
                 sw.Elapsed.ToLogString()
             );
+
             return NoContent();
         }
 
@@ -106,6 +108,7 @@ namespace Playlister.Controllers
                 Thread.Sleep(1000);
                 _appLifetime.StopApplication();
             });
+
             return NoContent();
         }
     }

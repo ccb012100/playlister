@@ -1,4 +1,3 @@
-using System;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
@@ -8,7 +7,9 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken, ApiController, Route("api/playlists/{playlistId}")]
+    [ValidateToken]
+    [ApiController]
+    [Route("api/playlists/{playlistId}")]
     public class PlaylistController : BaseController
     {
         public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility)

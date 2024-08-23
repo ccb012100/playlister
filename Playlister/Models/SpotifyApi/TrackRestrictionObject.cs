@@ -1,4 +1,3 @@
-
 #pragma warning disable 8618
 
 namespace Playlister.Models.SpotifyApi

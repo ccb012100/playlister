@@ -1,5 +1,6 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,13 +14,13 @@ namespace Playlister.Services
     {
         private readonly ISpotifyApi _spotifyApi;
 
-        private HttpClient Client { get; }
-
         public SpotifyApiService(HttpClient client, ISpotifyApi spotifyApi)
         {
             _spotifyApi = spotifyApi;
             Client = client;
         }
+
+        private HttpClient Client { get; }
 
         public async Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
             string accessToken,
@@ -30,7 +31,7 @@ namespace Playlister.Services
         )
         {
             Client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
             return await _spotifyApi.GetPlaylistTracksAsync(
                 accessToken,
@@ -48,7 +49,7 @@ namespace Playlister.Services
         )
         {
             Client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
             return (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>(next, ct))!;
         }
@@ -67,7 +68,7 @@ namespace Playlister.Services
         )
         {
             Client.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
+                new AuthenticationHeaderValue("Bearer", accessToken);
 
             return (
                 await Client.GetFromJsonAsync<PagingObject<SimplifiedPlaylistObject>>(next, ct)

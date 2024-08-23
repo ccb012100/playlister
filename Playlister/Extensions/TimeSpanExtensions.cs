@@ -1,15 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using Playlister.CQRS.Commands;
 
 namespace Playlister.Extensions
 {
     public static class TimeSpanExtensions
     {
-
         /// <summary>
-        /// Format <paramref name="elapsed"/> as a human-friendly number with units.
+        ///     Format <paramref name="elapsed" /> as a human-friendly number with units.
         /// </summary>
         /// <param name="elapsed"></param>
         /// <returns></returns>
@@ -47,7 +45,7 @@ namespace Playlister.Extensions
         }
 
         /// <summary>
-        /// Format <paramref name="seconds"/> as seconds and milliseconds.
+        ///     Format <paramref name="seconds" /> as seconds and milliseconds.
         /// </summary>
         /// <param name="seconds">A span of time in seconds</param>
         /// <param name="precision">The number of significant figures to use for the milliseconds portion</param>
@@ -63,11 +61,10 @@ namespace Playlister.Extensions
         }
 
         /// <summary>
-        /// Format <paramref name="d"/> as a string with up <paramref name="precision"/> number of signifcant digits
-        /// (trailing zeroes will be removed)
+        ///     Format <paramref name="d" /> as a string with up <paramref name="precision" /> number of signifcant digits
+        ///     (trailing zeroes will be removed)
         /// </summary>
         /// <param name="d"></param>
-        /// <param name="units"></param>
         /// <param name="precision">The number of significant digits</param>
         /// <returns></returns>
         private static string Format(this double d, uint precision)

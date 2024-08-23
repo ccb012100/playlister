@@ -39,20 +39,16 @@ namespace Playlister.Extensions
                 .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
         }
 
-        public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            return services
+        public static IServiceCollection AddServices(this IServiceCollection services) =>
+            services
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddScoped<IPlaylistService, PlaylistService>()
                 .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
-        }
 
-        public static IServiceCollection AddMiddleware(this IServiceCollection services)
-        {
-            return services
+        public static IServiceCollection AddMiddleware(this IServiceCollection services) =>
+            services
                 .AddTransient<HttpLoggingMiddleware>()
                 .AddTransient<SpotifyAuthHeaderMiddleware>();
-        }
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
         {
@@ -84,10 +80,7 @@ namespace Playlister.Extensions
             services
                 .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient(
-                    (svc, c) =>
-                    {
-                        c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress;
-                    }
+                    (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
                 )
                 .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
@@ -95,10 +88,7 @@ namespace Playlister.Extensions
             services
                 .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
                 .ConfigureHttpClient(
-                    (svc, c) =>
-                    {
-                        c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress;
-                    }
+                    (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
                 )
                 .AddHttpLoggingMiddleware(debugOptions)
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
@@ -111,7 +101,7 @@ namespace Playlister.Extensions
             IOptions<DebuggingOptions>? debugOptions
         )
         {
-            if (debugOptions is { } && debugOptions.Value.UseHttpLoggingMiddleware)
+            if (debugOptions is not null && debugOptions.Value.UseHttpLoggingMiddleware)
             {
                 httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>();
             }
@@ -139,12 +129,12 @@ namespace Playlister.Extensions
             this IApplicationBuilder builder,
             IConfiguration config,
             IWebHostEnvironment env
-        )
-        {
-            return builder.UseEndpoints(endpoints =>
+        ) =>
+            builder.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())
                     // view app settings at ~/debug
+                {
                     endpoints.MapGet(
                         "/debug",
                         async context =>
@@ -152,6 +142,7 @@ namespace Playlister.Extensions
                                 (config as IConfigurationRoot)!.GetDebugView()
                             )
                     );
+                }
 
                 endpoints.MapGet(
                     "/info",
@@ -160,7 +151,6 @@ namespace Playlister.Extensions
 
                 endpoints.MapControllers();
             });
-        }
 
         public static IServiceCollection AddHttpClientWithPollyPolicy(
             this IServiceCollection services

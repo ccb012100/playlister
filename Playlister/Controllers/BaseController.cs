@@ -5,17 +5,12 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ApiController, Route("api/[controller]")]
+    [ApiController]
+    [Route("api/[controller]")]
     public abstract class BaseController : Controller
     {
-        internal readonly IMediator _mediator;
         private readonly IAccessTokenUtility? _accessTokenUtility;
-
-        internal string AccessToken =>
-            _accessTokenUtility?.GetAccessTokenFromCurrentHttpContext()
-            ?? throw new InvalidOperationException(
-                "This controller does not have an IAccessTokenUtility"
-            );
+        internal readonly IMediator _mediator;
 
         protected BaseController(IMediator mediator, IAccessTokenUtility accessTokenUtility)
         {
@@ -23,9 +18,12 @@ namespace Playlister.Controllers
             _accessTokenUtility = accessTokenUtility;
         }
 
-        protected BaseController(IMediator mediator)
-        {
-            _mediator = mediator;
-        }
+        protected BaseController(IMediator mediator) => _mediator = mediator;
+
+        internal string AccessToken =>
+            _accessTokenUtility?.GetAccessTokenFromCurrentHttpContext()
+            ?? throw new InvalidOperationException(
+                "This controller does not have an IAccessTokenUtility"
+            );
     }
 }

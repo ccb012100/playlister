@@ -36,13 +36,15 @@ namespace Playlister.Middleware
 
             if (httpContext is not null)
             {
-                var accessToken = (string?)httpContext.Items["AccessToken"];
+                string? accessToken = (string?)httpContext.Items["AccessToken"];
 
                 if (!string.IsNullOrWhiteSpace(accessToken))
+                {
                     request.Headers.Authorization = new AuthenticationHeaderValue(
                         "Bearer",
                         accessToken
                     );
+                }
             }
             else
             {
@@ -50,6 +52,7 @@ namespace Playlister.Middleware
                     "No http context was found for request:\n{RequestUri}",
                     request.RequestUri
                 );
+
                 throw new InvalidOperationException();
             }
 

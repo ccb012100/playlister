@@ -37,8 +37,8 @@ namespace Playlister.CQRS.Handlers
              * &state=34fFs29kd09
              */
             StringBuilder builder = new StringBuilder(
-                _options.AccountsApiBaseAddress.OriginalString
-            )
+                    _options.AccountsApiBaseAddress.OriginalString
+                )
                 .Append("/authorize?")
                 .Append("response_type=code")
                 .Append($"&client_id={_options.ClientId}")

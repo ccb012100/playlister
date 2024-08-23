@@ -9,17 +9,17 @@ namespace Playlister.Data
         public const string Track = "Track";
 
         /// <summary>
-        /// Instances of a Track in a Playlist
+        ///     Instances of a Track in a Playlist
         /// </summary>
         public const string PlaylistTrack = "PlaylistTrack";
 
         /// <summary>
-        /// Album/Artist many-to-many relationship
+        ///     Album/Artist many-to-many relationship
         /// </summary>
         public const string AlbumArtist = "AlbumArtist";
 
         /// <summary>
-        /// Track/Artist many-to-many relationship
+        ///     Track/Artist many-to-many relationship
         /// </summary>
         public const string TrackArtist = "TrackArtist";
     }

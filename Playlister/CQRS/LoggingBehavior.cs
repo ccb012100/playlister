@@ -7,7 +7,7 @@ using Playlister.Utilities;
 namespace Playlister.CQRS
 {
     /// <summary>
-    /// Log Request/Response bodies from Mediatr Handlers.
+    ///     Log Request/Response bodies from Mediatr Handlers.
     /// </summary>
     /// <typeparam name="TRequest"></typeparam>
     /// <typeparam name="TResponse"></typeparam>
@@ -16,10 +16,7 @@ namespace Playlister.CQRS
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
 
-        public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
-        {
-            _logger = logger;
-        }
+        public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
 
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {

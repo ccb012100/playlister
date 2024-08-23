@@ -15,7 +15,7 @@ using Playlister.Utilities;
 
 namespace Playlister.Services
 {
-    public partial class PlaylistService : IPlaylistService
+    public class PlaylistService : IPlaylistService
     {
         private static readonly CacheObject<Playlist> s_playlistCache = new();
         private static readonly CacheObject<string> s_missingTracksCache = new();
@@ -37,9 +37,164 @@ namespace Playlister.Services
             _api = api;
             _logger = logger;
 
-            s_playlistCache.Initialize(PopulateCaches);
+            _ = s_playlistCache.Initialize(PopulateCaches);
         }
+
+        /// <summary>
+        ///     Update the data for the specified Playlist
+        /// </summary>
+        /// <param name="accessToken"></param>
+        /// <param name="playlist"></param>
+        /// <param name="offset"></param>
+        /// <param name="limit"></param>
+        /// <param name="ct"></param>
+        /// <param name="forceSync">If <see langword="true" />, sync the playlist regardless of whether it's changed since the last sync</param>
+        /// <returns></returns>
+        private async Task UpdatePlaylistAsync(
+            string accessToken,
+            Playlist playlist,
+            int offset,
+            int limit,
+            CancellationToken ct,
+            bool forceSync = false
+        )
+        {
+            _logger.LogDebug(
+                "{Playlist} Updating playlist...",
+                playlist.LoggingTag
+            );
+
+            if (!forceSync && IsCurrent(playlist) && HasAllTracks(playlist))
+            {
+                _logger.LogDebug("{PlaylistTag} playlist is up-to-date. Skipping sync", playlist.LoggingTag);
+
+                return;
+            }
+
+            Stopwatch sw = new();
+            sw.Start();
+
+            // get first page of playlist items
+            PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync(
+                accessToken,
+                playlist.Id,
+                offset,
+                limit,
+                ct
+            );
+
+            /*
+             * NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
+             * the thousands; I would like to update this to only grab changes made after the last sync, but the
+             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
+             */
+
+            /*
+             * PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
+             *       Then grab those pages in parallel and combine into a single collection.
+             */
+
+            // We want to get all the items for the playlist so that they can be inserted into the repository in a single Transaction
+            List<PlaylistItem> allItems = page.Items.ToList();
+
+            while (page.Next is not null)
+            {
+                page = await _api.GetPlaylistTracksAsync(accessToken, page.Next, ct);
+                allItems.AddRange(page.Items);
+            }
+
+            if (allItems.Count != playlist.Count)
+            {
+                _logger.LogWarning(
+                    "{PlaylistTag} The number of tracks returned from the API does not match Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}",
+                    playlist.LoggingTag, playlist.Count, allItems.Count);
+            }
+
+            ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(x =>
+                    new DistinctPlaylistTracks.DistinctPlaylistTrack(playlist.Id, x.Track.Id, x.AddedAt))
+                .ToImmutableArray();
+
+            playlist = playlist with { CountUnique = uniqueTracks.Length };
+
+            _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})", playlist.LoggingTag,
+                uniqueTracks.Length, playlist.Count);
+
+            await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
+
+            // only cache after data has been written to database
+            Cache(playlist);
+            CacheUpdatedPlaylist(playlist);
+            DecacheMissingTracks(playlist);
+
+            sw.Stop();
+
+            _logger.LogInformation(
+                "{PlaylistTag} Updated playlist. Total time: {Elapsed}\n",
+                playlist.LoggingTag,
+                sw.Elapsed.ToLogString()
+            );
+        }
+
+        /// <summary>
+        ///     Indicates whether the database needs to be synced with Spotify for the specified Playlist
+        /// </summary>
+        /// <param name="playlist"></param>
+        /// <returns></returns>
+        private bool IsCurrent(Playlist playlist)
+        {
+            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
+
+            if (cachedPlaylist is null) // If the playlist isn't in the cache, then we haven't synced it before
+            {
+                _logger.LogDebug("{PlaylistTag} was not found in the cache:\n\tSnapshotId:\t{SnapshotId}", playlist.LoggingTag, playlist.SnapshotId);
+
+                return false;
+            }
+
+            if (cachedPlaylist.SnapshotId != playlist.SnapshotId)
+            {
+                _logger.LogInformation(
+                    "{PlaylistTag} has changed since the last update:\n\tSnapshotId:         {SnapshotId}\n\tCached SnapshotId:  {CachedSnapshotId}",
+                    playlist.LoggingTag,
+                    playlist.SnapshotId,
+                    cachedPlaylist.SnapshotId
+                );
+
+                return false;
+            }
+
+            // if the SnapshotIds match, it hasn't changed since the last sync
+            _logger.LogDebug("{PlaylistTag} is unchanged since the last sync", playlist.LoggingTag);
+
+            return true;
+        }
+
+        /// <summary>
+        ///     Indicates whether the database contains all the PlaylistTracks for the specified Playlist.
+        ///     If they do not match, it's most likely because there have been tracks deleted from the Playlist in Spotify.
+        ///     Note that we're using a simple heuristic based on count of PlaylistTracks in the database; it's possible for the count to be the same but the
+        ///     tracks aren't the correct ones, but that would be a bug in the syncing logic that this does not (and should not) account for.
+        /// </summary>
+        /// <remarks>
+        ///     Right now, this can't be hooked into the normal Playlist update logic because we don't store duplicates in
+        ///     Playlists and Spotify's definition of a "duplicate" is not entirely clear (singles seem to be treated as a
+        ///     duplicate of the album track in at least some cases).
+        /// </remarks>
+        /// <param name="playlist"></param>
+        /// <returns>
+        ///     <see langword="false" /> if the number of <see cref="PlaylistTrack" />s for <paramref name="playlist" /> in the database is less than its
+        ///     <see cref="Playlist.Count" /> property; Otherwise, <see langword="true" />
+        /// </returns>
+        private static bool HasAllTracks(Playlist playlist)
+        {
+            bool found = s_missingTracksCache.Items.ContainsKey(playlist.Id);
+
+            // if the playlist isn't in the cache, it has all its tracks
+            return !found;
+        }
+
         #region public
+
         public async Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(
             string accessToken,
             CancellationToken ct
@@ -132,149 +287,8 @@ namespace Playlister.Services
 
             await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
         }
+
         #endregion
-
-        /// <summary>
-        /// Update the data for the specified Playlist
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <param name="playlist"></param>
-        /// <param name="offset"></param>
-        /// <param name="limit"></param>
-        /// <param name="ct"></param>
-        /// <param name="forceSync">If <see langword="true"/>, sync the playlist regardless of whether it's changed since the last sync</param>
-        /// <returns></returns>
-        private async Task UpdatePlaylistAsync(
-            string accessToken,
-            Playlist playlist,
-            int offset,
-            int limit,
-            CancellationToken ct,
-            bool forceSync = false
-        )
-        {
-            _logger.LogDebug(
-                "{Playlist} Updating playlist...",
-                playlist.LoggingTag
-            );
-
-            if (!forceSync && IsCurrent(playlist) && HasAllTracks(playlist))
-            {
-                _logger.LogDebug("{PlaylistTag} playlist is up-to-date. Skipping sync.", playlist.LoggingTag);
-
-                return;
-            }
-
-            Stopwatch sw = new();
-            sw.Start();
-
-            // get first page of playlist items
-            PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync(
-                accessToken,
-                playlist.Id,
-                offset,
-                limit,
-                ct
-            );
-
-            /*
-             * NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
-             * the thousands; I would like to update this to only grab changes made after the last sync, but the
-             * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
-             */
-
-            /*
-             * PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
-             *       Then grab those pages in parallel and combine into a single collection.
-             */
-
-            // We want to get all the items for the playlist so that they can be inserted into the repository in a single Transaction
-            List<PlaylistItem> allItems = page.Items.ToList();
-
-            while (page.Next is not null)
-            {
-                page = await _api.GetPlaylistTracksAsync(accessToken, page.Next, ct);
-                allItems.AddRange(page.Items);
-            }
-
-            if (allItems.Count != playlist.Count)
-            {
-                _logger.LogWarning("{PlaylistTag} The number of tracks returned from the API does not match Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}", playlist.LoggingTag, playlist.Count, allItems.Count);
-            }
-
-            ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(x => new DistinctPlaylistTrack(PlaylistId: playlist.Id, TrackId: x.Track.Id, AddedAt: x.AddedAt)).ToImmutableArray();
-
-            playlist = playlist with { CountUnique = uniqueTracks.Length };
-
-            _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})", playlist.LoggingTag, uniqueTracks.Length, playlist.Count);
-
-            await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
-
-            // only cache after data has been written to database
-            Cache(playlist);
-            CacheUpdatedPlaylist(playlist);
-            DecacheMissingTracks(playlist);
-
-            sw.Stop();
-
-            _logger.LogInformation(
-                "{PlaylistTag} Updated playlist. Total time: {Elapsed}\n",
-                playlist.LoggingTag,
-                sw.Elapsed.ToLogString()
-            );
-        }
-
-        /// <summary>
-        /// Indicates whether the database needs to be synced with Spotify for the specified Playlist
-        /// </summary>
-        /// <param name="playlist"></param>
-        /// <returns></returns>
-        private bool IsCurrent(Playlist playlist)
-        {
-            Playlist? cachedPlaylist = GetFromCache(playlist.Id);
-
-            if (cachedPlaylist is null) // If the playlist isn't in the cache, then we haven't synced it before
-            {
-                _logger.LogDebug("{PlaylistTag} was not found in the cache:\n\tSnapshotId:\t{SnapshotId}", playlist.LoggingTag, playlist.SnapshotId);
-
-                return false;
-            }
-            else if (cachedPlaylist.SnapshotId != playlist.SnapshotId)
-            {
-                _logger.LogInformation(
-                    "{PlaylistTag} has changed since the last update:\n\tSnapshotId:         {SnapshotId}\n\tCached SnapshotId:  {CachedSnapshotId}",
-                    playlist.LoggingTag,
-                    playlist.SnapshotId,
-                    cachedPlaylist.SnapshotId
-                );
-
-                return false;
-            }
-
-            // if the SnapshotIds match, it hasn't changed since the last sync
-            _logger.LogDebug("{PlaylistTag} is unchanged since the last sync", playlist.LoggingTag);
-
-            return true;
-        }
-
-        /// <summary>
-        /// Indicates whether the database contains all the PlaylistTracks for the specified Playlist.
-        /// If they do not match, it's most likely because there have been tracks deleted from the Playlist in Spotify.
-        /// Note that we're using a simple heuristic based on count of PlaylistTracks in the database; it's possible for the count to be the same but the tracks aren't the correct ones, but that would be a bug in the syncing logic that this does not (and should not) account for.
-        /// </summary>
-        /// <remarks>
-        /// Right now, this can't be hooked into the normal Playlist update logic because we don't store duplicates in
-        /// Playlists and Spotify's definition of a "duplicate" is not entirely clear (singles seem to be treated as a
-        /// duplicate of the album track in at least some cases).
-        /// </remarks>
-        /// <param name="playlist"></param>
-        /// <returns><see langword="false""/> if the number of <see cref="PlaylistTrack"/>s for <paramref name="playlist"/> in the database is less than its <see cref="Playlist.Count"/> property; Otherwise, <see langword="true""/></returns>
-        private static bool HasAllTracks(Playlist playlist)
-        {
-            bool found = s_missingTracksCache.Items.ContainsKey(playlist.Id);
-            // if the playlist isn't in the cache, it has all its tracks
-            return !found;
-        }
 
         #region cache
 
@@ -345,7 +359,7 @@ namespace Playlister.Services
         }
 
         /// <summary>
-        /// Populate <see cref="s_playlistCache"/> and <see cref="s_missingTracksCache"/>
+        ///     Populate <see cref="s_playlistCache" /> and <see cref="s_missingTracksCache" />
         /// </summary>
         /// <returns></returns>
         private async Task PopulateCaches()
@@ -382,6 +396,7 @@ namespace Playlister.Services
                 );
             }
         }
+
         #endregion
     }
 }

@@ -6,14 +6,11 @@ using Refit;
 namespace Playlister.CQRS.Commands
 {
     /// <summary>
-    /// Request to refresh Spotify Access Token
+    ///     Request to refresh Spotify Access Token
     /// </summary>
     public record RefreshTokenCommand : IRequest<UserAccessToken>
     {
-        public RefreshTokenCommand(string refreshToken)
-        {
-            RefreshToken = refreshToken;
-        }
+        public RefreshTokenCommand(string refreshToken) => RefreshToken = refreshToken;
 
         [Required]
         // The refresh token returned from the authorization code exchange.
@@ -21,16 +18,11 @@ namespace Playlister.CQRS.Commands
 
         public record BodyParams
         {
-            public BodyParams(string refreshToken)
-            {
-                RefreshToken = refreshToken;
-            }
+            public BodyParams(string refreshToken) => RefreshToken = refreshToken;
 
-            [Required, AliasAs("grant_type")]
-            public string GrantType { get; init; } = "refresh_token";
+            [Required] [AliasAs("grant_type")] public string GrantType { get; init; } = "refresh_token";
 
-            [Required, AliasAs("refresh_token")]
-            public string RefreshToken { get; init; }
+            [Required] [AliasAs("refresh_token")] public string RefreshToken { get; init; }
         }
     }
 }
