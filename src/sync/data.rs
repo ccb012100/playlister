@@ -29,10 +29,10 @@ pub struct ReleaseYear(pub i32);
 pub struct TrackCount(pub u16);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct AlbumTsv(pub(crate) String);
+pub struct AlbumTsv(pub String);
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub(crate) struct Album {
+pub struct Album {
     /// The name of the album
     name: AlbumName,
     /// The recording artist(s)
@@ -253,7 +253,7 @@ impl Album {
         }
     }
 
-    pub(crate) fn to_tsv_entry(&self) -> AlbumTsv {
+    pub fn to_tsv_entry(&self) -> AlbumTsv {
         AlbumTsv(format!(
             "{}\t{}\t{}\t{}\t{}\t{}",
             self.artist, self.name, self.tracks, self.release_year, self.date_added, self.playlist

@@ -6,7 +6,7 @@ use regex::Regex;
 use std::path::PathBuf;
 
 #[derive(Subcommand, Debug, Clone)]
-pub(crate) enum Subcommands {
+pub enum Subcommands {
     /// Search playlists
     Search {
         /// File type to perform action against
@@ -52,7 +52,7 @@ pub(crate) enum Subcommands {
     },
 }
 #[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum FileType {
+pub enum FileType {
     /// SQLite database file (file name = `[*.sql|*.sqlite|*.sqlite3|*.db]`).
     Sqlite,
     /// TSV file (file name = `*.tsv`)
@@ -60,7 +60,7 @@ pub(crate) enum FileType {
 }
 
 #[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub(crate) enum SortFields {
+pub enum SortFields {
     Artists,
     Album,
     Year,
@@ -82,7 +82,7 @@ impl From<SortFields> for search::data::SortFields {
 
 impl FileType {
     /// Parse `file_name` and return it as `PathBuf`
-    pub(crate) fn get_path(&self, file_name: &str) -> Result<PathBuf> {
+    pub fn get_path(&self, file_name: &str) -> Result<PathBuf> {
         debug!(
             "get_path called with: {} for FileType {:#?}",
             file_name, self

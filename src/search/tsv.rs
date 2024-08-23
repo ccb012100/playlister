@@ -9,7 +9,7 @@ use std::{
 };
 
 /// Search a `.tsv` file
-pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
+pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
     debug!("🪵 search called with: {:#?}", query);
 
     let file: File = OpenOptions::new()

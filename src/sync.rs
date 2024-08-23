@@ -3,11 +3,11 @@ use data::Album;
 use log::debug;
 use std::path::Path;
 
-pub(crate) mod data;
+pub mod data;
 mod sqlite;
 mod tsv;
 
-pub(crate) fn sync(source: &Path, destination: &Path) -> Result<()> {
+pub fn sync(source: &Path, destination: &Path) -> Result<()> {
     debug!(
         "🪵 sync called with: source={:#?} destination={:#?}",
         source, destination

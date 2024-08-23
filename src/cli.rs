@@ -20,7 +20,7 @@ mod subcommands;
 
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
-pub(crate) struct Cli {
+pub struct Cli {
     /// Set verbosity
     #[arg(
         long,
@@ -28,14 +28,14 @@ pub(crate) struct Cli {
         action = clap::ArgAction::Count,
         global = true
     )]
-    pub(crate) verbose: u8,
+    pub verbose: u8,
 
     #[command(subcommand)]
-    pub(crate) subcommand: subcommands::Subcommands,
+    pub subcommand: subcommands::Subcommands,
 }
 
 impl Cli {
-    pub(crate) fn run_subcommand(&self) -> Result<(), anyhow::Error> {
+    pub fn run_subcommand(&self) -> Result<(), anyhow::Error> {
         match &self.subcommand {
             Subcommands::Search {
                 include_header,
@@ -94,7 +94,7 @@ impl Cli {
         }
     }
 
-    pub(crate) fn initialize_logger(&self) {
+    pub fn initialize_logger(&self) {
         let log_level = match self.verbose {
             0 => LevelFilter::Error,
             1 => LevelFilter::Warn,

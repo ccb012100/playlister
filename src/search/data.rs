@@ -3,7 +3,7 @@ use anyhow::Result;
 use std::{path::PathBuf, str::FromStr};
 
 #[derive(Debug, Clone)]
-pub(crate) struct SearchQuery<'a> {
+pub struct SearchQuery<'a> {
     pub file: &'a PathBuf,
     pub include_header: bool,
     pub include_playlist_name: bool,
@@ -13,7 +13,7 @@ pub(crate) struct SearchQuery<'a> {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct SearchResults<'a> {
+pub struct SearchResults<'a> {
     pub include_header: bool,
     pub include_playlist_name: bool,
     pub results: Vec<Album>,
@@ -22,13 +22,13 @@ pub(crate) struct SearchResults<'a> {
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) enum SearchType {
+pub enum SearchType {
     Sqlite,
     Tsv,
 }
 
 #[derive(Clone, Copy, Debug)]
-pub(crate) enum SortFields {
+pub enum SortFields {
     Added,
     Album,
     Artists,
@@ -37,7 +37,7 @@ pub(crate) enum SortFields {
 }
 
 #[derive(Debug, Clone)]
-pub(crate) struct Album {
+pub struct Album {
     // row[0]
     pub artists: String,
     // row[1]
@@ -84,7 +84,7 @@ impl FromStr for Album {
 }
 
 impl Album {
-    pub(crate) fn new(
+    pub fn new(
         album: &str,
         artists: &str,
         date_added: &str,
@@ -103,7 +103,7 @@ impl Album {
     }
 
     /// `&self` -> `"{artists}\t{album}\t{tracks}\t{year_released}\t{date_added}\t{playlist}"`
-    pub(crate) fn to_tsv(&self, include_playlist_name: bool) -> String {
+    pub fn to_tsv(&self, include_playlist_name: bool) -> String {
         match include_playlist_name {
             true => format!(
                 "{}\t{}\t{}\t{}\t{}\t{}",
@@ -122,7 +122,7 @@ impl Album {
     }
 
     /// sort `albums` by `sortfield`
-    pub(crate) fn sort_by_field(mut albums: Vec<Album>, sortfield: SortFields) -> Vec<Album> {
+    pub fn sort_by_field(mut albums: Vec<Album>, sortfield: SortFields) -> Vec<Album> {
         match sortfield {
             SortFields::Artists => albums.sort_by(|a, b| {
                 (
