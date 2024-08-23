@@ -8,15 +8,11 @@ namespace Playlister.Repositories.Implementations
     {
         private readonly string _connectionString;
 
-        public ConnectionFactory(IOptions<DatabaseOptions> options)
-        {
+        public ConnectionFactory(IOptions<DatabaseOptions> options) =>
             _connectionString = new SqliteConnectionStringBuilder(options.Value.ConnectionString)
             {
-                Mode = SqliteOpenMode.ReadWriteCreate,
-                Cache = SqliteCacheMode.Shared,
-                ForeignKeys = true
+                Mode = SqliteOpenMode.ReadWriteCreate, Cache = SqliteCacheMode.Shared, ForeignKeys = true
             }.ToString();
-        }
 
         public SqliteConnection Connection => new(_connectionString);
     }

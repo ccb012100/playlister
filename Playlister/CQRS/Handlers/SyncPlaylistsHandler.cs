@@ -7,7 +7,7 @@ using Playlister.Services;
 namespace Playlister.CQRS.Handlers
 {
     /// <summary>
-    /// Sync the Playlist in the command to the db, regardless of whether it's up-to-date or not.
+    ///     Sync the Playlist in the command to the db, regardless of whether it's up-to-date or not.
     /// </summary>
     public class SyncPlaylistsHandler : IRequestHandler<SyncPlaylistCommand, Unit>
     {
@@ -16,7 +16,6 @@ namespace Playlister.CQRS.Handlers
         public SyncPlaylistsHandler(IPlaylistService playlistService) => _playlistService = playlistService;
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="command"></param>
         /// <param name="ct"></param>

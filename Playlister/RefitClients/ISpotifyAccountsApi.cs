@@ -9,17 +9,17 @@ namespace Playlister.RefitClients
     public interface ISpotifyAccountsApi
     {
         /// <summary>
-        /// Request Access Token for the authenticated User who was granted the provided code from Spotify.
+        ///     Request Access Token for the authenticated User who was granted the provided code from Spotify.
         /// </summary>
         /// <param name="bodyParams"></param>
         /// <param name="ct"></param>
         /// <returns></returns>
         [Post("/api/token")]
-        Task<SpotifyAccessToken> RequestAccessTokenAsync([Body(BodySerializationMethod.UrlEncoded)]
-            GetAccessTokenCommand.BodyParams bodyParams, CancellationToken ct);
+        Task<SpotifyAccessToken> RequestAccessTokenAsync([Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenCommand.BodyParams bodyParams,
+            CancellationToken ct);
 
         /// <summary>
-        /// Get a Refresh Token for User from Spotify.
+        ///     Get a Refresh Token for User from Spotify.
         /// </summary>
         /// <param name="authHeaderParam"></param>
         /// <param name="bodyParams"></param>

@@ -40,7 +40,8 @@ namespace Playlister.Utilities
             }
             catch (Exception ex)
             {
-                logger.LogError("Error trying to open url {Url} on OS [{OS}]\nOS Description{OSDescription}\nException: {Exception}", url, os, RuntimeInformation.OSDescription, ex);
+                logger.LogError(ex, "Error trying to open url {Url} on OS [{OS}]\nOS Description{OSDescription}", url, os,
+                    RuntimeInformation.OSDescription);
             }
         }
     }

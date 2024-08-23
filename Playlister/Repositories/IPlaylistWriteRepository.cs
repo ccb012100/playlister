@@ -8,7 +8,6 @@ namespace Playlister.Repositories
     public interface IPlaylistWriteRepository
     {
         /// <summary>
-        ///
         /// </summary>
         /// <param name="playlist"></param>
         /// <param name="playlistItems"></param>
@@ -17,7 +16,6 @@ namespace Playlister.Repositories
         Task UpsertAsync(Playlist playlist, IEnumerable<PlaylistItem> playlistItems, CancellationToken ct);
 
         /// <summary>
-        ///
         /// </summary>
         /// <param name="ct"></param>
         /// <returns></returns>

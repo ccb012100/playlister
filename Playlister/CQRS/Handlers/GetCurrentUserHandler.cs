@@ -11,10 +11,7 @@ namespace Playlister.CQRS.Handlers
     {
         private readonly ISpotifyApi _api;
 
-        public GetCurrentUserHandler(ISpotifyApi api)
-        {
-            _api = api;
-        }
+        public GetCurrentUserHandler(ISpotifyApi api) => _api = api;
 
         public async Task<PrivateUserObject> Handle(GetCurrentUserCommand command, CancellationToken ct) =>
             await _api.GetCurrentUserAsync(command.AccessToken, ct);

@@ -1,6 +1,6 @@
-using System.Runtime.InteropServices;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Dapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -17,9 +17,9 @@ namespace Playlister
 {
     public class Startup
     {
+        private const string CorsPolicyName = "CorsPolicy";
         private readonly IWebHostEnvironment _environment;
         private readonly string? _namespace;
-        private const string CorsPolicyName = "CorsPolicy";
 
         public Startup(IConfiguration configuration, IWebHostEnvironment environment)
         {
@@ -68,13 +68,10 @@ namespace Playlister
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
 
-            services.AddSpaStaticFiles(configuration =>
-            {
-                configuration.RootPath = "ClientApp";
-            });
+            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 
             // set Dapper to be compatible with snake_case table names
-            Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
+            DefaultTypeMap.MatchNamesWithUnderscores = true;
 
             if (_environment.IsDevelopment())
             {
@@ -122,10 +119,7 @@ namespace Playlister
                 .AddEndpoints(Configuration, _environment);
 
             // ~/app/* URLs will serve up the SPA default page (index.html)
-            app.UseSpa(spa =>
-            {
-                spa.Options.SourcePath = "/app";
-            });
+            app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
         }
 
         private void OnStarted(ILogger logger)

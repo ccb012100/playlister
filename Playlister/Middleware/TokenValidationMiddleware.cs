@@ -1,6 +1,5 @@
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using MediatR;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Logging;
@@ -10,26 +9,23 @@ namespace Playlister.Middleware
 {
     public class TokenValidationMiddleware
     {
-        private readonly RequestDelegate _next;
         private readonly ILogger<TokenValidationMiddleware> _logger;
-        private readonly IMediator _mediator;
+        private readonly RequestDelegate _next;
 
         public TokenValidationMiddleware(
             RequestDelegate next,
-            ILogger<TokenValidationMiddleware> logger,
-            IMediator mediator
+            ILogger<TokenValidationMiddleware> logger
         )
         {
             _next = next;
             _logger = logger;
-            _mediator = mediator;
         }
 
         public async Task Invoke(HttpContext context)
         {
             _logger.LogDebug($"Entered {nameof(TokenValidationMiddleware)}");
             Endpoint? endpoint = context.Features.Get<IEndpointFeature>()!.Endpoint;
-            var attribute = endpoint?.Metadata.GetMetadata<ValidateTokenAttribute>();
+            ValidateTokenAttribute? attribute = endpoint?.Metadata.GetMetadata<ValidateTokenAttribute>();
 
             if (attribute is null)
             {
@@ -37,7 +33,9 @@ namespace Playlister.Middleware
                     "There is no ValidateTokenAttribute on the endpoint {DisplayName}",
                     endpoint?.DisplayName
                 );
+
                 await _next(context); // call action in Controller
+
                 return;
             }
 
@@ -50,9 +48,11 @@ namespace Playlister.Middleware
             )
             {
                 _logger.LogWarning(
-                    $"Was unable to parse an AuthenticationHeaderValue from the Request"
+                    "Was unable to parse an AuthenticationHeaderValue from the Request"
                 );
+
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
                 return;
             }
 
@@ -64,7 +64,9 @@ namespace Playlister.Middleware
                     "Authorization header has invalid Scheme {Scheme}",
                     authHeader.Scheme
                 );
+
                 context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+
                 return;
             }
 
@@ -75,6 +77,7 @@ namespace Playlister.Middleware
             {
                 _logger.LogDebug("Token is valid");
                 await _next(context);
+
                 return;
             }
 

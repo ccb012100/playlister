@@ -5,7 +5,7 @@ using System;
 namespace Playlister.Models
 {
     /// <summary>
-    /// Representation of a record in the PlaylistTrack table
+    ///     Representation of a record in the PlaylistTrack table
     /// </summary>
     public record PlaylistTrack
     {

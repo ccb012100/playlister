@@ -5,7 +5,7 @@ using System;
 namespace Playlister.Models.SpotifyApi
 {
     /// <summary>
-    /// This doesn't exist on the Spotify documentation, but seems to be a thing.
+    ///     This doesn't exist on the Spotify documentation, but seems to be a thing.
     /// </summary>
     public record SimplifiedUserObject
     {
@@ -14,7 +14,7 @@ namespace Playlister.Models.SpotifyApi
         public string Id { get; init; }
 
         /// <summary>
-        /// Always "user"
+        ///     Always "user"
         /// </summary>
         public string Type { get; init; }
 

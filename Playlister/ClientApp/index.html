@@ -1,18 +1,18 @@
 <!DOCTYPE html>
-<html lang="en" data-bs-theme="dark">
+<html data-bs-theme="dark" lang="en">
 
 <head>
     <!-- Required meta tags for Bootstrap-->
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png" />
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1" name="viewport"/>
+    <link href="apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180"/>
+    <link href="favicon-32x32.png" rel="icon" sizes="32x32" type="image/png"/>
+    <link href="favicon-16x16.png" rel="icon" sizes="16x16" type="image/png"/>
     <!-- Bootstrap -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css" rel="stylesheet"
-        crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js"
-        crossorigin="anonymous"></script>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+    <script crossorigin="anonymous"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5/dist/js/bootstrap.bundle.min.js"></script>
     <!-- Vue.js -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/vue-router@4"></script>
@@ -22,22 +22,22 @@
 </head>
 
 <body class="container">
-    <div id="app">
-        <nav class="navbar">
-            <div class="container-fluid d-flex justify-content-start">
-                <div class="navbar-nav p-1">
-                    <router-link :to="{ name: 'homepage' }" class="btn btn-info"> Home</router-link>
-                </div>
-                <div class="navbar-nav p-1">
-                    <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
-                </div>
-                <div class="navbar-nav p-1 ms-auto">
-                    <router-link :to="{name: 'logout'}" class="btn btn-danger">Sign out</router-link>
-                </div>
+<div id="app">
+    <nav class="navbar">
+        <div class="container-fluid d-flex justify-content-start">
+            <div class="navbar-nav p-1">
+                <router-link :to="{ name: 'homepage' }" class="btn btn-info"> Home</router-link>
             </div>
-        </nav>
-        <router-view></router-view>
-    </div>
+            <div class="navbar-nav p-1">
+                <router-link :to="{ name: 'data-page' }" class="btn btn-warning"> Data</router-link>
+            </div>
+            <div class="navbar-nav p-1 ms-auto">
+                <router-link :to="{name: 'logout'}" class="btn btn-danger">Sign out</router-link>
+            </div>
+        </div>
+    </nav>
+    <router-view></router-view>
+</div>
 </body>
 <script type="module">
     /*
@@ -64,7 +64,7 @@
         }
 
         localStorage.setItem(userTokenItemName, JSON.stringify(userToken));
-        axios.defaults.headers.common['Authorization'] = `Bearer ${ userToken }`;
+        axios.defaults.headers.common['Authorization'] = `Bearer ${userToken}`;
     }
 
     function lsRemoveToken() {
@@ -77,31 +77,33 @@
      */
     const RootComponent = {
         template: `
-          <h3>Page loaded at:</h3>
-          <pre>{{ dateLoaded }}</pre>
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Home</h5>
-            <p v-if="message" class="card-text">
-              {{ message }}
-            </p>
-            <button v-if="!authenticated" v-on:click="signIn" class="btn btn-primary">
-              Sign in
-            </button>
-            <div v-if="authenticated">
-              <p>You're signed in!</p>
-              <button v-on:click="clearToken" class="btn btn-info">Clear token</button>
+            <h3>Page loaded at:</h3>
+            <pre>{{ dateLoaded }}</pre>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Home</h5>
+                    <p v-if="message" class="card-text">
+                        {{ message }}
+                    </p>
+                    <button v-if="!authenticated" v-on:click="signIn" class="btn btn-primary">
+                        Sign in
+                    </button>
+                    <div v-if="authenticated">
+                        <p>You're signed in!</p>
+                        <button v-on:click="clearToken" class="btn btn-info">Clear token</button>
+                    </div>
+                    <router-view></router-view>
+                </div>
             </div>
-            <router-view></router-view>
-          </div>
-          </div>
         `,
         mounted() {
-            if (lsGetToken()) { lsRemoveToken(); }
+            if (lsGetToken()) {
+                lsRemoveToken();
+            }
             this.authenticated = !!lsGetToken();
 
             if (this.authenticated) {
-                router.push({ name: 'data-page' });
+                router.push({name: 'data-page'});
             } else if (this.$route.path === '/app/home') {
                 this.signIn();
             }
@@ -164,19 +166,19 @@
             if (lsGetToken()) {
                 lsRemoveToken();
             }
-            this.$router.push({ name: 'homepage' });
+            this.$router.push({name: 'homepage'});
         },
     };
 
     const LoginComponent = {
         props: ['authCode', 'error', 'state'],
         template: `
-          <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
-          <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
+            <div v-if='authMessage' class='alert alert-primary'>{{ authMessage }}</div>
+            <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
         `,
         mounted() {
             if (!!lsGetToken()) {
-                this.$router.push({ name: 'data-page' });
+                this.$router.push({name: 'data-page'});
             } else if (this.error) {
                 this.showErrorMessage(this.error);
             } else if (this.authCode) {
@@ -205,7 +207,7 @@
                         try {
                             self.authMessage = 'Logged in successfully!';
                             lsSetToken(response.data);
-                            router.push({ name: 'data-page' });
+                            router.push({name: 'data-page'});
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -222,25 +224,25 @@
 
     const SpotifyDataComponent = {
         template: `
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Data page</h5>
-            <obj-properties-list v-bind:obj="userToken"></obj-properties-list>
-            <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh
-              token
-            </button>
-            <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
-          </div>
-          </div>
-          <playlist-data></playlist-data>
-          <user-data></user-data>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Data page</h5>
+                    <obj-properties-list v-bind:obj="userToken"></obj-properties-list>
+                    <button v-if="userToken.refreshToken" v-on:click="refreshToken" class="btn btn-info">Refresh
+                        token
+                    </button>
+                    <div v-if='errorMessage' class='alert alert-danger'>{{ errorMessage }}</div>
+                </div>
+            </div>
+            <playlist-data></playlist-data>
+            <user-data></user-data>
         `,
         mounted() {
             const token = lsGetToken();
 
             if (!token) {
                 console.log('User does not have a token. Going back to homepage.');
-                this.$router.push({ name: 'homepage' });
+                this.$router.push({name: 'homepage'});
             } else {
                 let dateNow = new Date();
                 let expirationDate = new Date(token.expiration);
@@ -265,7 +267,7 @@
         },
         watch: {
             userToken: function (val) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${ val.accessToken }`;
+                axios.defaults.headers.common['Authorization'] = `Bearer ${val.accessToken}`;
             },
         },
         methods: {
@@ -295,39 +297,39 @@
 
     const CurrentUserComponent = {
         template: `
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">
-              User Profile
-            </h5>
-            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-            <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
-            <div v-if="isLoading" class="d-flex justify-content-center">
-              <div class="spinner-border text-primary" role="status"></div>
-              <strong>Updating Playlists...</strong>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        User Profile
+                    </h5>
+                    <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+                    <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+                    <div v-if="isLoading" class="d-flex justify-content-center">
+                        <div class="spinner-border text-primary" role="status"></div>
+                        <strong>Updating Playlists...</strong>
+                    </div>
+                    <div class="row">
+                        <div class="col p-2">
+                            <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile
+                            </button>
+                        </div>
+                        <div class="col p-2">
+                            <button v-on:click="getUserPlaylists" class="btn btn-warning">Get Playlists
+                            </button>
+                        </div>
+                        <div class="col p-2">
+                            <button v-on:click="updatePlaylists" class="btn btn-info align-center">Update Playlists
+                            </button>
+                        </div>
+                    </div>
+                    <obj-properties-list v-if="displayObject"
+                                         v-for="item in displayObject"
+                                         v-bind:obj="item"></obj-properties-list>
+                    <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100"
+                         alt="user profile pic"
+                         class="img-thumbnail">
+                </div>
             </div>
-            <div class="row">
-              <div class="col p-2">
-                <button v-on:click="getUserProfile" class="btn btn-primary">Get User Profile
-                </button>
-              </div>
-              <div class="col p-2">
-                <button v-on:click="getUserPlaylists" class="btn btn-warning">Get Playlists
-                </button>
-              </div>
-              <div class="col p-2">
-                <button v-on:click="updatePlaylists" class="btn btn-info align-center">Update Playlists
-                </button>
-              </div>
-            </div>
-            <obj-properties-list v-if="displayObject"
-                                 v-for="item in displayObject"
-                                 v-bind:obj="item"></obj-properties-list>
-            <img v-if="userProfile" v-bind:src="userProfile.images[0].url" height="100"
-                 alt="user profile pic"
-                 class="img-thumbnail">
-          </div>
-          </div>
         `,
         // mounted() {
         //    this.$nextTick(function () {
@@ -364,8 +366,8 @@
                     .then(function (response) {
                         try {
                             self.displayObject = {};
-                            self.successMessage = `Update Playlists call returned: ${ response.status } ${ response.statusText }`;
-                            router.push({ name: 'stop-application' });
+                            self.successMessage = `Update Playlists call returned: ${response.status} ${response.statusText}`;
+                            router.push({name: 'stop-application'});
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -386,7 +388,7 @@
                         try {
                             self.userProfile = response.data;
                             self.displayObject = [self.userProfile];
-                            self.successMessage = `Get Current User call returned: ${ response.status } ${ response.statusText }`;
+                            self.successMessage = `Get Current User call returned: ${response.status} ${response.statusText}`;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -404,7 +406,7 @@
                         try {
                             self.userPlaylists = response.data;
                             self.displayObject = self.userPlaylists;
-                            self.successMessage = `Get User Playlists call returned: ${ response.status } ${ response.statusText } | Response contained ${ response.data.length } playlists.`;
+                            self.successMessage = `Get User Playlists call returned: ${response.status} ${response.statusText} | Response contained ${response.data.length} playlists.`;
                         } catch (e) {
                             self.errorMessage = e.message;
                         }
@@ -417,20 +419,21 @@
     };
 
     const StopApplicationTemplate = {
-        template: `<div class="card">
-          <div class="card-body">
-            <h5 class="card-title d-flex justify-content-center">
-              Stop Application
-            </h5>
-            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-            <div class="row">
-              <div class="col p-2 d-flex justify-content-center"> Stopping App... </div>
-            </div>
-            <div class="row">
-                <div class="col p-2 d-flex justify-content-center"> {{ statusMessage }} </div>
-            </div>
-          </div>
-          </div>`,
+        template: `
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title d-flex justify-content-center">
+                        Stop Application
+                    </h5>
+                    <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+                    <div class="row">
+                        <div class="col p-2 d-flex justify-content-center"> Stopping App...</div>
+                    </div>
+                    <div class="row">
+                        <div class="col p-2 d-flex justify-content-center"> {{ statusMessage }}</div>
+                    </div>
+                </div>
+            </div>`,
         mounted() {
             this.stopApp();
         },
@@ -448,7 +451,7 @@
                     .post('user/stop-application/', {})
                     .then(function (response) {
                         try {
-                            self.statusMessage = `Stop App call returned: ${ response.status } ${ response.statusText }`;
+                            self.statusMessage = `Stop App call returned: ${response.status} ${response.statusText}`;
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -462,36 +465,36 @@
 
     const PlaylistDataComponent = {
         template: `
-          <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">
-              Update Playlist
-            </h5>
-            <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
-            <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
-            <div class="row">
-              <div class="col p-2">
-                <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2"
-                       placeholder="playlist id"/>
-                <label for="playlist-id-input">Playlist Id</label>
-              </div>
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        Update Playlist
+                    </h5>
+                    <div v-if="errorMessage" class='alert alert-danger'>{{ errorMessage }}</div>
+                    <div v-if="successMessage" class="alert alert-success">{{ successMessage }}</div>
+                    <div class="row">
+                        <div class="col p-2">
+                            <input id="playlist-id-input" type="text" v-model="playlistId" class="m-2"
+                                   placeholder="playlist id"/>
+                            <label for="playlist-id-input">Playlist Id</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col p-2">
+                            <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
+                                    class="btn btn-primary p-2 align-center">
+                                Update Playlist
+                            </button>
+                        </div>
+                        <div class="col p-2">
+                            <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
+                                    class="btn btn-primary p-2 align-center">
+                                Sync Playlist
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="row">
-              <div class="col p-2">
-                <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
-                        class="btn btn-primary p-2 align-center">
-                  Update Playlist
-                </button>
-              </div>
-              <div class="col p-2">
-                <button v-on:click="updateTracks" v-bind:disabled="!playlistId"
-                        class="btn btn-primary p-2 align-center">
-                  Sync Playlist
-                </button>
-              </div>
-            </div>
-          </div>
-          </div>
         `,
         data() {
             return {
@@ -505,10 +508,10 @@
                 const self = this;
 
                 axios
-                    .post(`playlists/${ this.playlistId }/tracks`, {})
+                    .post(`playlists/${this.playlistId}/tracks`, {})
                     .then(function (response) {
                         try {
-                            self.successMessage = `Updated playlist ${ self.playlistId }!`;
+                            self.successMessage = `Updated playlist ${self.playlistId}!`;
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -521,10 +524,10 @@
                 const self = this;
 
                 axios
-                    .post(`playlists/${ this.playlistId }/sync`, {})
+                    .post(`playlists/${this.playlistId}/sync`, {})
                     .then(function (response) {
                         try {
-                            self.successMessage = `Updated playlist ${ self.playlistId }!`;
+                            self.successMessage = `Updated playlist ${self.playlistId}!`;
                         } catch (e) {
                             self.errorMessage = e;
                         }
@@ -539,18 +542,18 @@
     const ObjectPropertiesListComponent = {
         props: ['obj'],
         template: `
-          <table class="table table-success table-striped table-bordered text-break">
-          <tbody>
-          <tr v-for="(value,name) in obj">
-            <td>
-              <b>{{ name }}</b>
-            </td>
-            <td style="width:85%">
-              {{ value }}
-            </td>
-          </tr>
-          </tbody>
-          </table>
+            <table class="table table-success table-striped table-bordered text-break">
+                <tbody>
+                <tr v-for="(value,name) in obj">
+                    <td>
+                        <b>{{ name }}</b>
+                    </td>
+                    <td style="width:85%">
+                        {{ value }}
+                    </td>
+                </tr>
+                </tbody>
+            </table>
         `,
     };
 
@@ -575,20 +578,20 @@
                 },
             ],
         },
-        { path: '/app', redirect: { name: 'homepage' } },
+        {path: '/app', redirect: {name: 'homepage'}},
         {
             path: '/app/data',
             name: 'data-page',
             component: SpotifyDataComponent,
             props: true,
         },
-        { path: '/stop-application', name: 'stop-application', component: StopApplicationTemplate },
-        { path: '/stop', name: 'stop-application', component: StopApplicationTemplate },
-        { path: '/logout', name: 'logout', component: LogoutComponent },
-        { path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent },
+        {path: '/stop-application', name: 'stop-application', component: StopApplicationTemplate},
+        {path: '/stop', name: 'stop-application', component: StopApplicationTemplate},
+        {path: '/logout', name: 'logout', component: LogoutComponent},
+        {path: '/:pathMatch(.*)*', name: 'page-not-found', component: PageNotFoundComponent},
     ];
 
-    const router = VueRouter.createRouter({ history: VueRouter.createWebHistory(), routes });
+    const router = VueRouter.createRouter({history: VueRouter.createWebHistory(), routes});
 
     /*
      * Create and mount App

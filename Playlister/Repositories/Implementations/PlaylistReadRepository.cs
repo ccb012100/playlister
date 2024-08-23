@@ -10,10 +10,7 @@ namespace Playlister.Repositories.Implementations
     {
         private readonly IConnectionFactory _connectionFactory;
 
-        public PlaylistReadRepository(IConnectionFactory connectionFactory)
-        {
-            _connectionFactory = connectionFactory;
-        }
+        public PlaylistReadRepository(IConnectionFactory connectionFactory) => _connectionFactory = connectionFactory;
 
         public async Task<IEnumerable<Playlist>> GetAllAsync()
         {
