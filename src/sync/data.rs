@@ -362,3 +362,45 @@ impl AlbumTsv {
         }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use crate::sync::data::{
+        Album, AlbumArtist, AlbumName, AlbumTsv, DateAdded, Playlist, ReleaseYear, TrackCount,
+    };
+
+    #[test]
+    fn album_new() {
+        let name = AlbumName("foo".to_string());
+        let artist = AlbumArtist("bar".to_string());
+        let date_added = DateAdded("baz".to_string());
+        let playlist = Playlist("bat".to_string());
+        let release_year = ReleaseYear(2018);
+        let tracks = TrackCount(20);
+        let album = Album::new(name, artist, tracks, release_year, date_added, playlist);
+
+        assert_eq!(album.name.0, "foo");
+        assert_eq!(album.artist.0, "bar");
+        assert_eq!(album.date_added.0, "baz");
+        assert_eq!(album.playlist.0, "bat");
+        assert_eq!(album.release_year.0, 2018);
+        assert_eq!(album.tracks.0, 20);
+    }
+
+    #[test]
+    fn album_to_tsv_entry() {
+        let actual = Album::new(
+            AlbumName("foo".to_string()),
+            AlbumArtist("bar".to_string()),
+            TrackCount(20),
+            ReleaseYear(2018),
+            DateAdded("baz".to_string()),
+            Playlist("bat".to_string()),
+        )
+        .to_tsv_entry();
+
+        let expected = AlbumTsv("bar\tfoo\t20\t2018\tbaz\tbat".to_string());
+
+        assert_eq!(actual, expected);
+    }
+}
