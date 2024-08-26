@@ -143,8 +143,7 @@ sync)
     ;;
 # search tsv file with default search
 *)
-    info "\t--Search for '${*}'--\n"
-    search_term="${*}"
-    default_search "${*}"
+    error "Error: '${*}' not supported\n"
+    return 1
     ;;
 esac

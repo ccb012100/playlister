@@ -6,18 +6,9 @@ Tool to download your Spotify Playlists into a SQLite database.
 
 - runs on <http://localhost:5000> and <https://localhost:5001>
 
-## String Enums
-
-`ReleaseDatePrecision` on `Album`s can't be set as an enum right now due to a limitation in the System.Text.Json
-serializer: <https://github.com/dotnet/runtime/issues/31081>
-
 ## Database
 
 Uses a single **Sqlite** database.
-
-### Schema
-
-![Playlister.db sqlite database schema](/images/db_schema.png)
 
 ## ClientApp
 
