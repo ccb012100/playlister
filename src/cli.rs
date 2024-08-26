@@ -63,6 +63,8 @@ impl Cli {
                     filters: filter
                         .iter()
                         .map(|f| search::data::FilterField::from(*f))
+                        .collect::<std::collections::HashSet<_>>() // collect into HashSet to dedupe the values
+                        .into_iter()
                         .collect(),
                 };
 
