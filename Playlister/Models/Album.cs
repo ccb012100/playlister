@@ -4,6 +4,7 @@ using System.Collections.Immutable;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Serialization;
+using Playlister.Models.SpotifyApi.Enums;
 
 #pragma warning disable 8618
 
@@ -26,7 +27,7 @@ namespace Playlister.Models
         public string ReleaseDate { get; init; }
 
         [JsonPropertyName("release_date_precision")]
-        public string ReleaseDatePrecision { get; init; }
+        public ReleaseDatePrecision ReleaseDatePrecision { get; init; }
 
         [JsonPropertyName("total_tracks")] public int TotalTracks { get; init; }
 
@@ -55,10 +56,9 @@ namespace Playlister.Models
         }
 
         /// <summary>
-        ///     Gets a pairing of the Album's Id with <see cref="Album.Artists" />'s Id
+        ///     Gets a pairing of the Album's ID with <see cref="Album.Artists" />'s Id
         /// </summary>
         /// <returns><see cref="AlbumArtistPair" /> for every <see cref="Artist" /> in <see cref="Album.Artists" /></returns>
-        public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings() =>
-            Artists.Select(x => new AlbumArtistPair(Id, x.Id)).ToImmutableArray();
+        public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings() => Artists.Select(x => new AlbumArtistPair(Id, x.Id)).ToImmutableArray();
     }
 }
