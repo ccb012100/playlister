@@ -20,31 +20,25 @@ pub enum Subcommands {
         term: Vec<String>,
 
         /// Field to sort on
-        #[arg(short, long, value_name = "FIELD")]
+        #[arg(short, long, value_name = "FIELD", value_enum)]
         #[arg(default_value_t = SortField::Artists)]
-        #[clap(value_enum)]
         sort: SortField,
 
         /// Field(s) to filter the search on
-        #[arg(short, long, value_name = "FILTER")]
-        #[arg(default_missing_values = ["artists", "album"])]
+        #[arg(short, long, value_name = "FILTER", value_delimiter = ',', value_enum)]
         #[arg(default_values_t = [FilterField::Artists, FilterField::Album])]
-        #[clap(value_enum)]
         filter: Vec<FilterField>,
 
         /// Include Playlist names in search results
-        #[arg(long)]
-        #[arg(default_value_t = false)]
+        #[arg(long, default_value_t = false)]
         include_playlist_name: bool,
 
         /// Don't format output
-        #[arg(long)]
-        #[arg(default_value_t = false)]
+        #[arg(long, default_value_t = false)]
         no_format: bool,
 
         /// Include header row in output
-        #[arg(long)]
-        #[arg(default_value_t = false)]
+        #[arg(long, default_value_t = false)]
         include_header: bool,
     },
     /// Sync playlists
