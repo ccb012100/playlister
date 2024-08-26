@@ -1,4 +1,4 @@
-pub(crate) mod data;
+pub mod data;
 mod sqlite;
 mod tsv;
 
@@ -7,7 +7,7 @@ use log::{debug, info};
 
 use self::data::{SearchQuery, SearchResults, SearchType};
 
-pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
+pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
     debug!("🪵 search called with: {:#?}", query);
 
     match query.search_type {

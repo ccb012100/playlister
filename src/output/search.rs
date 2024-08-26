@@ -4,11 +4,11 @@ use log::debug;
 use nu_ansi_term::{AnsiString, Color};
 use std::io::{self, stdout, IsTerminal, Write};
 
-pub(crate) struct SearchOutput();
+pub struct SearchOutput();
 
 impl SearchOutput {
     // Print search results to stdout
-    pub(crate) fn search_results_table(search_results: &SearchResults) {
+    pub fn search_results_table(search_results: &SearchResults) {
         if search_results.results.is_empty() {
             Self::no_results(search_results);
             return;
@@ -64,7 +64,7 @@ impl SearchOutput {
     }
 
     /// print search results to stdout with no formatting
-    pub(crate) fn search_results(search_results: &SearchResults) {
+    pub fn search_results(search_results: &SearchResults) {
         debug!("🪵 search_results called with {:#?}", search_results);
         if search_results.results.is_empty() {
             Self::no_results(search_results);
@@ -130,17 +130,18 @@ impl SearchOutput {
 
     /// get the search results headers
     fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
-        if include_playlist {
-            vec![
-                "Artists",
-                "Album",
-                "Tracks",
-                "Year",
-                "Date Added",
-                "Playlist",
-            ]
-        } else {
-            vec!["Artists", "Album", "Tracks", "Year", "Date Added"]
+        match include_playlist {
+            true => {
+                vec![
+                    "Artists",
+                    "Album",
+                    "Tracks",
+                    "Year",
+                    "Date Added",
+                    "Playlist",
+                ]
+            }
+            false => vec!["Artists", "Album", "Tracks", "Year", "Date Added"],
         }
     }
 }

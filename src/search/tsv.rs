@@ -9,7 +9,7 @@ use std::{
 };
 
 /// Search a `.tsv` file
-pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
+pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
     debug!("🪵 search called with: {:#?}", query);
 
     let file: File = OpenOptions::new()
@@ -41,8 +41,14 @@ pub(crate) fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>
 
     debug!("🪵 Found {} matches.", results.len());
 
+    Album::filter_by_field(&mut results, query.search_term, &query.filters);
+
+    debug!("🪵 Found {} matches after filtering.", results.len());
+
+    Album::sort_by_field(&mut results, &query.sort);
+
     Ok(SearchResults {
-        results: Album::sort_by_field(results, query.sort),
+        results,
         search_term: query.search_term,
         include_header: query.include_header,
         include_playlist_name: query.include_playlist_name,

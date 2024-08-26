@@ -6,9 +6,9 @@ use rusqlite::{Connection, OpenFlags};
 
 use crate::sync::data::DateAdded;
 
-use super::data::{Album, AlbumArtist, AlbumName, AlbumTsv, Playlist, ReleaseYear, TrackCount};
+use super::data::{Album, AlbumArtist, AlbumName, Playlist, ReleaseYear, TrackCount};
 
-pub fn get_the_most_recent_starred_albums(db: &Path, offset: usize) -> Result<Vec<AlbumTsv>> {
+pub fn get_the_most_recent_starred_albums(db: &Path, offset: usize) -> Result<Vec<Album>> {
     debug!(
         "🪵 get_the_most_recent_starred_albums called with db={:#?}, offset={}",
         db, offset
@@ -40,10 +40,10 @@ pub fn get_the_most_recent_starred_albums(db: &Path, offset: usize) -> Result<Ve
         },
     )?;
 
-    let mut x: Vec<AlbumTsv> = Vec::new();
+    let mut x: Vec<Album> = Vec::new();
 
     for album in albums {
-        x.push(album?.to_tsv_entry());
+        x.push(album?);
     }
 
     Ok(x)

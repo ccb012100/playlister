@@ -1,11 +1,10 @@
 use crate::{
-    cli::subcommands::FileType,
-    search,
-    sync::{self},
-};
-use crate::{
     output::search::SearchOutput,
     search::data::{SearchQuery, SearchType},
+};
+use crate::{
+    search,
+    sync::{self},
 };
 
 use anyhow::Context;
@@ -14,13 +13,13 @@ use clap::Parser;
 use log::{info, LevelFilter};
 use std::path::PathBuf;
 
-use subcommands::Subcommands;
+use subcommands::{FileType, Subcommands};
 
 mod subcommands;
 
 #[derive(Parser, Debug)]
 #[command(about, version, arg_required_else_help = true)]
-pub(crate) struct Cli {
+pub struct Cli {
     /// Set verbosity
     #[arg(
         long,
@@ -28,14 +27,14 @@ pub(crate) struct Cli {
         action = clap::ArgAction::Count,
         global = true
     )]
-    pub(crate) verbose: u8,
+    pub verbose: u8,
 
     #[command(subcommand)]
-    pub(crate) subcommand: subcommands::Subcommands,
+    pub subcommand: subcommands::Subcommands,
 }
 
 impl Cli {
-    pub(crate) fn run_subcommand(&self) -> Result<(), anyhow::Error> {
+    pub fn run_subcommand(&self) -> Result<(), anyhow::Error> {
         match &self.subcommand {
             Subcommands::Search {
                 include_header,
@@ -44,9 +43,10 @@ impl Cli {
                 file_type,
                 no_format,
                 sort,
+                filter,
                 term,
             } => {
-                info!("ℹ️ Searching...");
+                info!("ℹ️ Searching... 🔎");
 
                 let path: PathBuf = file_type.get_path(file_name)?;
 
@@ -59,7 +59,11 @@ impl Cli {
                     file: &path,
                     include_header: *include_header,
                     include_playlist_name: *include_playlist_name,
-                    sort: search::data::SortFields::from(*sort),
+                    sort: search::data::SortField::from(*sort),
+                    filters: filter
+                        .iter()
+                        .map(|f| search::data::FilterField::from(*f))
+                        .collect(),
                 };
 
                 let results: search::data::SearchResults<'_> = search::search(&query)
@@ -94,7 +98,7 @@ impl Cli {
         }
     }
 
-    pub(crate) fn initialize_logger(&self) {
+    pub fn initialize_logger(&self) {
         let log_level = match self.verbose {
             0 => LevelFilter::Error,
             1 => LevelFilter::Warn,
