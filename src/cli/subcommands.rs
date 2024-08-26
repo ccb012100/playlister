@@ -21,9 +21,16 @@ pub enum Subcommands {
 
         /// Field to sort on
         #[arg(short, long, value_name = "FIELD")]
-        #[arg(default_value_t = SortFields::Artists)]
+        #[arg(default_value_t = SortField::Artists)]
         #[clap(value_enum)]
-        sort: SortFields,
+        sort: SortField,
+
+        /// Field(s) to filter the search on
+        #[arg(short, long, value_name = "FILTER")]
+        #[arg(default_missing_values = ["artists", "album"])]
+        #[arg(default_values_t = [FilterField::Artists, FilterField::Album])]
+        #[clap(value_enum)]
+        filter: Vec<FilterField>,
 
         /// Include Playlist names in search results
         #[arg(long)]
@@ -60,7 +67,7 @@ pub enum FileType {
 }
 
 #[derive(ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub enum SortFields {
+pub enum SortField {
     Artists,
     Album,
     Year,
@@ -68,14 +75,31 @@ pub enum SortFields {
     Playlist,
 }
 
-impl From<SortFields> for search::data::SortFields {
-    fn from(value: SortFields) -> Self {
+#[derive(clap::ValueEnum, Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub(crate) enum FilterField {
+    Artists,
+    Album,
+    Playlist,
+}
+
+impl From<SortField> for search::data::SortField {
+    fn from(value: SortField) -> Self {
         match value {
-            SortFields::Added => search::data::SortFields::Added,
-            SortFields::Album => search::data::SortFields::Album,
-            SortFields::Artists => search::data::SortFields::Artists,
-            SortFields::Playlist => search::data::SortFields::Playlist,
-            SortFields::Year => search::data::SortFields::Year,
+            SortField::Added => search::data::SortField::Added,
+            SortField::Album => search::data::SortField::Album,
+            SortField::Artists => search::data::SortField::Artists,
+            SortField::Playlist => search::data::SortField::Playlist,
+            SortField::Year => search::data::SortField::Year,
+        }
+    }
+}
+
+impl From<FilterField> for search::data::FilterField {
+    fn from(value: FilterField) -> Self {
+        match value {
+            FilterField::Artists => search::data::FilterField::Artists,
+            FilterField::Album => search::data::FilterField::Album,
+            FilterField::Playlist => search::data::FilterField::Playlist,
         }
     }
 }

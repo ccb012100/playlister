@@ -1,11 +1,10 @@
 use crate::{
-    cli::subcommands::FileType,
-    search,
-    sync::{self},
-};
-use crate::{
     output::search::SearchOutput,
     search::data::{SearchQuery, SearchType},
+};
+use crate::{
+    search,
+    sync::{self},
 };
 
 use anyhow::Context;
@@ -14,7 +13,7 @@ use clap::Parser;
 use log::{info, LevelFilter};
 use std::path::PathBuf;
 
-use subcommands::Subcommands;
+use subcommands::{FileType, Subcommands};
 
 mod subcommands;
 
@@ -44,9 +43,10 @@ impl Cli {
                 file_type,
                 no_format,
                 sort,
+                filter,
                 term,
             } => {
-                info!("ℹ️ Searching...");
+                info!("ℹ️ Searching... 🔎");
 
                 let path: PathBuf = file_type.get_path(file_name)?;
 
@@ -59,7 +59,11 @@ impl Cli {
                     file: &path,
                     include_header: *include_header,
                     include_playlist_name: *include_playlist_name,
-                    sort: search::data::SortFields::from(*sort),
+                    sort: search::data::SortField::from(*sort),
+                    filters: filter
+                        .iter()
+                        .map(|f| search::data::FilterField::from(*f))
+                        .collect(),
                 };
 
                 let results: search::data::SearchResults<'_> = search::search(&query)

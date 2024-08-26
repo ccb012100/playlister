@@ -130,17 +130,18 @@ impl SearchOutput {
 
     /// get the search results headers
     fn get_header_fields<'a>(include_playlist: bool) -> Vec<&'a str> {
-        if include_playlist {
-            vec![
-                "Artists",
-                "Album",
-                "Tracks",
-                "Year",
-                "Date Added",
-                "Playlist",
-            ]
-        } else {
-            vec!["Artists", "Album", "Tracks", "Year", "Date Added"]
+        match include_playlist {
+            true => {
+                vec![
+                    "Artists",
+                    "Album",
+                    "Tracks",
+                    "Year",
+                    "Date Added",
+                    "Playlist",
+                ]
+            }
+            false => vec!["Artists", "Album", "Tracks", "Year", "Date Added"],
         }
     }
 }

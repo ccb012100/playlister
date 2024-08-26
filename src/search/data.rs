@@ -2,33 +2,34 @@ use anyhow::anyhow;
 use anyhow::Result;
 use std::{path::PathBuf, str::FromStr};
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct SearchQuery<'a> {
     pub file: &'a PathBuf,
     pub include_header: bool,
     pub include_playlist_name: bool,
     pub search_term: &'a str,
     pub search_type: SearchType,
-    pub sort: SortFields,
+    pub sort: SortField,
+    pub filters: Vec<FilterField>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct SearchResults<'a> {
     pub include_header: bool,
     pub include_playlist_name: bool,
     pub results: Vec<Album>,
     pub search_term: &'a str,
-    pub sort: SortFields,
+    pub sort: SortField,
 }
 
-#[derive(Clone, Copy, Debug)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum SearchType {
     Sqlite,
     Tsv,
 }
 
-#[derive(Clone, Copy, Debug)]
-pub enum SortFields {
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum SortField {
     Added,
     Album,
     Artists,
@@ -36,7 +37,14 @@ pub enum SortFields {
     Year,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq, PartialOrd, Ord)]
+pub enum FilterField {
+    Artists,
+    Album,
+    Playlist,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Album {
     // row[0]
     pub artists: String,
@@ -122,9 +130,9 @@ impl Album {
     }
 
     /// sort `albums` by `sortfield`
-    pub fn sort_by_field(mut albums: Vec<Album>, sortfield: SortFields) -> Vec<Album> {
+    pub fn sort_by_field(albums: &mut [Album], sortfield: &SortField) {
         match sortfield {
-            SortFields::Artists => albums.sort_by(|a, b| {
+            SortField::Artists => albums.sort_by(|a, b| {
                 (
                     &a.artists,
                     &a.album,
@@ -140,7 +148,7 @@ impl Album {
                         &b.playlist,
                     ))
             }),
-            SortFields::Album => albums.sort_by(|a, b| {
+            SortField::Album => albums.sort_by(|a, b| {
                 (
                     &a.album,
                     &a.artists,
@@ -156,7 +164,7 @@ impl Album {
                         &b.playlist,
                     ))
             }),
-            SortFields::Year => albums.sort_by(|a, b| {
+            SortField::Year => albums.sort_by(|a, b| {
                 (
                     &a.year_released,
                     &a.artists,
@@ -172,7 +180,7 @@ impl Album {
                         &b.playlist,
                     ))
             }),
-            SortFields::Added => albums.sort_by(|a, b| {
+            SortField::Added => albums.sort_by(|a, b| {
                 (
                     &a.date_added,
                     &a.artists,
@@ -188,7 +196,7 @@ impl Album {
                         &b.playlist,
                     ))
             }),
-            SortFields::Playlist => albums.sort_by(|a, b| {
+            SortField::Playlist => albums.sort_by(|a, b| {
                 (
                     &a.playlist,
                     &a.artists,
@@ -205,7 +213,29 @@ impl Album {
                     ))
             }),
         }
+    }
 
-        albums
+    /// filter `albums` on `filters`
+    pub fn filter_by_field(albums: &mut Vec<Album>, search_term: &str, filters: &[FilterField]) {
+        if albums.is_empty() || filters.is_empty() {
+            return; // albums;
+        }
+
+        let term_caps = search_term.to_uppercase();
+
+        albums.retain(
+            |Album {
+                 artists,
+                 album,
+                 playlist,
+                 ..
+             }: &Album| {
+                (filters.contains(&FilterField::Album) && album.to_uppercase().contains(&term_caps))
+                    || (filters.contains(&FilterField::Artists)
+                        && artists.to_uppercase().contains(&term_caps))
+                    || (filters.contains(&FilterField::Playlist)
+                        && playlist.to_uppercase().contains(&term_caps))
+            },
+        );
     }
 }

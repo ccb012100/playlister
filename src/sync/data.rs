@@ -374,12 +374,7 @@ mod tests {
     use chrono::Datelike;
     use chrono::Utc;
 
-    use crate::sync::data::{
-        is_valid_track_count, Album, AlbumArtist, AlbumName, AlbumTsv, DateAdded, Playlist,
-        ReleaseYear, TrackCount,
-    };
-
-    use super::is_valid_release_year;
+    use super::*;
 
     #[test]
     fn album_new() {
