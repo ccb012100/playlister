@@ -20,11 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 6.0.x
-    - name: navigate to Playlister directory
-      run: cd api
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore api/Playlister.sln
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore api/Playlister.sln
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal api/Playlister.sln
