@@ -2,4 +2,4 @@
 set -Eeou pipefail
 repo=$(dirname -- "$(readlink -f -- "$0")")
 
-ln -s "$repo" "$HOME"/bin/
+ln -sv "$repo" "$HOME"/bin/
