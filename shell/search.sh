@@ -91,7 +91,7 @@ db)
     error="$(validate_search_term "${*}")"
     if [[ -n "$error" ]]; then
         error "$error"
-        return 1
+        exit 1
     else
         [[ -n "${*}" ]]
         search_term="${*}"
@@ -105,7 +105,7 @@ song)
     error="$(validate_search_term "${*}")"
     if [[ -n "$error" ]]; then
         error "$error"
-        return 1
+        exit 1
     else
         [[ -n "${*}" ]]
         search_term="${*}"
@@ -137,13 +137,13 @@ sync)
         ;;
     *)
         error "Error: you must use 'sync db' or 'sync tsv'"
-        return 1
+        exit 1
         ;;
     esac
     ;;
 # search tsv file with default search
 *)
-    error "Error: '${*}' not supported\n"
-    return 1
+    error "Error: '${*}' not supported"
+    exit 1
     ;;
 esac
