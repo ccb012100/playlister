@@ -124,7 +124,6 @@
                     // Get Spotify auth URL from API
                     .get('auth')
                     .then(function (response) {
-                        console.log('auth response:');
                         try {
                             // redirect to Spotify to sign in
                             window.location.href = response.data;

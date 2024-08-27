@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Playlister.CQRS.Commands;
 using Playlister.Models.SpotifyApi;

@@ -1,23 +1,30 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace Playlister
 {
     public static class Program
     {
-        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
+        public static void Main(string[] args)
+        {
+            WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        internal static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            var startup = new Startup(builder.Configuration, builder.Environment);
+
+            startup.ConfigureServices(builder.Services);
+
+            var app = builder.Build();
+
+            startup.Configure(app, app.Lifetime);
+
+            app.Run();
+        }
+
+        private static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost
                 .CreateDefaultBuilder(args)
                 .ConfigureLogging(
+                    // TODO: add back file logger
                     (context, builder) => { builder.AddFile(context.Configuration.GetSection("Logging")); }
                 )
                 .UseKestrel(LogDevelopmentConfiguration)
@@ -28,15 +35,17 @@ namespace Playlister
             KestrelServerOptions options
         )
         {
-            if (context.HostingEnvironment.IsDevelopment())
+            if (!context.HostingEnvironment.IsDevelopment())
             {
-                IConfigurationSection debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
-                IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
+                return;
+            }
 
-                if (bool.Parse(printEnv.Value!))
-                {
-                    ShowConfig(context.Configuration);
-                }
+            IConfigurationSection debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
+            IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
+
+            if (bool.Parse(printEnv.Value!))
+            {
+                ShowConfig(context.Configuration);
             }
         }
 
@@ -48,13 +57,15 @@ namespace Playlister
         {
             List<IConfigurationSection> children = configuration.GetChildren().ToList();
 
-            if (children.Any())
+            if (children.Count == 0)
             {
-                foreach (IConfigurationSection section in children)
-                {
-                    ShowConfig(section);
-                    Console.WriteLine($"{section.Path} => {section.Value}");
-                }
+                return;
+            }
+
+            foreach (IConfigurationSection section in children)
+            {
+                ShowConfig(section);
+                Console.WriteLine($"{section.Path} => {section.Value}");
             }
         }
     }

@@ -1,12 +1,6 @@
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.Extensions;

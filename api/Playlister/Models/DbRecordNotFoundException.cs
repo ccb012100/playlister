@@ -1,5 +1,3 @@
-using System;
-
 namespace Playlister.Models
 {
     public class DbRecordNotFoundException : Exception

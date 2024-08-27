@@ -1,5 +1,3 @@
-using System.Threading;
-using System.Threading.Tasks;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Refit;

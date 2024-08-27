@@ -1,5 +1,3 @@
-using System;
-
 namespace Playlister.Models.SpotifyApi
 {
     public interface ISpotifyApiObject

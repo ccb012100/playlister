@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Playlister.Models;
 
 namespace Playlister.Repositories

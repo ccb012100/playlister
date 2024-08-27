@@ -1,7 +1,4 @@
-using System.Threading;
-using System.Threading.Tasks;
 using MediatR;
-using Microsoft.Extensions.Logging;
 using Playlister.Utilities;
 
 namespace Playlister.CQRS

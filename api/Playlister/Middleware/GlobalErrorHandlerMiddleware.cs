@@ -1,7 +1,3 @@
-using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Refit;
 
 namespace Playlister.Middleware
@@ -23,18 +19,22 @@ namespace Playlister.Middleware
             {
                 await _next(context);
             }
-            catch (Exception error)
+            catch (Exception ex)
             {
                 HttpResponse response = context.Response;
                 response.ContentType = "application/json";
 
-                switch (error)
+                switch (ex)
                 {
                     case ApiException e:
                         // custom application error
-                        _logger.LogError("Refit ApiException: `{ReasonPhrase} {Content}`", e.ReasonPhrase, e.Content);
+                        _logger.LogError("Unhandled Refit ApiException: `{ReasonPhrase} {Content}`", e.ReasonPhrase, e.Content);
                         response.StatusCode = (int)e.StatusCode;
-                        _logger.LogError("Authorization Header: {Headers}", e.RequestMessage.Headers.Authorization);
+                        _logger.LogError("Unhandled Authorization Header: {Headers}", e.RequestMessage.Headers.Authorization);
+
+                        break;
+                    default:
+                        _logger.LogError(ex, "Unhandled {ExceptionType}", ex.GetType());
 
                         break;
                 }
