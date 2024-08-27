@@ -3,5 +3,5 @@ set -eou pipefail
 
 repo=$(dirname -- "$(readlink -f -- "$0")")
 
-ln -sv "$repo"/../dbsearch.py "$HOME"/bin/playlist-dbsearch.py
-ln -sv "$repo"/../search.sh "$HOME"/bin/playlist-search.sh
+ln -sv "$repo"/../dbsearch.py "$HOME"/bin/playlister.py
+ln -sv "$repo"/../playlister.sh "$HOME"/bin/playlister.sh

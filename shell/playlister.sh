@@ -9,7 +9,7 @@ playlist_util="$HOME/bin/playlist-util"
 sql_scripts_dir="$sm_repo"/sql
 
 # set $SM_TSV in the environment to override these
-albums_dir="$sm_repo/albums"
+albums_dir="$HOME/bin/albums"
 all_albums_tsv="$albums_dir/all_albums.tsv"
 sorted_tsv="$albums_dir/sorted_albums.tsv"
 starred_tsv="$albums_dir/starred_albums.tsv"
