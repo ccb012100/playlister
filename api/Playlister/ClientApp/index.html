@@ -125,7 +125,6 @@
                     .get('auth')
                     .then(function (response) {
                         console.log('auth response:');
-                        console.log(response);
                         try {
                             // redirect to Spotify to sign in
                             window.location.href = response.data;
@@ -136,7 +135,6 @@
                         }
                     })
                     .catch(function (error) {
-                        console.log('line 138');
                         self.message = error.message;
                     });
             },
