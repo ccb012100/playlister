@@ -8,7 +8,8 @@ public static class TokenService
 
     private static AuthToken s_authToken = new()
     {
-        ViewToken = Guid.Empty, UserAccessToken = new UserAccessToken { AccessToken = "", RefreshToken = null, Expiration = DateTime.MinValue }
+        ViewToken = Guid.Empty,
+        UserAccessToken = new UserAccessToken { AccessToken = "", RefreshToken = null, Expiration = DateTime.MinValue }
     };
 
     public static Guid AddToken(UserAccessToken token)

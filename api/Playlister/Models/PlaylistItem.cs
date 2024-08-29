@@ -15,7 +15,10 @@ namespace Playlister.Models
 
         public PlaylistTrack ToPlaylistTrack(Playlist playlist) => new()
         {
-            TrackId = Track.Id, AddedAt = AddedAt, PlaylistId = playlist.Id, SnapshotId = playlist.SnapshotId
+            TrackId = Track.Id,
+            AddedAt = AddedAt,
+            PlaylistId = playlist.Id,
+            SnapshotId = playlist.SnapshotId
         };
     }
 }

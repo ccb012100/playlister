@@ -20,9 +20,9 @@ namespace Playlister.CQRS.Commands
         {
             public BodyParams(string refreshToken) => RefreshToken = refreshToken;
 
-            [Required] [AliasAs("grant_type")] public string GrantType { get; init; } = "refresh_token";
+            [Required][AliasAs("grant_type")] public string GrantType { get; init; } = "refresh_token";
 
-            [Required] [AliasAs("refresh_token")] public string RefreshToken { get; init; }
+            [Required][AliasAs("refresh_token")] public string RefreshToken { get; init; }
         }
     }
 }

@@ -46,7 +46,9 @@ public class LoginController : Controller
 
         AuthenticationProperties authProperties = new()
         {
-            AllowRefresh = true, IsPersistent = true, IssuedUtc = DateTimeOffset.Now, // TODO: set RedirectUri
+            AllowRefresh = true,
+            IsPersistent = true,
+            IssuedUtc = DateTimeOffset.Now, // TODO: set RedirectUri
         };
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);

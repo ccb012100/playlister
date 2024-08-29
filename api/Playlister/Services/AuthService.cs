@@ -50,7 +50,10 @@ public class AuthService : IAuthService
         SpotifyAccessToken token = await _spotifyAccountsApi.RequestAccessTokenAsync(
             new GetAccessTokenCommand.BodyParams
             {
-                Code = code, RedirectUri = _options.CallbackUrl.ToString(), ClientId = _options.ClientId, ClientSecret = _options.ClientSecret
+                Code = code,
+                RedirectUri = _options.CallbackUrl.ToString(),
+                ClientId = _options.ClientId,
+                ClientSecret = _options.ClientSecret
             }, ct);
 
         return TokenService.AddToken(token.ToUserAccessToken());
