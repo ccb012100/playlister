@@ -16,10 +16,12 @@ public interface IPlaylistService
     ///     <b>Note:</b> The items in <paramref name="playlists" /> are directly compared to the versions in the database,
     ///     so the caller should be providing current versions retrieved from Spotify's API.
     /// </summary>
+    /// <param name="accessToken"></param>
     /// <param name="playlists">
     ///     The playlists to update. These are directly compared to the versions in the database, so the caller should be providing
     ///     current versions retrieved from Spotify's API.
     /// </param>
+    /// <param name="ct"></param>
     /// <returns>The number of playlists updated.</returns>
     Task<int> UpdatePlaylistsAsync(string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct);
 

@@ -18,8 +18,6 @@ public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUs
     /// <summary>
     ///     Update Current user's playlists
     /// </summary>
-    /// <param name="command"></param>
-    /// <param name="ct"></param>
     /// <returns>Number of playlists Updated.</returns>
     public async Task<(int total, int updated)> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
     {

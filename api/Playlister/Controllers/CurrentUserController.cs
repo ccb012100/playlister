@@ -6,7 +6,6 @@ using Playlister.CQRS.Commands;
 using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
-using Playlister.Services;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers;
@@ -16,20 +15,17 @@ namespace Playlister.Controllers;
 public class CurrentUserController : BaseController
 {
     private readonly IHostApplicationLifetime _appLifetime;
-    private readonly IPlaylistService _playlistService;
     private readonly ILogger<CurrentUserController> _logger;
 
     public CurrentUserController(
         IMediator mediator,
         IAccessTokenUtility tokenUtility,
         ILogger<CurrentUserController> logger,
-        IHostApplicationLifetime appLifetime,
-        IPlaylistService playlistService
+        IHostApplicationLifetime appLifetime
     ) : base(mediator, tokenUtility)
     {
         _logger = logger;
         _appLifetime = appLifetime;
-        _playlistService = playlistService;
     }
 
     /// <summary>
