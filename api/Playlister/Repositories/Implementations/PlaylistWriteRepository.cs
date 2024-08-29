@@ -7,89 +7,87 @@ using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Utilities;
 
-namespace Playlister.Repositories.Implementations
-{
-    public class PlaylistWriteRepository : IPlaylistWriteRepository
-    {
-        private readonly IConnectionFactory _connectionFactory;
-        private readonly ILogger<PlaylistWriteRepository> _logger;
+namespace Playlister.Repositories.Implementations;
 
-        public PlaylistWriteRepository(
-            IConnectionFactory connectionFactory,
-            ILogger<PlaylistWriteRepository> logger
-        )
+public class PlaylistWriteRepository : IPlaylistWriteRepository
+{
+    private readonly IConnectionFactory _connectionFactory;
+    private readonly ILogger<PlaylistWriteRepository> _logger;
+
+    public PlaylistWriteRepository(
+        IConnectionFactory connectionFactory,
+        ILogger<PlaylistWriteRepository> logger
+    )
+    {
+        _connectionFactory = connectionFactory;
+        _logger = logger;
+    }
+
+    public async Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    {
+        Stopwatch sw = new();
+        sw.Start();
+
+        await using SqliteConnection connection = _connectionFactory.Connection;
+        await connection.OpenAsync(ct);
+        DbTransaction txn = await connection.BeginTransactionAsync(ct);
+
+        int deleted;
+
+        try
         {
-            _connectionFactory = connectionFactory;
-            _logger = logger;
+            deleted = await connection.ExecuteScalarQueryAsync(
+                SqlQueries.Delete.OrphanedTracks,
+                txn
+            );
+        }
+        catch (SqliteException)
+        {
+            _logger.LogCritical("SqliteException thrown while trying to delete orphaned PlaylistTracks");
+
+            throw;
+        }
+        finally
+        {
+            sw.Stop();
+            await txn.CommitAsync(ct);
         }
 
-        public async Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+        _logger.LogInformation(
+            "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
+            deleted,
+            sw.Elapsed.ToLogString()
+        );
+    }
+
+    public async Task UpsertAsync(
+        Playlist playlist,
+        IEnumerable<PlaylistItem> playlistItems,
+        CancellationToken ct
+    )
+    {
+        await using SqliteConnection connection = _connectionFactory.Connection;
+        await connection.OpenAsync(ct);
+        DbTransaction txn = await connection.BeginTransactionAsync(ct);
+
+        try
         {
             Stopwatch sw = new();
             sw.Start();
 
-            await using SqliteConnection connection = _connectionFactory.Connection;
-            await connection.OpenAsync(ct);
-            DbTransaction txn = await connection.BeginTransactionAsync(ct);
+            /*
+             *  Due to FKs, these have to be upserted in a certain order
+             */
 
-            int deleted;
+            await UpsertPlaylist(playlist, connection, txn);
 
-            try
+            // convert to avoid multiple enumerations
+            ImmutableArray<PlaylistItem> items = playlistItems.ToImmutableArray();
+
+            // The DB calls will blow up if the collection is empty
+            if (items.Length > 0)
             {
-                deleted = await connection.ExecuteScalarQueryAsync(
-                    SqlQueries.Delete.OrphanedTracks,
-                    txn
-                );
-            }
-            catch (SqliteException)
-            {
-                _logger.LogCritical("SqliteException thrown while trying to delete orphaned PlaylistTracks");
-
-                throw;
-            }
-            finally
-            {
-                sw.Stop();
-                await txn.CommitAsync(ct);
-            }
-
-            _logger.LogInformation(
-                "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
-                deleted,
-                sw.Elapsed.ToLogString()
-            );
-        }
-
-        public async Task UpsertAsync(
-            Playlist playlist,
-            IEnumerable<PlaylistItem> playlistItems,
-            CancellationToken ct
-        )
-        {
-            await using SqliteConnection connection = _connectionFactory.Connection;
-            await connection.OpenAsync(ct);
-            DbTransaction txn = await connection.BeginTransactionAsync(ct);
-
-            try
-            {
-                Stopwatch sw = new();
-                sw.Start();
-
-                /*
-                 *  Due to FKs, these have to be upserted in a certain order
-                 */
-
-                await UpsertPlaylist(playlist, connection, txn);
-
-                // convert to avoid multiple enumerations
-                ImmutableArray<PlaylistItem> items = playlistItems.ToImmutableArray();
-
-                // The DB calls will blow up if the collection is empty
-                if (items.Any())
-                {
-                    await UpsertPlaylistItems(playlist, items, connection, txn);
-                }
-
+                await UpsertPlaylistItems(playlist, items, connection, txn);
                 sw.Stop();
 
                 _logger.LogInformation(
@@ -98,165 +96,169 @@ namespace Playlister.Repositories.Implementations
                     items.Length,
                     sw.Elapsed.ToLogString()
                 );
-            }
-            catch (SqliteException)
-            {
-                _logger.LogCritical(
-                    "{PlaylistTag} SqliteException thrown while trying to upsert data for playlist: {PlaylistData}",
-                    playlist.LoggingTag,
-                    JsonUtility.PrettyPrint(playlist)
-                );
 
-                throw;
-            }
-            finally
-            {
-                await txn.CommitAsync(ct);
+                return;
             }
 
-            return;
+            _logger.LogDebug("{PlaylistTag} Upserted 0 tracks", playlist.LoggingTag);
 
-            async Task UpsertPlaylistItems(Playlist plist, ImmutableArray<PlaylistItem> items, SqliteConnection conn, DbTransaction transaction)
-            {
-                ImmutableArray<Track> tracks = items.Select(t => t.Track).ToImmutableArray();
-                ImmutableArray<Album> albums = tracks.Select(t => t.Album).ToImmutableArray();
+            sw.Stop();
+        }
+        catch (SqliteException)
+        {
+            _logger.LogCritical(
+                "{PlaylistTag} SqliteException thrown while trying to upsert data for playlist: {PlaylistData}",
+                playlist.LoggingTag,
+                playlist.PrettyPrint()
+            );
 
-                List<Task> tasks = new() { UpsertArtists(tracks, conn, transaction), UpsertAlbums(albums, conn, transaction) };
+            throw;
+        }
+        finally
+        {
+            await txn.CommitAsync(ct);
+        }
 
-                await Task.WhenAll(tasks);
+        return;
 
-                tasks.Clear();
+        async Task UpsertPlaylistItems(Playlist plist, ImmutableArray<PlaylistItem> items, SqliteConnection conn, DbTransaction transaction)
+        {
+            ImmutableArray<Track> tracks = items.Select(t => t.Track).ToImmutableArray();
+            ImmutableArray<Album> albums = tracks.Select(t => t.Album).ToImmutableArray();
 
-                // Track has FK to Album
-                await UpsertTracks(plist, tracks, conn, transaction);
+            List<Task> tasks = new() { UpsertArtists(tracks, conn, transaction), UpsertAlbums(albums, conn, transaction) };
 
-                // has FK to Playlist, Track
-                tasks.Add(UpsertPlaylistTracks(plist, items, conn, transaction));
-                // has FK to Album, Artist
-                tasks.Add(UpsertAlbumArtists(albums, conn, transaction));
-                // has FK to Artist, Track
-                tasks.Add(UpsertTrackArtist(tracks, conn, transaction));
+            await Task.WhenAll(tasks);
 
-                await Task.WhenAll(tasks);
-            }
+            tasks.Clear();
 
-            async Task UpsertPlaylist(
-                Playlist plist,
-                IDbConnection conn,
-                IDbTransaction dbTransaction
-            )
-            {
-                await conn.UpsertAsync(SqlQueries.Upsert.Playlist, plist, dbTransaction);
+            await UpsertTracks(plist, tracks, conn, transaction); // Track has FK to Album
 
-                _logger.LogInformation("{PlaylistTag} Upserted Playlist",
-                    plist.LoggingTag
-                );
-            }
+            tasks.Add(UpsertPlaylistTracks(plist, items, conn, transaction)); // has FK to Playlist, Track
+            tasks.Add(UpsertAlbumArtists(albums, conn, transaction)); // has FK to Album, Artist
+            tasks.Add(UpsertTrackArtist(tracks, conn, transaction)); // has FK to Artist, Track
 
-            async Task UpsertPlaylistTracks(
-                Playlist plist,
-                ImmutableArray<PlaylistItem> plistItems,
-                IDbConnection conn,
-                IDbTransaction dbTxn
-            )
-            {
-                _logger.LogDebug(
-                    "{PlaylistTag} Attempting to upsert {Count} PlaylistTracks...",
-                    plist.LoggingTag,
-                    plistItems.Length
-                );
+            await Task.WhenAll(tasks);
+        }
 
-                ImmutableArray<PlaylistTrack> playlistTracks = plistItems.Select(x => x.ToPlaylistTrack(plist)).ToImmutableArray();
+        async Task UpsertPlaylist(
+            Playlist plist,
+            IDbConnection conn,
+            IDbTransaction dbTransaction
+        )
+        {
+            await conn.UpsertAsync(SqlQueries.Upsert.Playlist, plist, dbTransaction);
 
-                await conn.UpsertAsync(SqlQueries.Upsert.PlaylistTrack, playlistTracks, dbTxn);
+            _logger.LogDebug("{PlaylistTag} Upserted Playlist {Playlist} {PlaylistId}",
+                plist.LoggingTag,
+                plist.Name,
+                plist.Id
+            );
+        }
 
-                _logger.LogInformation("{PlaylistTag} Upserted {Upserted} PlaylistTracks",
-                    plist.LoggingTag,
-                    playlistTracks.Length
-                );
-            }
+        async Task UpsertPlaylistTracks(
+            Playlist plist,
+            ImmutableArray<PlaylistItem> plistItems,
+            IDbConnection conn,
+            IDbTransaction dbTxn
+        )
+        {
+            _logger.LogTrace(
+                "{PlaylistTag} Attempting to upsert {Count} PlaylistTracks...",
+                plist.LoggingTag,
+                plistItems.Length
+            );
 
-            async Task UpsertTracks(
-                Playlist plist,
-                ImmutableArray<Track> tracks,
-                IDbConnection conn,
-                IDbTransaction dbTxn
-            )
-            {
-                await conn.UpsertAsync(SqlQueries.Upsert.Track, tracks, dbTxn);
+            ImmutableArray<PlaylistTrack> playlistTracks = plistItems.Select(x => x.ToPlaylistTrack(plist)).ToImmutableArray();
 
-                _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} Tracks",
-                    plist.LoggingTag,
-                    tracks.Length
-                );
-            }
+            await conn.UpsertAsync(SqlQueries.Upsert.PlaylistTrack, playlistTracks, dbTxn);
 
-            async Task UpsertTrackArtist(
-                ImmutableArray<Track> tracks,
-                IDbConnection conn,
-                IDbTransaction dtTxn
-            )
-            {
-                ImmutableArray<object> trackArtists = tracks.SelectMany(x => x.GetArtistIdPairings()).ToImmutableArray();
+            _logger.LogDebug("{PlaylistTag} Upserted {Upserted} PlaylistTracks",
+                plist.LoggingTag,
+                playlistTracks.Length
+            );
+        }
 
-                await conn.UpsertAsync(SqlQueries.Upsert.TrackArtist, trackArtists, dtTxn);
+        async Task UpsertTracks(
+            Playlist plist,
+            ImmutableArray<Track> tracks,
+            IDbConnection conn,
+            IDbTransaction dbTxn
+        )
+        {
+            await conn.UpsertAsync(SqlQueries.Upsert.Track, tracks, dbTxn);
 
-                _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} TrackArtists",
-                    playlist.LoggingTag,
-                    trackArtists.Length
-                );
-            }
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} Tracks",
+                plist.LoggingTag,
+                tracks.Length
+            );
+        }
 
-            async Task UpsertAlbums(
-                ImmutableArray<Album> albums,
-                IDbConnection conn,
-                IDbTransaction dbTxn
-            )
-            {
-                await conn.UpsertAsync(SqlQueries.Upsert.Album, albums, dbTxn);
+        async Task UpsertTrackArtist(
+            ImmutableArray<Track> tracks,
+            IDbConnection conn,
+            IDbTransaction dtTxn
+        )
+        {
+            ImmutableArray<object> trackArtists = tracks.SelectMany(x => x.GetArtistIdPairings()).ToImmutableArray();
 
-                _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} Albums",
-                    playlist.LoggingTag,
-                    albums.Length
-                );
-            }
+            await conn.UpsertAsync(SqlQueries.Upsert.TrackArtist, trackArtists, dtTxn);
 
-            async Task UpsertArtists(
-                ImmutableArray<Track> tracks,
-                IDbConnection conn,
-                IDbTransaction dbTxn
-            )
-            {
-                ImmutableArray<Artist> artists = tracks.SelectMany(x => x.GetAllContainedArtists()).ToImmutableArray();
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} TrackArtists",
+                playlist.LoggingTag,
+                trackArtists.Length
+            );
+        }
 
-                await conn.UpsertAsync(SqlQueries.Upsert.Artist, artists, dbTxn);
+        async Task UpsertAlbums(
+            ImmutableArray<Album> albums,
+            IDbConnection conn,
+            IDbTransaction dbTxn
+        )
+        {
+            await conn.UpsertAsync(SqlQueries.Upsert.Album, albums, dbTxn);
 
-                _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} Artists",
-                    playlist.LoggingTag,
-                    artists.Length
-                );
-            }
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} Albums",
+                playlist.LoggingTag,
+                albums.Length
+            );
+        }
 
-            async Task UpsertAlbumArtists(
-                ImmutableArray<Album> albums,
-                IDbConnection conn,
-                IDbTransaction dbTxn
-            )
-            {
-                ImmutableArray<AlbumArtistPair> albumArtists = albums.SelectMany(a => a.GetAlbumArtistPairings()).ToImmutableArray();
+        async Task UpsertArtists(
+            ImmutableArray<Track> tracks,
+            IDbConnection conn,
+            IDbTransaction dbTxn
+        )
+        {
+            ImmutableArray<Artist> artists = tracks.SelectMany(x => x.GetAllContainedArtists()).ToImmutableArray();
 
-                await conn.UpsertAsync(SqlQueries.Upsert.AlbumArtist, albumArtists, dbTxn);
+            await conn.UpsertAsync(SqlQueries.Upsert.Artist, artists, dbTxn);
 
-                _logger.LogInformation(
-                    "{PlaylistTag} Upserted {Upserted} AlbumArtists",
-                    playlist.LoggingTag,
-                    albumArtists.Length
-                );
-            }
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} Artists",
+                playlist.LoggingTag,
+                artists.Length
+            );
+        }
+
+        async Task UpsertAlbumArtists(
+            ImmutableArray<Album> albums,
+            IDbConnection conn,
+            IDbTransaction dbTxn
+        )
+        {
+            ImmutableArray<AlbumArtistPair> albumArtists = albums.SelectMany(a => a.GetAlbumArtistPairings()).ToImmutableArray();
+
+            await conn.UpsertAsync(SqlQueries.Upsert.AlbumArtist, albumArtists, dbTxn);
+
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} AlbumArtists",
+                playlist.LoggingTag,
+                albumArtists.Length
+            );
         }
     }
 }

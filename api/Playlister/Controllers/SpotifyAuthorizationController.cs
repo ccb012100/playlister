@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.Models;
+using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
@@ -10,9 +11,7 @@ namespace Playlister.Controllers
     [Route("api/auth")]
     public class SpotifyAuthorizationController : BaseController
     {
-        public SpotifyAuthorizationController(IMediator mediator) : base(mediator)
-        {
-        }
+        public SpotifyAuthorizationController(IMediator mediator, IAccessTokenUtility tokenUtility) : base(mediator, tokenUtility) { }
 
         /// <summary>
         ///     Get the Spotify Accounts URL to direct user
@@ -39,7 +38,7 @@ namespace Playlister.Controllers
             return Ok(token);
         }
 
-        [ValidateToken]
+        [ValidateAuthHeaderToken]
         [HttpPost("token/refresh")]
         public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
         {

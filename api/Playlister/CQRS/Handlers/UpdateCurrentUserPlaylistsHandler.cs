@@ -9,8 +9,7 @@ namespace Playlister.CQRS.Handlers
     /// <summary>
     ///     Add or Update the current user's playlists to the db.
     /// </summary>
-    public class UpdateCurrentUserPlaylistsHandler
-        : IRequestHandler<UpdateCurrentUserPlaylistsCommand, int>
+    public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUserPlaylistsCommand, (int total, int updated)>
     {
         private readonly IPlaylistService _playlistService;
 
@@ -22,18 +21,14 @@ namespace Playlister.CQRS.Handlers
         /// <param name="command"></param>
         /// <param name="ct"></param>
         /// <returns>Number of playlists Updated.</returns>
-        public async Task<int> Handle(
-            UpdateCurrentUserPlaylistsCommand command,
-            CancellationToken ct
-        )
+        public async Task<(int total, int updated)> Handle(UpdateCurrentUserPlaylistsCommand command, CancellationToken ct)
         {
-            ImmutableArray<Playlist> playlists =
-                await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
+            ImmutableArray<Playlist> playlists = await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
 
-            await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
+            int updated = await _playlistService.UpdatePlaylistsAsync(command.AccessToken, playlists, ct);
             await _playlistService.DeleteOrphanedPlaylistTracksAsync(ct);
 
-            return playlists.Length;
+            return (total: playlists.Length, updated);
         }
     }
 }

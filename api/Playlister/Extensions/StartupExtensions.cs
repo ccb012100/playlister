@@ -17,11 +17,7 @@ namespace Playlister.Extensions
 {
     public static class StartupExtensions
     {
-        public static IServiceCollection AddConfigOptions(
-            this IServiceCollection services,
-            IConfiguration config,
-            IWebHostEnvironment env
-        )
+        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -33,16 +29,20 @@ namespace Playlister.Extensions
                 .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
         }
 
-        public static IServiceCollection AddServices(this IServiceCollection services) =>
-            services
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            return services
+                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
                 .AddSingleton<IConnectionFactory, ConnectionFactory>()
                 .AddScoped<IPlaylistService, PlaylistService>()
+                .AddScoped<IAuthService, AuthService>()
                 .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+        }
 
-        public static IServiceCollection AddMiddleware(this IServiceCollection services) =>
-            services
-                .AddTransient<HttpLoggingMiddleware>()
-                .AddTransient<SpotifyAuthHeaderMiddleware>();
+        public static IServiceCollection AddMiddleware(this IServiceCollection services)
+        {
+            return services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
+        }
 
         public static void ConfigureFluentMigrator(this IServiceCollection services)
         {
@@ -95,41 +95,34 @@ namespace Playlister.Extensions
             IOptions<DebuggingOptions>? debugOptions
         )
         {
-            if (debugOptions is not null && debugOptions.Value.UseHttpLoggingMiddleware)
-            {
-                httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>();
-            }
-
-            return httpClientBuilder;
+            return debugOptions is { Value.UseHttpLoggingMiddleware: true }
+                ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
+                : httpClientBuilder;
         }
 
         public static void AddDebuggingOptions(this IServiceCollection services)
         {
-            IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
-
-            if (debugOptions is not null && debugOptions.Value.UseLoggingBehavior)
+            if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
             {
                 services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
             }
         }
 
-        public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+        public static IServiceCollection AddRepositories(this IServiceCollection services)
+        {
             // these need to be added as Transient to prevent DI exceptions in Mediatr
-            services
+            return services
                 .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
                 .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
+        }
 
-        public static IApplicationBuilder AddEndpoints(
-            this IApplicationBuilder builder,
-            IConfiguration config,
-            IWebHostEnvironment env
-        ) =>
-            builder.UseEndpoints(endpoints =>
+        public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
+        {
+            return builder.UseEndpoints(endpoints =>
             {
                 if (env.IsDevelopment())
-                    // view app settings at ~/debug
                 {
-                    endpoints.MapGet(
+                    endpoints.MapGet( // view app settings at ~/debug
                         "/debug",
                         async context =>
                             await context.Response.WriteAsync(
@@ -138,20 +131,14 @@ namespace Playlister.Extensions
                     );
                 }
 
-                endpoints.MapGet(
-                    "/info",
-                    async context => await context.Response.WriteAsJsonAsync(new AppInfo())
-                );
-
+                endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
                 endpoints.MapControllers();
             });
+        }
 
-        public static IServiceCollection AddHttpClientWithPollyPolicy(
-            this IServiceCollection services
-        )
+        public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
         {
-            services
-                .AddHttpClient<ISpotifyApiService, SpotifyApiService>()
+            services.AddHttpClient<ISpotifyApiService, SpotifyApiService>()
                 .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
             return services;

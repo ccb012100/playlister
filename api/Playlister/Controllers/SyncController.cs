@@ -1,19 +1,12 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Playlister.ViewModels;
 
-namespace Playlister.Controllers
+namespace Playlister.Controllers;
+
+public class SyncController : Controller
 {
-    public class SyncController : Controller
+    public Task<IActionResult> Index()
     {
-        private readonly IMediator _mediator;
-        private readonly ILogger<SyncController> _logger;
-
-        public SyncController(IMediator mediator, ILogger<SyncController> logger)
-        {
-            _mediator = mediator;
-            _logger = logger;
-        }
-
-        public Task<IActionResult> Index() => Task.FromResult<IActionResult>(View());
+        return Task.FromResult<IActionResult>(View(new SyncViewModel()));
     }
 }

@@ -6,7 +6,7 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken]
+    [ValidateAuthHeaderToken]
     [ApiController]
     [Route("api/playlists/{playlistId}")]
     public class PlaylistController : BaseController
@@ -17,7 +17,7 @@ namespace Playlister.Controllers
         [HttpPost("tracks")]
         public async Task<ActionResult> UpdateTracks(string playlistId)
         {
-            await _mediator.Send(new UpdatePlaylistCommand(AccessToken, playlistId));
+            await _mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
 
             return NoContent();
         }
@@ -25,7 +25,7 @@ namespace Playlister.Controllers
         [HttpPost("sync")]
         public async Task<ActionResult> SyncPlaylist(string playlistId)
         {
-            await _mediator.Send(new SyncPlaylistCommand(AccessToken, playlistId));
+            await _mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
 
             return NoContent();
         }

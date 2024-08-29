@@ -5,7 +5,6 @@ using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
-using Playlister.Utilities;
 
 namespace Playlister.Services
 {
@@ -213,7 +212,17 @@ namespace Playlister.Services
             return lists.ToImmutableArray();
         }
 
-        public async Task UpdatePlaylistsAsync(
+        public async Task<(int total, int updated)> SyncCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct = default)
+        {
+            ImmutableArray<Playlist> playlists = await GetCurrentUserPlaylistsAsync(accessToken, ct);
+
+            int updated = await UpdatePlaylistsAsync(accessToken, playlists, ct);
+            await DeleteOrphanedPlaylistTracksAsync(ct);
+
+            return (total: playlists.Length, updated);
+        }
+
+        public async Task<int> UpdatePlaylistsAsync(
             string accessToken,
             IEnumerable<Playlist> playlists,
             CancellationToken ct
@@ -228,20 +237,25 @@ namespace Playlister.Services
 
             sw.Stop();
 
-            if (s_updatedPlaylistsCache.Items.Any())
+            switch (s_updatedPlaylistsCache.Items.IsEmpty)
             {
-                _logger.LogInformation(
-                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
-                    sw.Elapsed.ToLogString(),
-                    s_updatedPlaylistsCache.Items.Count
-                );
-            }
-            else
-            {
-                _logger.LogInformation(
-                    "There were no changed playlists found. Time elapsed: {Elapsed}",
-                    sw.Elapsed.ToLogString()
-                );
+                case true:
+                    _logger.LogInformation(
+                        "There were no changed playlists found. Time elapsed: {Elapsed}",
+                        sw.Elapsed.ToLogString()
+                    );
+
+                    return 0;
+                case false:
+                    int changedPlaylistCount = s_updatedPlaylistsCache.Items.Count;
+
+                    _logger.LogInformation(
+                        "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
+                        sw.Elapsed.ToLogString(),
+                        changedPlaylistCount
+                    );
+
+                    return changedPlaylistCount;
             }
         }
 
@@ -296,7 +310,7 @@ namespace Playlister.Services
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist
             );
 
-            _logger.LogDebug("{PlaylistTag} Added playlist to the cache: {Playlist}", playlist.LoggingTag, JsonUtility.PrettyPrint(pl));
+            _logger.LogTrace("{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}", playlist.LoggingTag, pl.Name, pl.SnapshotId);
         }
 
         private Playlist? GetFromCache(string id)
@@ -305,7 +319,7 @@ namespace Playlister.Services
 
             if (found)
             {
-                _logger.LogDebug("Found playlist {PlaylistId} in the cache: {Playlist}", id, JsonUtility.PrettyPrint(playlist));
+                _logger.LogTrace("Found playlist {PlaylistId} in the cache: {Playlist}", id, playlist!.Name);
             }
             else
             {
@@ -319,24 +333,28 @@ namespace Playlister.Services
         {
             (string playlistId, int count) = playlistWithCount;
 
-            string cacheItem = s_missingTracksCache.Items.AddOrUpdate(
+            string _ = s_missingTracksCache.Items.AddOrUpdate(
                 playlistId,
                 count.ToString(),
                 (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : count.ToString()
             );
 
-            _logger.LogDebug("Added playlist {PlaylistId} to the MissingTracks cache; Count = {Count}", playlistId, cacheItem);
+            _logger.LogDebug(
+                "Added playlist {PlaylistId} to the MissingTracks cache; Count = {CacheItemsCount}",
+                playlistId,
+                s_missingTracksCache.Items.Count
+            );
         }
 
         private void DecacheMissingTracks(Playlist playlist)
         {
             if (s_missingTracksCache.Items.Remove(playlist.Id, out string? _))
             {
-                _logger.LogDebug("{PlaylistTag} Removed playlist from the MissingTracks cache", playlist.LoggingTag);
+                _logger.LogTrace("{PlaylistTag} Removed {PlaylistId} playlist from the MissingTracks cache", playlist.LoggingTag, playlist.Id);
             }
             else
             {
-                _logger.LogDebug("{PlaylistTag} Playlist was not present in the MissingTracks cache", playlist.LoggingTag);
+                _logger.LogTrace("{PlaylistTag} Playlist {PlaylistId} was not present in the MissingTracks cache", playlist.LoggingTag, playlist.Id);
             }
         }
 
@@ -346,11 +364,11 @@ namespace Playlister.Services
 
             if (added)
             {
-                _logger.LogDebug("{PlaylistTag} Added playlist to the UpdatedPlaylists cache", playlist.LoggingTag);
+                _logger.LogTrace("{PlaylistTag} Added playlist {PlaylistId} to the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id);
             }
             else
             {
-                _logger.LogWarning("{PlaylistTag} Playlist was already in the UpdatedPlaylists cache", playlist.LoggingTag);
+                _logger.LogWarning("{PlaylistTag} Playlist {PlaylistId} was already in the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id);
             }
         }
 
@@ -364,6 +382,8 @@ namespace Playlister.Services
 
             await Task.WhenAll(tasks);
 
+            return;
+
             async Task PopulatePlaylistCache()
             {
                 _logger.LogDebug("Populating Playlist cache...");
@@ -373,8 +393,8 @@ namespace Playlister.Services
                 playlists.AsParallel().ForAll(Cache);
 
                 _logger.LogDebug(
-                    "Playlist cache populated: {CacheItems}",
-                    JsonUtility.PrettyPrint(s_playlistCache.Items)
+                    "Playlist cache populated: {CacheItemsCount} items",
+                    s_playlistCache.Items.Count
                 );
             }
 
@@ -387,8 +407,8 @@ namespace Playlister.Services
                 missingTracks.AsParallel().ForAll(CacheMissingTracks);
 
                 _logger.LogDebug(
-                    "MissingTracks cache populated: {CacheItems}",
-                    JsonUtility.PrettyPrint(s_missingTracksCache.Items)
+                    "MissingTracks cache populated: {CacheItemsCount} items",
+                    s_missingTracksCache.Items.Count
                 );
             }
         }

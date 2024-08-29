@@ -49,6 +49,7 @@ namespace Playlister.Models.SpotifyAccounts
         [JsonPropertyName("refresh_token")]
         public string RefreshToken { get; init; }
 
+        /// <remarks>make non-nullable</remarks>
         public UserAccessToken ToUserAccessToken() =>
             new() { AccessToken = AccessToken, Expiration = DateTime.Now.AddSeconds(ExpiresIn), RefreshToken = RefreshToken };
     }

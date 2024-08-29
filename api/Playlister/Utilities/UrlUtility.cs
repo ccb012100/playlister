@@ -6,6 +6,7 @@ namespace Playlister.Utilities
     public static class UrlUtility
     {
         // HACK: because of this => <https://github.com/dotnet/corefx/issues/10361>
+        // ReSharper disable once UnusedMember.Global - not using it for now
         public static void OpenUrl(string url, ILogger logger)
         {
             string os = "other";

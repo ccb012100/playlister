@@ -6,38 +6,41 @@ using Playlister.CQRS.Commands;
 using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
+using Playlister.Services;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers
 {
-    [ValidateToken]
     [ApiController]
     [Route("api/user")]
     public class CurrentUserController : BaseController
     {
         private readonly IHostApplicationLifetime _appLifetime;
+        private readonly IPlaylistService _playlistService;
         private readonly ILogger<CurrentUserController> _logger;
 
         public CurrentUserController(
             IMediator mediator,
             IAccessTokenUtility tokenUtility,
             ILogger<CurrentUserController> logger,
-            IHostApplicationLifetime appLifetime
-        )
-            : base(mediator, tokenUtility)
+            IHostApplicationLifetime appLifetime,
+            IPlaylistService playlistService
+        ) : base(mediator, tokenUtility)
         {
             _logger = logger;
             _appLifetime = appLifetime;
+            _playlistService = playlistService;
         }
 
         /// <summary>
         ///     Get the User who was assigned the Access Token in the Authorization Header.
         /// </summary>
         /// <returns></returns>
+        [ValidateAuthHeaderToken]
         [HttpGet]
         public async Task<PrivateUserObject> Get()
         {
-            PrivateUserObject user = await _mediator.Send(new GetCurrentUserCommand(AccessToken));
+            PrivateUserObject user = await _mediator.Send(new GetCurrentUserCommand(AuthHeaderAccessToken));
 
             return user;
         }
@@ -46,6 +49,7 @@ namespace Playlister.Controllers
         ///     Get the current user's Playlists.
         /// </summary>
         /// <returns></returns>
+        [ValidateAuthHeaderToken]
         [HttpGet("playlists")]
         public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
         {
@@ -53,7 +57,7 @@ namespace Playlister.Controllers
             sw.Start();
 
             IEnumerable<Playlist> lists = await _mediator.Send(
-                new GetCurrentUserPlaylistsCommand(AccessToken)
+                new GetCurrentUserPlaylistsCommand(AuthHeaderAccessToken)
             );
 
             sw.Stop();
@@ -71,22 +75,46 @@ namespace Playlister.Controllers
         ///     Update list of current user's playlists.
         /// </summary>
         /// <returns></returns>
+        [ValidateAuthHeaderToken]
         [HttpPost("playlists")]
         public async Task<ActionResult> UpdateCurrentUserPlaylists()
         {
             Stopwatch sw = new();
             sw.Start();
 
-            int total = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AccessToken));
+            (int total, int updated) = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AuthHeaderAccessToken));
+
             sw.Stop();
 
             _logger.LogInformation(
-                "Updated current user's {Total} playlists. Total time: {Elapsed}",
+                "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
+                updated,
                 total,
                 sw.Elapsed.ToLogString()
             );
 
             return NoContent();
+        }
+
+        /// <summary>
+        ///     Update list of current user's playlists.
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost("playlists/sync")]
+        public async Task<ActionResult<(int totalSynced, string elapsed, int updated)>> SyncAllPlaylists()
+        {
+            Stopwatch sw = new();
+            sw.Start();
+
+            (int total, int updated) = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken));
+
+            sw.Stop();
+
+            string elapsed = sw.Elapsed.ToLogString();
+
+            _logger.LogInformation("Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}", updated, total, elapsed);
+
+            return Ok((total, elapsed, updated));
         }
 
         /// <summary>
@@ -99,7 +127,7 @@ namespace Playlister.Controllers
         {
             Task.Factory.StartNew(() =>
             {
-                Thread.Sleep(1000);
+                Thread.Sleep(3_000);
                 _appLifetime.StopApplication();
             });
 

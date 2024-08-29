@@ -8,8 +8,10 @@ namespace Playlister.Configuration
     {
         public const string Spotify = "Spotify";
 
-        private static readonly Uri[] s_validCallbackUrls
-            = { new("https://localhost:5001/app/home/login"), new("https://localhost:5001/login") };
+        private static readonly Uri[] s_validCallbackUrls =
+        {
+            new("https://localhost:5001/app/home/login"), new("https://localhost:5001/login")
+        };
 
         private readonly Uri _callback;
 

@@ -1,7 +1,38 @@
+@using Playlister.Utilities
+@model Playlister.ViewModels.SyncViewModel
+
 @{
     ViewData["Title"] = "sync all playlists";
 }
 
 <div class="text-center">
-    <h1 class="display-4">Sync All Playlists (wip)</h1>
+    <h1 class="display-4">Sync All Playlists</h1>
+    <div>Model: <pre>@Model.PrettyPrint()</pre></div>
+    <div id="results">
+        <p>Syncing...</p>
+    </div>
 </div>
+<script type="text/javascript">
+    window.onload = async function () {
+        const resultsId= "results";
+        const url = `${window.location.origin}/api/user/playlists/sync`
+
+        document.getElementById(resultsId).innerHTML = '<p style="color:darkorange">Syncing</p>';
+
+        try {
+            const response = await fetch(url, { method: "POST", credentials: 'include' });
+            let {totalSynced, elapsed, updated} = await response.json()
+            document.getElementById(resultsId).innerHTML = `<p><b style="color:darkgreen">Sync succeeded:</p><p>Total: ${
+            totalSynced
+            }</p><p>Number Updated: ${
+            updated
+            }</p><p>Elapsed: ${
+            elapsed
+            }</p></b>`;
+            console.log();
+        } catch (e) {
+            console.error(e);
+            document.getElementById(resultsId).innerHTML = `<p><b style="color:darkred">Sync failed:</p><pre>${e.message}</pre></b>`;
+        }
+    };
+</script>

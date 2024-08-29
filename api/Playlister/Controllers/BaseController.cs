@@ -8,7 +8,7 @@ namespace Playlister.Controllers
     [Route("api/[controller]")]
     public abstract class BaseController : Controller
     {
-        private readonly IAccessTokenUtility? _accessTokenUtility;
+        private readonly IAccessTokenUtility _accessTokenUtility;
         internal readonly IMediator _mediator;
 
         protected BaseController(IMediator mediator, IAccessTokenUtility accessTokenUtility)
@@ -17,12 +17,8 @@ namespace Playlister.Controllers
             _accessTokenUtility = accessTokenUtility;
         }
 
-        protected BaseController(IMediator mediator) => _mediator = mediator;
+        internal string AuthHeaderAccessToken => _accessTokenUtility.GetAccessTokenFromRequestAuthHeader();
 
-        internal string AccessToken =>
-            _accessTokenUtility?.GetAccessTokenFromCurrentHttpContext()
-            ?? throw new InvalidOperationException(
-                "This controller does not have an IAccessTokenUtility"
-            );
+        internal string CookieAccessToken => _accessTokenUtility.GetTokenFromUserCookie();
     }
 }

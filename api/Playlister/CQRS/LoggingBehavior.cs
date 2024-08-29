@@ -18,12 +18,12 @@ namespace Playlister.CQRS
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
             _logger.LogTrace(
-                "{RequestType} => Mediator Request: {Request}", typeof(TRequest).Name, JsonUtility.PrettyPrint(request));
+                "{RequestType} => Mediator Request: {Request}", typeof(TRequest).Name, request.PrettyPrint());
 
             TResponse response = await next();
 
             _logger.LogTrace(
-                "{ResponseType} => Mediator Response: {Response}", typeof(TResponse).Name, JsonUtility.PrettyPrint(response));
+                "{ResponseType} => Mediator Response: {Response}", typeof(TResponse).Name, response.PrettyPrint());
 
             return response;
         }

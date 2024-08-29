@@ -18,6 +18,6 @@ namespace Playlister.Utilities
         /// <param name="t">Object you want converted to JSON</param>
         /// <typeparam name="T">Type of <paramref name="t" /></typeparam>
         /// <returns>String representation of the object as pretty-printed JSON</returns>
-        public static string PrettyPrint<T>(T t) => JsonSerializer.Serialize(t, s_prettyPrintOptions);
+        public static string PrettyPrint<T>(this T t) => JsonSerializer.Serialize(t, s_prettyPrintOptions);
     }
 }
