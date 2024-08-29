@@ -27,10 +27,10 @@
     <PackageReference Include="Refit.Newtonsoft.Json" Version="7.1.2"/>
     <PackageReference Include="Serilog.Extensions.Logging.File" Version="3.0.0"/>
     <PackageReference Include="SQLite" Version="3.13.0"/>
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.3" />
-    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.7.3" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="6.7.3"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.Swagger" Version="6.7.3"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" Version="6.7.3"/>
+    <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.7.3"/>
     <PackageReference Include="System.Linq.Async" Version="6.0.1"/>
   </ItemGroup>
 
@@ -69,14 +69,14 @@
 
   <ItemGroup>
     <_ContentIncludedByDefault Remove="wwwroot\js\components.js"/>
-    <_ContentIncludedByDefault Remove="Components\App.razor" />
-    <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor" />
-    <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
-    <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor" />
-    <_ContentIncludedByDefault Remove="Components\Routes.razor" />
-    <_ContentIncludedByDefault Remove="Components\_Imports.razor" />
+    <_ContentIncludedByDefault Remove="Components\App.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Layout\MainLayout.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Layout\NavMenu.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Pages\Counter.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Pages\Error.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Pages\Home.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor"/>
+    <_ContentIncludedByDefault Remove="Components\Routes.razor"/>
+    <_ContentIncludedByDefault Remove="Components\_Imports.razor"/>
   </ItemGroup>
 </Project>

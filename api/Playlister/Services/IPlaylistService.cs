@@ -12,7 +12,7 @@ public interface IPlaylistService
     Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct);
 
     /// <summary>
-    ///     Update the playlists provided.<br/><br/>
+    ///     Update the playlists provided.<br /><br />
     ///     <b>Note:</b> The items in <paramref name="playlists" /> are directly compared to the versions in the database,
     ///     so the caller should be providing current versions retrieved from Spotify's API.
     /// </summary>
@@ -31,7 +31,7 @@ public interface IPlaylistService
     Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct);
 
     /// <summary>
-    ///     Sync the specified playlist.<br/><br/>
+    ///     Sync the specified playlist.<br /><br />
     ///     This will do a full sync, even if the snapshot ID has not changed since the last update.
     /// </summary>
     Task SyncPlaylistAsync(string accessToken, string playlistId, CancellationToken ct);

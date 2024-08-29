@@ -1,9 +1,8 @@
 using Microsoft.Data.Sqlite;
 
-namespace Playlister.Repositories
+namespace Playlister.Repositories;
+
+public interface IConnectionFactory
 {
-    public interface IConnectionFactory
-    {
-        SqliteConnection Connection { get; }
-    }
+    SqliteConnection Connection { get; }
 }

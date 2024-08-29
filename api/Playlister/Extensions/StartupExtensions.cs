@@ -29,20 +29,16 @@ public static class StartupExtensions
             .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services)
-    {
-        return services
+    public static IServiceCollection AddServices(this IServiceCollection services) =>
+        services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IConnectionFactory, ConnectionFactory>()
             .AddScoped<IPlaylistService, PlaylistService>()
             .AddScoped<IAuthService, AuthService>()
             .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
-    }
 
-    public static IServiceCollection AddMiddleware(this IServiceCollection services)
-    {
-        return services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
-    }
+    public static IServiceCollection AddMiddleware(this IServiceCollection services) =>
+        services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
 
     public static void ConfigureFluentMigrator(this IServiceCollection services)
     {
@@ -93,12 +89,10 @@ public static class StartupExtensions
     private static IHttpClientBuilder AddHttpLoggingMiddleware(
         this IHttpClientBuilder httpClientBuilder,
         IOptions<DebuggingOptions>? debugOptions
-    )
-    {
-        return debugOptions is { Value.UseHttpLoggingMiddleware: true }
+    ) =>
+        debugOptions is { Value.UseHttpLoggingMiddleware: true }
             ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
             : httpClientBuilder;
-    }
 
     public static void AddDebuggingOptions(this IServiceCollection services)
     {
@@ -108,17 +102,14 @@ public static class StartupExtensions
         }
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
-    {
+    public static IServiceCollection AddRepositories(this IServiceCollection services) =>
         // these need to be added as Transient to prevent DI exceptions in Mediatr
-        return services
+        services
             .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
             .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
-    }
 
-    public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
-    {
-        return builder.UseEndpoints(endpoints =>
+    public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env) =>
+        builder.UseEndpoints(endpoints =>
         {
             if (env.IsDevelopment())
             {
@@ -134,7 +125,6 @@ public static class StartupExtensions
             endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
             endpoints.MapControllers();
         });
-    }
 
     public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
     {

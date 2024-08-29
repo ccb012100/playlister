@@ -11,11 +11,11 @@ public static class Program
         builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
         builder.WebHost.UseKestrel(LogDevelopmentConfiguration);
 
-        var startup = new Startup(builder.Configuration, builder.Environment);
+        Startup startup = new Startup(builder.Configuration, builder.Environment);
 
         startup.ConfigureServices(builder.Services);
 
-        var app = builder.Build();
+        WebApplication app = builder.Build();
 
         startup.Configure(app, app.Lifetime);
 

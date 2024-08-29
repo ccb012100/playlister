@@ -5,42 +5,41 @@ using Refit;
 
 #pragma warning disable 8618
 
-namespace Playlister.CQRS.Commands
+namespace Playlister.CQRS.Commands;
+
+/// <summary>
+///     Request to get an Access Token from Spotify
+/// </summary>
+public record GetAccessTokenCommand : IRequest<UserAccessToken>
 {
     /// <summary>
-    ///     Request to get an Access Token from Spotify
+    ///     The authorization code returned from the initial request to the Spotify Account /authorize endpoint.
     /// </summary>
-    public record GetAccessTokenCommand : IRequest<UserAccessToken>
+    [Required]
+    public string Code { get; init; }
+
+    /// <summary>
+    ///     The value of the `state` parameter supplied in the request to the Spotify Account /authorize endpoint.
+    /// </summary>
+    [Required]
+    public string State { get; init; }
+
+    public record BodyParams
     {
-        /// <summary>
-        ///     The authorization code returned from the initial request to the Spotify Account /authorize endpoint.
-        /// </summary>
-        [Required]
-        public string Code { get; init; }
+        // As defined in the OAuth 2.0 specification, this field must contain the value
+        [Required][AliasAs("grant_type")] public string GrantType { get; init; } = "authorization_code";
 
-        /// <summary>
-        ///     The value of the `state` parameter supplied in the request to the Spotify Account /authorize endpoint.
-        /// </summary>
-        [Required]
-        public string State { get; init; }
+        // The authorization code returned from the initial request to the Spotify Account /authorize endpoint
+        [Required][AliasAs("code")] public string Code { get; init; }
 
-        public record BodyParams
-        {
-            // As defined in the OAuth 2.0 specification, this field must contain the value
-            [Required][AliasAs("grant_type")] public string GrantType { get; init; } = "authorization_code";
+        /*
+         * This parameter is used for validation only (there is no actual redirection).
+         * The value of this parameter must exactly match the value of redirect_uri supplied when requesting the authorization code.
+         */
+        [Required][AliasAs("redirect_uri")] public string RedirectUri { get; init; }
 
-            // The authorization code returned from the initial request to the Spotify Account /authorize endpoint
-            [Required][AliasAs("code")] public string Code { get; init; }
+        [Required][AliasAs("client_id")] public string ClientId { get; init; }
 
-            /*
-             * This parameter is used for validation only (there is no actual redirection).
-             * The value of this parameter must exactly match the value of redirect_uri supplied when requesting the authorization code.
-             */
-            [Required][AliasAs("redirect_uri")] public string RedirectUri { get; init; }
-
-            [Required][AliasAs("client_id")] public string ClientId { get; init; }
-
-            [Required][AliasAs("client_secret")] public string ClientSecret { get; init; }
-        }
+        [Required][AliasAs("client_secret")] public string ClientSecret { get; init; }
     }
 }

@@ -17,7 +17,7 @@ public class PlaylistController : BaseController
     [HttpPost("tracks")]
     public async Task<ActionResult> UpdateTracks(string playlistId)
     {
-        await _mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
+        await Mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
 
         return NoContent();
     }
@@ -25,7 +25,7 @@ public class PlaylistController : BaseController
     [HttpPost("sync")]
     public async Task<ActionResult> SyncPlaylist(string playlistId)
     {
-        await _mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
+        await Mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
 
         return NoContent();
     }

@@ -10,9 +10,9 @@ namespace Playlister.Services;
 public class AuthService : IAuthService
 {
     private const string AuthScope = "user-read-private";
+    private readonly SpotifyOptions _options;
 
     private readonly ISpotifyAccountsApi _spotifyAccountsApi;
-    private readonly SpotifyOptions _options;
 
     public AuthService(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options)
     {
@@ -20,8 +20,7 @@ public class AuthService : IAuthService
         _spotifyAccountsApi = api;
     }
 
-    public Uri GetSpotifyAuthUrl()
-    {
+    public Uri GetSpotifyAuthUrl() =>
         /*
          * https://accounts.spotify.com/authorize?
          * client_id=5fe01282e44241328a84e7c5cc169165
@@ -31,15 +30,13 @@ public class AuthService : IAuthService
          * &state=34fFs29kd09
          */
         // TODO: cache `state` so that it can be validated on the access token command
-
-        return _options.AccountsApiBaseAddress.AppendPathSegment("authorize")
+        _options.AccountsApiBaseAddress.AppendPathSegment("authorize")
             .AppendQueryParam("response_type", "code")
             .AppendQueryParam("client_id", _options.ClientId)
             .AppendQueryParam("redirect_uri", _options.CallbackUrl)
             .AppendQueryParam("scope", AuthScope)
             .AppendQueryParam("state", Guid.NewGuid())
             .ToUri();
-    }
 
     public async Task<Guid> GetAccessToken(string code, CancellationToken ct = default)
     {

@@ -19,7 +19,7 @@ public class ErrorViewModel : PageModel
     {
         RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
 
-        var exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
+        IExceptionHandlerPathFeature? exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
         if (exceptionHandlerPathFeature?.Error is FileNotFoundException)
         {

@@ -1,10 +1,9 @@
 #pragma warning disable 8618
-namespace Playlister.Models
-{
-    public record Artist
-    {
-        public string Id { get; init; }
+namespace Playlister.Models;
 
-        public string Name { get; init; }
-    }
+public record Artist
+{
+    public string Id { get; init; }
+
+    public string Name { get; init; }
 }

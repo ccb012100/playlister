@@ -1,11 +1,10 @@
-namespace Playlister.ViewModels
+namespace Playlister.ViewModels;
+
+public class HomeViewModel
 {
-    public class HomeViewModel
-    {
-        public required Uri SpotifyAuthUrl { get; init; }
+    public required Uri SpotifyAuthUrl { get; init; }
 
-        public string? RequestId { get; init; }
+    public string? RequestId { get; init; }
 
-        public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
-    }
+    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 }

@@ -20,7 +20,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        Uri authUrl = await _mediator.Send(new GetAuthUrlCommand());
+        Uri authUrl = await Mediator.Send(new GetAuthUrlCommand());
 
         return Ok(authUrl);
     }
@@ -33,7 +33,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpPost("token")]
     public async Task<IActionResult> GetAccessToken([FromBody] GetAccessTokenCommand tokenCommand)
     {
-        UserAccessToken token = await _mediator.Send(tokenCommand);
+        UserAccessToken token = await Mediator.Send(tokenCommand);
 
         return Ok(token);
     }
@@ -42,7 +42,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpPost("token/refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
     {
-        UserAccessToken userAccessToken = await _mediator.Send(refreshTokenCommand);
+        UserAccessToken userAccessToken = await Mediator.Send(refreshTokenCommand);
 
         return Ok(userAccessToken);
     }

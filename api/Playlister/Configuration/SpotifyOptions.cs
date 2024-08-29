@@ -8,10 +8,7 @@ public record SpotifyOptions
 {
     public const string Spotify = "Spotify";
 
-    private static readonly Uri[] s_validCallbackUrls =
-    {
-        new("https://localhost:5001/app/home/login"), new("https://localhost:5001/login")
-    };
+    private static readonly Uri[] s_validCallbackUrls = { new("https://localhost:5001/app/home/login"), new("https://localhost:5001/login") };
 
     private readonly Uri _callback;
 
@@ -22,20 +19,18 @@ public record SpotifyOptions
     [Required] public required Uri AccountsApiBaseAddress { get; init; }
 
     /// <summary>
-    /// Allowed values:<br/><br/>
-    /// - <c>https://localhost:5001/app/home/login</c><br/>
-    /// - <c>https://localhost:5001/login</c>
+    ///     Allowed values:<br /><br />
+    ///     - <c>https://localhost:5001/app/home/login</c><br />
+    ///     - <c>https://localhost:5001/login</c>
     /// </summary>
     [Required]
     public required Uri CallbackUrl
     {
         get => _callback;
 
-        init
-        {
+        init =>
             _callback = s_validCallbackUrls.Contains(value)
                 ? value
                 : throw new ArgumentException($"Invalid CallbackUrl: {value}");
-        }
     }
 }

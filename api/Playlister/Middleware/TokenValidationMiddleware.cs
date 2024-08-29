@@ -6,7 +6,7 @@ using Playlister.Attributes;
 namespace Playlister.Middleware;
 
 /// <summary>
-/// Validate that the HTTP Request has a valid Authentication Token attached
+///     Validate that the HTTP Request has a valid Authentication Token attached
 /// </summary>
 public class TokenValidationMiddleware
 {

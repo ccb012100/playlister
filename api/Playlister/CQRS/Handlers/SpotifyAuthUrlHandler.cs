@@ -8,10 +8,7 @@ public class SpotifyAuthUrlHandler : IRequestHandler<GetAuthUrlCommand, Uri>
 {
     private readonly IAuthService _authService;
 
-    public SpotifyAuthUrlHandler(IAuthService authService)
-    {
-        _authService = authService;
-    }
+    public SpotifyAuthUrlHandler(IAuthService authService) => _authService = authService;
 
     public Task<Uri> Handle(GetAuthUrlCommand command, CancellationToken ct) => Task.FromResult(_authService.GetSpotifyAuthUrl());
 }

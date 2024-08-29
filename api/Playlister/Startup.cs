@@ -27,9 +27,9 @@ public class Startup
     private IConfiguration Configuration { get; }
 
     /// <summary>
-    /// This is legacy from the old .NET pattern
+    ///     This is legacy from the old .NET pattern
     /// </summary>
-    /// <remarks> TODO: migrate into <see cref="Program"/> </remarks>
+    /// <remarks> TODO: migrate into <see cref="Program" /> </remarks>
     public void ConfigureServices(IServiceCollection services)
     {
         services.AddCors(
@@ -85,9 +85,9 @@ public class Startup
     }
 
     /// <summary>
-    /// This is legacy from the old .NET pattern
+    ///     This is legacy from the old .NET pattern
     /// </summary>
-    /// <remarks> TODO: migrate into <see cref="Program"/> </remarks>
+    /// <remarks> TODO: migrate into <see cref="Program" /> </remarks>
     public void Configure(
         WebApplication app,
         IHostApplicationLifetime appLifetime
@@ -117,7 +117,7 @@ public class Startup
         }
         else
         {
-            app.UseExceptionHandler("/Error", createScopeForErrors: true);
+            app.UseExceptionHandler("/Error", true);
             // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
             app.UseHsts();
         }
@@ -133,18 +133,9 @@ public class Startup
         app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
     }
 
-    private void OnStarted(ILogger logger)
-    {
-        logger.LogInformation("{Namespace} Started", _namespace);
-    }
+    private void OnStarted(ILogger logger) => logger.LogInformation("{Namespace} Started", _namespace);
 
-    private void OnStopping(ILogger logger)
-    {
-        logger.LogInformation("{Namespace} Stopping", _namespace);
-    }
+    private void OnStopping(ILogger logger) => logger.LogInformation("{Namespace} Stopping", _namespace);
 
-    private void OnStopped(ILogger logger)
-    {
-        logger.LogInformation("{Namespace} Stopped", _namespace);
-    }
+    private void OnStopped(ILogger logger) => logger.LogInformation("{Namespace} Stopped", _namespace);
 }

@@ -1,9 +1,8 @@
 #pragma warning disable 8618
-namespace Playlister.Models.SpotifyApi
+namespace Playlister.Models.SpotifyApi;
+
+public record PlaylistTracksRefObject
 {
-    public record PlaylistTracksRefObject
-    {
-        public Uri Href { get; init; }
-        public int Total { get; init; }
-    }
+    public Uri Href { get; init; }
+    public int Total { get; init; }
 }

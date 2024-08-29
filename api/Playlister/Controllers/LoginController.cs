@@ -9,9 +9,9 @@ namespace Playlister.Controllers;
 
 public class LoginController : Controller
 {
-    private readonly ILogger<LoginController> _logger;
     private readonly IAuthService _authService;
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<LoginController> _logger;
 
     public LoginController(ILogger<LoginController> logger, IAuthService authService, IHttpContextAccessor httpContextAccessor)
     {
@@ -21,14 +21,14 @@ public class LoginController : Controller
     }
 
     /// <summary>
-    /// URL that Spotify redirects to after authenticating with Spotify's accounts URL.
+    ///     URL that Spotify redirects to after authenticating with Spotify's accounts URL.
     /// </summary>
     /// <param name="code">The reason authorization failed, for example: <c>"access_denied"</c></param>
     /// <param name="state">The value of the <c>state</c> parameter supplied in the request; used to prevent CSRF attacks</param>
     /// <param name="error">Error message populated if authentication failed</param>
     /// <param name="returnUrl">Local URL to redirect to after successful authentication</param>
     /// <returns></returns>
-    /// <exception cref="InvalidOperationException"><paramref name="error"/> is not <c>null</c></exception>
+    /// <exception cref="InvalidOperationException"><paramref name="error" /> is not <c>null</c></exception>
     public async Task<IActionResult> Index([FromQuery] string code, [FromQuery] string state, [FromQuery] string? error,
         [FromQuery] string? returnUrl)
     {
@@ -48,7 +48,7 @@ public class LoginController : Controller
         {
             AllowRefresh = true,
             IsPersistent = true,
-            IssuedUtc = DateTimeOffset.Now, // TODO: set RedirectUri
+            IssuedUtc = DateTimeOffset.Now // TODO: set RedirectUri
         };
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
