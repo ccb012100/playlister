@@ -1,4 +1,3 @@
-namespace Playlister.ViewModels
-{
-    public class SyncViewModel;
-}
+namespace Playlister.ViewModels;
+
+public class SyncViewModel;

@@ -13,135 +13,134 @@ using Playlister.Services;
 using Playlister.Utilities;
 using Refit;
 
-namespace Playlister.Extensions
+namespace Playlister.Extensions;
+
+public static class StartupExtensions
 {
-    public static class StartupExtensions
+    public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
     {
-        public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
+        if (env.IsDevelopment())
+        {
+            services.Configure<DebuggingOptions>(config.GetSection(DebuggingOptions.Debugging));
+        }
+
+        return services
+            .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
+            .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
+    }
+
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        return services
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+            .AddSingleton<IConnectionFactory, ConnectionFactory>()
+            .AddScoped<IPlaylistService, PlaylistService>()
+            .AddScoped<IAuthService, AuthService>()
+            .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+    }
+
+    public static IServiceCollection AddMiddleware(this IServiceCollection services)
+    {
+        return services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
+    }
+
+    public static void ConfigureFluentMigrator(this IServiceCollection services)
+    {
+        string connectionString = services
+            .BuildServiceProvider()
+            .GetService<IOptions<DatabaseOptions>>()!
+            .Value.ConnectionString;
+
+        ServiceProvider serviceProvider = services
+            .AddFluentMigratorCore()
+            .ConfigureRunner(
+                c =>
+                    c.AddSQLite()
+                        .WithGlobalConnectionString(connectionString)
+                        .ScanIn(Assembly.GetExecutingAssembly())
+                        .For.All()
+            )
+            .AddLogging(c => c.AddFluentMigratorConsole())
+            .BuildServiceProvider(false);
+
+        using IServiceScope scope = serviceProvider.CreateScope();
+        scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
+    }
+
+    public static IServiceCollection AddRefitClients(this IServiceCollection services)
+    {
+        IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
+
+        services
+            .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
+            .ConfigureHttpClient(
+                (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
+            )
+            .AddHttpLoggingMiddleware(debugOptions)
+            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+
+        services
+            .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
+            .ConfigureHttpClient(
+                (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
+            )
+            .AddHttpLoggingMiddleware(debugOptions)
+            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+
+        return services;
+    }
+
+    private static IHttpClientBuilder AddHttpLoggingMiddleware(
+        this IHttpClientBuilder httpClientBuilder,
+        IOptions<DebuggingOptions>? debugOptions
+    )
+    {
+        return debugOptions is { Value.UseHttpLoggingMiddleware: true }
+            ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
+            : httpClientBuilder;
+    }
+
+    public static void AddDebuggingOptions(this IServiceCollection services)
+    {
+        if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
+        {
+            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+        }
+    }
+
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
+        // these need to be added as Transient to prevent DI exceptions in Mediatr
+        return services
+            .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
+            .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
+    }
+
+    public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
+    {
+        return builder.UseEndpoints(endpoints =>
         {
             if (env.IsDevelopment())
             {
-                services.Configure<DebuggingOptions>(config.GetSection(DebuggingOptions.Debugging));
+                endpoints.MapGet( // view app settings at ~/debug
+                    "/debug",
+                    async context =>
+                        await context.Response.WriteAsync(
+                            (config as IConfigurationRoot)!.GetDebugView()
+                        )
+                );
             }
 
-            return services
-                .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
-                .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
-        }
+            endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
+            endpoints.MapControllers();
+        });
+    }
 
-        public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            return services
-                .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
-                .AddSingleton<IConnectionFactory, ConnectionFactory>()
-                .AddScoped<IPlaylistService, PlaylistService>()
-                .AddScoped<IAuthService, AuthService>()
-                .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
-        }
+    public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
+    {
+        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>()
+            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
-        public static IServiceCollection AddMiddleware(this IServiceCollection services)
-        {
-            return services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
-        }
-
-        public static void ConfigureFluentMigrator(this IServiceCollection services)
-        {
-            string connectionString = services
-                .BuildServiceProvider()
-                .GetService<IOptions<DatabaseOptions>>()!
-                .Value.ConnectionString;
-
-            ServiceProvider serviceProvider = services
-                .AddFluentMigratorCore()
-                .ConfigureRunner(
-                    c =>
-                        c.AddSQLite()
-                            .WithGlobalConnectionString(connectionString)
-                            .ScanIn(Assembly.GetExecutingAssembly())
-                            .For.All()
-                )
-                .AddLogging(c => c.AddFluentMigratorConsole())
-                .BuildServiceProvider(false);
-
-            using IServiceScope scope = serviceProvider.CreateScope();
-            scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
-        }
-
-        public static IServiceCollection AddRefitClients(this IServiceCollection services)
-        {
-            IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
-
-            services
-                .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
-                .ConfigureHttpClient(
-                    (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
-                )
-                .AddHttpLoggingMiddleware(debugOptions)
-                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
-
-            services
-                .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
-                .ConfigureHttpClient(
-                    (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
-                )
-                .AddHttpLoggingMiddleware(debugOptions)
-                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
-
-            return services;
-        }
-
-        private static IHttpClientBuilder AddHttpLoggingMiddleware(
-            this IHttpClientBuilder httpClientBuilder,
-            IOptions<DebuggingOptions>? debugOptions
-        )
-        {
-            return debugOptions is { Value.UseHttpLoggingMiddleware: true }
-                ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
-                : httpClientBuilder;
-        }
-
-        public static void AddDebuggingOptions(this IServiceCollection services)
-        {
-            if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
-            {
-                services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
-            }
-        }
-
-        public static IServiceCollection AddRepositories(this IServiceCollection services)
-        {
-            // these need to be added as Transient to prevent DI exceptions in Mediatr
-            return services
-                .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
-                .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
-        }
-
-        public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
-        {
-            return builder.UseEndpoints(endpoints =>
-            {
-                if (env.IsDevelopment())
-                {
-                    endpoints.MapGet( // view app settings at ~/debug
-                        "/debug",
-                        async context =>
-                            await context.Response.WriteAsync(
-                                (config as IConfigurationRoot)!.GetDebugView()
-                            )
-                    );
-                }
-
-                endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
-                endpoints.MapControllers();
-            });
-        }
-
-        public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
-        {
-            services.AddHttpClient<ISpotifyApiService, SpotifyApiService>()
-                .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
-
-            return services;
-        }
+        return services;
     }
 }

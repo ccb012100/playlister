@@ -4,30 +4,29 @@ using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.Utilities;
 
-namespace Playlister.Controllers
+namespace Playlister.Controllers;
+
+[ValidateAuthHeaderToken]
+[ApiController]
+[Route("api/playlists/{playlistId}")]
+public class PlaylistController : BaseController
 {
-    [ValidateAuthHeaderToken]
-    [ApiController]
-    [Route("api/playlists/{playlistId}")]
-    public class PlaylistController : BaseController
+    public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility)
+        : base(mediator, tokenUtility) { }
+
+    [HttpPost("tracks")]
+    public async Task<ActionResult> UpdateTracks(string playlistId)
     {
-        public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility)
-            : base(mediator, tokenUtility) { }
+        await _mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
 
-        [HttpPost("tracks")]
-        public async Task<ActionResult> UpdateTracks(string playlistId)
-        {
-            await _mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
+        return NoContent();
+    }
 
-            return NoContent();
-        }
+    [HttpPost("sync")]
+    public async Task<ActionResult> SyncPlaylist(string playlistId)
+    {
+        await _mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
 
-        [HttpPost("sync")]
-        public async Task<ActionResult> SyncPlaylist(string playlistId)
-        {
-            await _mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
-
-            return NoContent();
-        }
+        return NoContent();
     }
 }

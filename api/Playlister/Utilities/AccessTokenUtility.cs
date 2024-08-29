@@ -1,64 +1,63 @@
 using System.Net.Http.Headers;
 using Playlister.Services;
 
-namespace Playlister.Utilities
+namespace Playlister.Utilities;
+
+public class AccessTokenUtility : IAccessTokenUtility
 {
-    public class AccessTokenUtility : IAccessTokenUtility
+    private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly ILogger<AccessTokenUtility> _logger;
+
+    public AccessTokenUtility(
+        IHttpContextAccessor httpContextAccessor,
+        ILogger<AccessTokenUtility> logger
+    )
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
-        private readonly ILogger<AccessTokenUtility> _logger;
+        _httpContextAccessor = httpContextAccessor;
+        _logger = logger;
+    }
 
-        public AccessTokenUtility(
-            IHttpContextAccessor httpContextAccessor,
-            ILogger<AccessTokenUtility> logger
-        )
+    public string GetAccessTokenFromRequestAuthHeader()
+    {
+        if (_httpContextAccessor.HttpContext is null)
         {
-            _httpContextAccessor = httpContextAccessor;
-            _logger = logger;
+            throw new InvalidOperationException("httpContext");
         }
 
-        public string GetAccessTokenFromRequestAuthHeader()
+        if (!AuthenticationHeaderValue.TryParse(
+                _httpContextAccessor.HttpContext.Request.Headers.Authorization,
+                out AuthenticationHeaderValue? authHeader))
         {
-            if (_httpContextAccessor.HttpContext is null)
-            {
-                throw new InvalidOperationException("httpContext");
-            }
-
-            if (!AuthenticationHeaderValue.TryParse(
-                    _httpContextAccessor.HttpContext.Request.Headers.Authorization,
-                    out AuthenticationHeaderValue? authHeader))
-            {
-                throw new InvalidOperationException("No Authorization header found on HttpContext.Request");
-            }
-
-            string token = authHeader.Parameter
-                           ?? throw new NullReferenceException("The Authentication Header was present, but the Parameter was null");
-
-            _logger.LogDebug("Found access token {Token} on HttpContext", token);
-
-            return token;
+            throw new InvalidOperationException("No Authorization header found on HttpContext.Request");
         }
 
-        public string GetTokenFromUserCookie()
+        string token = authHeader.Parameter
+                       ?? throw new NullReferenceException("The Authentication Header was present, but the Parameter was null");
+
+        _logger.LogDebug("Found access token {Token} on HttpContext", token);
+
+        return token;
+    }
+
+    public string GetTokenFromUserCookie()
+    {
+        if (_httpContextAccessor.HttpContext is null)
         {
-            if (_httpContextAccessor.HttpContext is null)
-            {
-                throw new InvalidOperationException("HttpContext is null");
-            }
-
-            string? cookie = _httpContextAccessor.HttpContext.Request.Cookies[TokenService.UserTokenCookieName];
-
-            if (string.IsNullOrWhiteSpace(cookie))
-            {
-                throw new InvalidOperationException($"{TokenService.UserTokenCookieName} cookie missing!");
-            }
-
-            if (!Guid.TryParse(cookie, out Guid viewToken))
-            {
-                throw new InvalidOperationException($"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}");
-            }
-
-            return TokenService.GetToken(viewToken).AccessToken;
+            throw new InvalidOperationException("HttpContext is null");
         }
+
+        string? cookie = _httpContextAccessor.HttpContext.Request.Cookies[TokenService.UserTokenCookieName];
+
+        if (string.IsNullOrWhiteSpace(cookie))
+        {
+            throw new InvalidOperationException($"{TokenService.UserTokenCookieName} cookie missing!");
+        }
+
+        if (!Guid.TryParse(cookie, out Guid viewToken))
+        {
+            throw new InvalidOperationException($"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}");
+        }
+
+        return TokenService.GetToken(viewToken).AccessToken;
     }
 }
