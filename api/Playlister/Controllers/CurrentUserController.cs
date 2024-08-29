@@ -36,7 +36,7 @@ public class CurrentUserController : BaseController
     [HttpGet]
     public async Task<PrivateUserObject> Get()
     {
-        PrivateUserObject user = await _mediator.Send(new GetCurrentUserCommand(AuthHeaderAccessToken));
+        PrivateUserObject user = await Mediator.Send(new GetCurrentUserCommand(AuthHeaderAccessToken));
 
         return user;
     }
@@ -49,19 +49,14 @@ public class CurrentUserController : BaseController
     [HttpGet("playlists")]
     public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
     {
-        Stopwatch sw = new();
-        sw.Start();
-
-        IEnumerable<Playlist> lists = await _mediator.Send(
-            new GetCurrentUserPlaylistsCommand(AuthHeaderAccessToken)
+        (IEnumerable<Playlist> lists, TimeSpan elapsed) = await RunInTimer(async () =>
+            await Mediator.Send(new GetCurrentUserPlaylistsCommand(AuthHeaderAccessToken))
         );
-
-        sw.Stop();
 
         _logger.LogInformation(
             "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
             lists.Count(),
-            sw.Elapsed.ToLogString()
+            elapsed.ToLogString()
         );
 
         return Ok(lists);
@@ -78,7 +73,7 @@ public class CurrentUserController : BaseController
         Stopwatch sw = new();
         sw.Start();
 
-        (int total, int updated) = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(AuthHeaderAccessToken));
+        (int total, int updated) = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(AuthHeaderAccessToken));
 
         sw.Stop();
 
@@ -102,7 +97,7 @@ public class CurrentUserController : BaseController
         Stopwatch sw = new();
         sw.Start();
 
-        (int total, int updated) = await _mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken));
+        (int total, int updated) = await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken));
 
         sw.Stop();
 
