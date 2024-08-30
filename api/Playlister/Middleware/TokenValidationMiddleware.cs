@@ -33,14 +33,15 @@ public class TokenValidationMiddleware
         {
             if (endpoint is null)
             {
-                _logger.LogDebug("There is no ValidateAuthHeaderTokenAttribute for {Path}", context.Request.GetDisplayUrl());
+                _logger.LogDebug("There is no ValidateAuthHeaderTokenAttribute for {Path}; skipping validation", context.Request.GetDisplayUrl());
             }
             else
             {
-                _logger.LogDebug("There is no ValidateAuthHeaderTokenAttribute on the endpoint {Endpoint}", endpoint.DisplayName);
+                _logger.LogDebug("There is no ValidateAuthHeaderTokenAttribute on the endpoint {Endpoint}; skipping validation",
+                    endpoint.DisplayName);
             }
 
-            await _next(context); // call action in Controller
+            await _next(context);
 
             return;
         }

@@ -29,16 +29,21 @@ public static class StartupExtensions
             .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
     }
 
-    public static IServiceCollection AddServices(this IServiceCollection services) =>
-        services
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
+        return services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IConnectionFactory, ConnectionFactory>()
             .AddScoped<IPlaylistService, PlaylistService>()
             .AddScoped<IAuthService, AuthService>()
             .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+    }
 
-    public static IServiceCollection AddMiddleware(this IServiceCollection services) =>
-        services.AddTransient<HttpLoggingMiddleware>(); //.AddTransient<SpotifyAuthHeaderMiddleware>();
+    public static IServiceCollection AddMiddleware(this IServiceCollection services)
+    {
+        return services.AddTransient<HttpLoggingMiddleware>();
+        //.AddTransient<SpotifyAuthHeaderMiddleware>();
+    }
 
     public static void ConfigureFluentMigrator(this IServiceCollection services)
     {
@@ -86,13 +91,37 @@ public static class StartupExtensions
         return services;
     }
 
+    public static void ValidateConfiguration(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddOptions<SpotifyOptions>()
+            .Bind(builder.Configuration.GetSection(SpotifyOptions.Spotify))
+            .ValidateDataAnnotations()
+            .Validate(
+                o => o.CallbackUrl == new Uri("https://localhost:5001/login")
+                     || o.CallbackUrl == new Uri("https://localhost:5001/app/home/login"),
+                "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>")
+            .ValidateOnStart();
+
+        builder.Services.AddOptions<DebuggingOptions>()
+            .Bind(builder.Configuration.GetSection(DebuggingOptions.Debugging))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        builder.Services.AddOptions<DatabaseOptions>()
+            .Bind(builder.Configuration.GetSection(DatabaseOptions.Database))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+    }
+
     private static IHttpClientBuilder AddHttpLoggingMiddleware(
         this IHttpClientBuilder httpClientBuilder,
         IOptions<DebuggingOptions>? debugOptions
-    ) =>
-        debugOptions is { Value.UseHttpLoggingMiddleware: true }
+    )
+    {
+        return debugOptions is { Value.UseHttpLoggingMiddleware: true }
             ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
             : httpClientBuilder;
+    }
 
     public static void AddDebuggingOptions(this IServiceCollection services)
     {
@@ -102,13 +131,16 @@ public static class StartupExtensions
         }
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services) =>
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
         // these need to be added as Transient to prevent DI exceptions in Mediatr
-        services
+        return services
             .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
             .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
+    }
 
-    public static IApplicationBuilder AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env) =>
+    public static void AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
+    {
         builder.UseEndpoints(endpoints =>
         {
             if (env.IsDevelopment())
@@ -125,6 +157,7 @@ public static class StartupExtensions
             endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
             endpoints.MapControllers();
         });
+    }
 
     public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
     {

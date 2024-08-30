@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Http;
+using Playlister.Configuration;
 using Playlister.Extensions;
 using Playlister.Middleware;
 
@@ -16,9 +17,6 @@ public class Startup
 
     public Startup(IConfiguration configuration, IWebHostEnvironment environment)
     {
-        ArgumentNullException.ThrowIfNull(configuration);
-        ArgumentNullException.ThrowIfNull(environment);
-
         Configuration = configuration;
         _environment = environment;
         _namespace = GetType().Namespace;
@@ -27,24 +25,17 @@ public class Startup
     private IConfiguration Configuration { get; }
 
     /// <summary>
-    ///     This is legacy from the old .NET pattern
+    ///     This follows the old .NET pattern
     /// </summary>
-    /// <remarks> TODO: migrate into <see cref="Program" /> </remarks>
     public void ConfigureServices(IServiceCollection services)
     {
-        services.AddCors(
-                o =>
-                    o.AddPolicy(
-                        CorsPolicyName,
-                        corsBuilder =>
-                        {
-                            corsBuilder
-                                .WithOrigins("https://localhost:5001")
-                                .WithMethods("GET", "POST")
-                                .AllowAnyHeader()
-                                .AllowCredentials();
-                        }
-                    )
+        services
+            .AddCors(o => o.AddPolicy(CorsPolicyName,
+                    corsBuilder =>
+                    {
+                        corsBuilder.WithOrigins("https://localhost:5001").WithMethods("GET", "POST").AllowAnyHeader().AllowCredentials();
+                    }
+                )
             )
             .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>())
             .AddConfigOptions(Configuration, _environment)
@@ -73,8 +64,7 @@ public class Startup
         services.AddEndpointsApiExplorer().AddSwaggerGen();
         services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 
-        // set Dapper to be compatible with snake_case table names
-        DefaultTypeMap.MatchNamesWithUnderscores = true;
+        DefaultTypeMap.MatchNamesWithUnderscores = true; // set Dapper to be compatible with snake_case table names
 
         if (_environment.IsDevelopment())
         {
@@ -85,21 +75,18 @@ public class Startup
     }
 
     /// <summary>
-    ///     This is legacy from the old .NET pattern
+    ///     This follows the old .NET pattern
     /// </summary>
-    /// <remarks> TODO: migrate into <see cref="Program" /> </remarks>
     public void Configure(
         WebApplication app,
         IHostApplicationLifetime appLifetime
     )
     {
-        ArgumentNullException.ThrowIfNull(app);
-        ArgumentNullException.ThrowIfNull(appLifetime);
-
+        // Log Application lifetime events
         ILogger<Startup> logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Startup>();
-        appLifetime.ApplicationStarted.Register(() => OnStarted(logger));
-        appLifetime.ApplicationStopping.Register(() => OnStopping(logger));
-        appLifetime.ApplicationStopped.Register(() => OnStopped(logger));
+        appLifetime.ApplicationStarted.Register(() => OnEvent(logger, "Started"));
+        appLifetime.ApplicationStopping.Register(() => OnEvent(logger, "Stopping"));
+        appLifetime.ApplicationStopped.Register(() => OnEvent(logger, "Stopped"));
 
         app.UseHttpsRedirection()
             .UseRouting()
@@ -133,9 +120,8 @@ public class Startup
         app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
     }
 
-    private void OnStarted(ILogger logger) => logger.LogInformation("{Namespace} Started", _namespace);
-
-    private void OnStopping(ILogger logger) => logger.LogInformation("{Namespace} Stopping", _namespace);
-
-    private void OnStopped(ILogger logger) => logger.LogInformation("{Namespace} Stopped", _namespace);
+    private void OnEvent(ILogger logger, string @event)
+    {
+        logger.LogInformation("{Namespace} {Event}", _namespace, @event);
+    }
 }

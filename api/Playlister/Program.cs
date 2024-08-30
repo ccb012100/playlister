@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
+using Playlister.Configuration;
+using Playlister.Extensions;
 
 namespace Playlister;
 
@@ -8,10 +10,11 @@ public static class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+        builder.ValidateConfiguration();
         builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
-        builder.WebHost.UseKestrel(LogDevelopmentConfiguration);
+        builder.WebHost.UseKestrel(PrintDevelopmentConfiguration);
 
-        Startup startup = new Startup(builder.Configuration, builder.Environment);
+        Startup startup = new(builder.Configuration, builder.Environment);
 
         startup.ConfigureServices(builder.Services);
 
@@ -22,42 +25,37 @@ public static class Program
         app.Run();
     }
 
-    private static void LogDevelopmentConfiguration(
+    /// <summary>
+    ///     If enabled, print the Application's Configuration to the Console
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="options"></param>
+    private static void PrintDevelopmentConfiguration(
         WebHostBuilderContext context,
         KestrelServerOptions options
     )
     {
-        if (!context.HostingEnvironment.IsDevelopment())
+        if (context.HostingEnvironment.IsDevelopment() && context.Configuration.Get<DebuggingOptions>() is { PrintEnvironmentInfo: true })
         {
-            return;
+            WriteToConsole(context.Configuration);
         }
 
-        IConfigurationSection debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
-        IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
+        return;
 
-        if (bool.Parse(printEnv.Value!))
+        void WriteToConsole(IConfiguration configuration)
         {
-            ShowConfig(context.Configuration);
-        }
-    }
+            List<IConfigurationSection> children = configuration.GetChildren().ToList();
 
-    /// <summary>
-    ///     Write App Configuration to Console
-    /// </summary>
-    /// <param name="configuration"></param>
-    private static void ShowConfig(IConfiguration configuration)
-    {
-        List<IConfigurationSection> children = configuration.GetChildren().ToList();
+            if (children.Count == 0)
+            {
+                return;
+            }
 
-        if (children.Count == 0)
-        {
-            return;
-        }
-
-        foreach (IConfigurationSection section in children)
-        {
-            ShowConfig(section);
-            Console.WriteLine($"{section.Path} => {section.Value}");
+            foreach (IConfigurationSection section in children)
+            {
+                WriteToConsole(section);
+                Console.WriteLine($"{section.Path} => {section.Value}");
+            }
         }
     }
 }
