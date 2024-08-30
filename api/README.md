@@ -69,11 +69,10 @@ EOF
 - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
 - [ ] [Get User's saved tracks](https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks)
 - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
-    - There doesn't seem to be a way to fix this; Spotify's API doesn't allow sorting/filtering when calling the Spotify
+    - There doesn't seem to be a way to fix this; Spotify's API does not allow sorting/filtering when calling the Spotify
       [Get Playlist Items](https://developer.spotify.com/documentation/web-api/reference/get-playlists-tracks) endpoint.
 - [ ] Add `.devcontainer`
 - [ ] Documentation/visualisations
-- [ ] (?) Use [Humanizer](https://github.com/Humanizr/Humanizer)
 - SQLite
     - [x] Add a stored proc to cull the SQL tables
         - artists/albums/songs that have been removed from playlists and have no references
