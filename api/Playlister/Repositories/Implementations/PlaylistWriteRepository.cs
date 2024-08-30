@@ -42,7 +42,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             _logger.LogInformation(
                 "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
                 deleted,
-                sw.Elapsed.ToLogString()
+                sw.Elapsed.ToDisplayString()
             );
 
             return deleted;
@@ -94,7 +94,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
                     "{PlaylistTag} Upserted {Upserted} tracks. Total time: {Elapsed}",
                     playlist.LoggingTag,
                     items.Length,
-                    sw.Elapsed.ToLogString()
+                    sw.Elapsed.ToDisplayString()
                 );
 
                 return;

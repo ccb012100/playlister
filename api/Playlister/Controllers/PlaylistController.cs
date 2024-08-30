@@ -53,7 +53,7 @@ public class PlaylistController : BaseController
             await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken))
         );
 
-        string elapsedStr = elapsed.ToLogString();
+        string elapsedStr = elapsed.ToDisplayString();
 
         _logger.LogInformation("Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
             updated,

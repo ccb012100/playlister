@@ -126,7 +126,7 @@ public class PlaylistService : IPlaylistService
         _logger.LogInformation(
             "{PlaylistTag} Updated playlist. Total time: {Elapsed}\n",
             playlist.LoggingTag,
-            sw.Elapsed.ToLogString()
+            sw.Elapsed.ToDisplayString()
         );
     }
 
@@ -232,7 +232,7 @@ public class PlaylistService : IPlaylistService
             case true:
                 _logger.LogInformation(
                     "There were no changed playlists found. Time elapsed: {Elapsed}",
-                    sw.Elapsed.ToLogString()
+                    sw.Elapsed.ToDisplayString()
                 );
 
                 return 0;
@@ -241,7 +241,7 @@ public class PlaylistService : IPlaylistService
 
                 _logger.LogInformation(
                     "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
-                    sw.Elapsed.ToLogString(),
+                    sw.Elapsed.ToDisplayString(),
                     changedPlaylistCount
                 );
 

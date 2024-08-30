@@ -70,7 +70,7 @@ public class CurrentUserController : BaseController
         _logger.LogInformation(
             "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
             lists.Count(),
-            elapsed.ToLogString()
+            elapsed.ToDisplayString()
         );
 
         return Ok(lists);
@@ -96,7 +96,7 @@ public class CurrentUserController : BaseController
             "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
             updated,
             total,
-            sw.Elapsed.ToLogString()
+            sw.Elapsed.ToDisplayString()
         );
 
         return NoContent();
