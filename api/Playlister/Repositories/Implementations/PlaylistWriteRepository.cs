@@ -23,7 +23,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         _logger = logger;
     }
 
-    public async Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
     {
         Stopwatch sw = new();
         sw.Start();
@@ -32,14 +32,20 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         await connection.OpenAsync(ct);
         DbTransaction txn = await connection.BeginTransactionAsync(ct);
 
-        int deleted;
-
         try
         {
-            deleted = await connection.ExecuteScalarQueryAsync(
+            int deleted = await connection.ExecuteScalarQueryAsync(
                 SqlQueries.Delete.OrphanedTracks,
                 txn
             );
+
+            _logger.LogInformation(
+                "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
+                deleted,
+                sw.Elapsed.ToLogString()
+            );
+
+            return deleted;
         }
         catch (SqliteException)
         {
@@ -52,12 +58,6 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             sw.Stop();
             await txn.CommitAsync(ct);
         }
-
-        _logger.LogInformation(
-            "Deleted {Deleted} orphaned PlaylistTracks from the DB. Total time: {Elapsed}",
-            deleted,
-            sw.Elapsed.ToLogString()
-        );
     }
 
     public async Task UpsertAsync(

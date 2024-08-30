@@ -5,5 +5,8 @@ namespace Playlister.Controllers;
 
 public class SyncController : Controller
 {
-    public Task<IActionResult> Index() => Task.FromResult<IActionResult>(View(new SyncViewModel()));
+    public Task<IActionResult> Index()
+    {
+        return Task.FromResult<IActionResult>(View(new SyncViewModel()));
+    }
 }

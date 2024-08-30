@@ -212,16 +212,6 @@ public class PlaylistService : IPlaylistService
         return lists.ToImmutableArray();
     }
 
-    public async Task<(int total, int updated)> SyncCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct = default)
-    {
-        ImmutableArray<Playlist> playlists = await GetCurrentUserPlaylistsAsync(accessToken, ct);
-
-        int updated = await UpdatePlaylistsAsync(accessToken, playlists, ct);
-        await DeleteOrphanedPlaylistTracksAsync(ct);
-
-        return (total: playlists.Length, updated);
-    }
-
     public async Task<int> UpdatePlaylistsAsync(
         string accessToken,
         IEnumerable<Playlist> playlists,
@@ -291,11 +281,11 @@ public class PlaylistService : IPlaylistService
         );
     }
 
-    public async Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
     {
         _logger.LogDebug("Deleting orphaned PlaylistTracks...");
 
-        await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
+        return await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
     }
 
     #endregion

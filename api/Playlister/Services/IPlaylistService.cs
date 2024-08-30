@@ -39,6 +39,6 @@ public interface IPlaylistService
     /// <summary>
     ///     Delete tracks without any Playlist associations
     /// </summary>
-    /// <remarks>TODO: return deleted count</remarks>
-    Task DeleteOrphanedPlaylistTracksAsync(CancellationToken ct);
+    /// <remarks>Total number of tracks deleted</remarks>
+    Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct);
 }
