@@ -2,18 +2,13 @@
 
 Tool to download your Spotify Playlists into a SQLite database.
 
-## notes
-
-- runs on <http://localhost:5000> and <https://localhost:5001>
-
 ## Database
 
 Uses a single **Sqlite** database.
 
-## ClientApp
+## UI
 
-A `Vue.js` SPA contained in a single file, `index.html`. It's just a simple hacked-together app for assisting
-development. It gets the job done but needs to be updated.
+Uses [ASP.NET Core MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) without any style sheets or JavaScript libraries.
 
 ## JSON serialization
 
@@ -57,18 +52,12 @@ EOF
 
 ### Docker
 
-- [x] FIXME: set secrets in app
 - [ ] FIXME: Open web browser when running from Docker container
-
-### UI
-
-- [ ] Rewrite the UI (in Blazor, Svelte, Solid.js, or just vanilla JS/HTML (or possibly a CLI))
 
 ### .NET
 
 - Tests
     - [ ] Integration
-        - [ ] Use [mountebank](https://www.mbtest.org/)
     - [ ] Unit
         - [ ] Property-based
 - [ ] Add `Polly` Policy to attempt re-auths for 401s
@@ -76,7 +65,7 @@ EOF
     - [ ] Swap out `Polly` for `Microsoft.Extensions.Http.Resilience`
 - Spotify Access Token
     - [ ] Validate that the `state` value matches the original value sent to user
-    - [ ] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+    - [x] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
 - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
 - [ ] [Get User's saved tracks](https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks)
 - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
@@ -89,8 +78,8 @@ EOF
     - [x] Add a stored proc to cull the SQL tables
         - artists/albums/songs that have been removed from playlists and have no references
         - need to figure out which table(s) to cull
-    - [ ] Schema visualisation
-    - [ ] (maybe) Simplify Playlist tables (add all relevant data in table? - need to look into : this)
+    - [x] Schema visualisation
+    - [ ] (maybe) Simplify Playlist tables (add all relevant data in table? - need to look into this)
 - CI/CD
     - [ ] dotnet format
     - [ ] Test coverage
