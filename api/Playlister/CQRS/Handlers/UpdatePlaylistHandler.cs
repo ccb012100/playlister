@@ -11,7 +11,10 @@ public class UpdatePlaylistHandler : IRequestHandler<UpdatePlaylistCommand, Unit
 {
     private readonly IPlaylistService _playlistService;
 
-    public UpdatePlaylistHandler(IPlaylistService playlistService) => _playlistService = playlistService;
+    public UpdatePlaylistHandler(IPlaylistService playlistService)
+    {
+        _playlistService = playlistService;
+    }
 
     public async Task<Unit> Handle(UpdatePlaylistCommand command, CancellationToken ct)
     {

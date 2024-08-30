@@ -13,11 +13,14 @@ public record PlaylistItem
 
     public Track Track { get; init; }
 
-    public PlaylistTrack ToPlaylistTrack(Playlist playlist) => new()
+    public PlaylistTrack ToPlaylistTrack(Playlist playlist)
     {
-        TrackId = Track.Id,
-        AddedAt = AddedAt,
-        PlaylistId = playlist.Id,
-        SnapshotId = playlist.SnapshotId
-    };
+        return new PlaylistTrack
+        {
+            TrackId = Track.Id,
+            AddedAt = AddedAt,
+            PlaylistId = playlist.Id,
+            SnapshotId = playlist.SnapshotId
+        };
+    }
 }

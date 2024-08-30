@@ -56,5 +56,8 @@ public record Album
     ///     Gets a pairing of the Album's ID with <see cref="Album.Artists" />'s Id
     /// </summary>
     /// <returns><see cref="AlbumArtistPair" /> for every <see cref="Artist" /> in <see cref="Album.Artists" /></returns>
-    public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings() => Artists.Select(x => new AlbumArtistPair(Id, x.Id)).ToImmutableArray();
+    public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings()
+    {
+        return Artists.Select(x => new AlbumArtistPair(Id, x.Id)).ToImmutableArray();
+    }
 }

@@ -16,7 +16,8 @@ public static class IDbConnectionExtensions
     /// <param name="conn"></param>
     /// <param name="dbTxn"></param>
     /// <returns>The number of items affected</returns>
-    public static async Task UpsertAsync<T>(this IDbConnection conn,
+    public static async Task UpsertAsync<T>(
+        this IDbConnection conn,
         string sqlQuery,
         ImmutableArray<T> items,
         IDbTransaction dbTxn
@@ -39,7 +40,8 @@ public static class IDbConnectionExtensions
     /// <param name="item"></param>
     /// <param name="dbTxn"></param>
     /// <returns></returns>
-    public static async Task UpsertAsync<T>(this IDbConnection conn,
+    public static async Task UpsertAsync<T>(
+        this IDbConnection conn,
         string sqlQuery,
         T item,
         IDbTransaction dbTxn

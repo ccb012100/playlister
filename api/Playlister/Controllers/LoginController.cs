@@ -31,8 +31,12 @@ public class LoginController : Controller
     /// <param name="returnUrl">Local URL to redirect to after successful authentication</param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"><paramref name="error" /> is not <c>null</c></exception>
-    public async Task<IActionResult> Index([FromQuery] string code, [FromQuery] string state, [FromQuery] string? error,
-        [FromQuery] string? returnUrl)
+    public async Task<IActionResult> Index(
+        [FromQuery] string code,
+        [FromQuery] string state,
+        [FromQuery] string? error,
+        [FromQuery] string? returnUrl
+    )
     {
         // Spotify sets the "error" query param if authentication failed
         if (error is not null)

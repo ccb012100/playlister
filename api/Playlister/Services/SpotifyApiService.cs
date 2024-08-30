@@ -54,7 +54,10 @@ public class SpotifyApiService : ISpotifyApiService
         CancellationToken ct,
         int? offset = null,
         int? limit = 50
-    ) => await _spotifyApi.GetCurrentUserPlaylistsAsync(accessToken, offset, limit, ct);
+    )
+    {
+        return await _spotifyApi.GetCurrentUserPlaylistsAsync(accessToken, offset, limit, ct);
+    }
 
     public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
         string accessToken,
@@ -74,5 +77,8 @@ public class SpotifyApiService : ISpotifyApiService
         string accessToken,
         string playlistId,
         CancellationToken ct
-    ) => await _spotifyApi.GetPlaylistAsync(accessToken, playlistId, ct);
+    )
+    {
+        return await _spotifyApi.GetPlaylistAsync(accessToken, playlistId, ct);
+    }
 }

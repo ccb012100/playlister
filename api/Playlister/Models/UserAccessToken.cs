@@ -10,5 +10,8 @@ public record UserAccessToken
     public required string? RefreshToken { get; init; }
     public required DateTime Expiration { get; init; }
 
-    public override string ToString() => $"UserAccessToken {this.PrettyPrint()}";
+    public override string ToString()
+    {
+        return $"UserAccessToken {this.PrettyPrint()}";
+    }
 }

@@ -28,7 +28,7 @@ public class PlaylistController : BaseController
     }
 
     /// <summary>
-    /// Sync the specified playlist
+    ///     Sync the specified playlist
     /// </summary>
     /// <param name="playlistId">ID of the Playlist to update</param>
     /// <returns></returns>
@@ -45,18 +45,28 @@ public class PlaylistController : BaseController
     [HttpPost("sync")]
     public async Task<ActionResult<SyncResultDto>> SyncAllPlaylists()
     {
-        ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(async () =>
-            await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken))
+        ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(
+            async () =>
+                await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken))
         );
 
         string elapsedStr = elapsed.ToDisplayString();
 
-        _logger.LogInformation("Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
+        _logger.LogInformation(
+            "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
             updated,
             total,
             elapsedStr
         );
 
-        return Ok(new SyncResultDto { TotalSynced = total, Deleted = deleted, Elapsed = elapsed.ToDisplayString(), Updated = updated });
+        return Ok(
+            new SyncResultDto
+            {
+                TotalSynced = total,
+                Deleted = deleted,
+                Elapsed = elapsed.ToDisplayString(),
+                Updated = updated
+            }
+        );
     }
 }

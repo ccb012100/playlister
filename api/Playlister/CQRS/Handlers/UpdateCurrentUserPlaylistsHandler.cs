@@ -13,7 +13,10 @@ public class UpdateCurrentUserPlaylistsHandler : IRequestHandler<UpdateCurrentUs
 {
     private readonly IPlaylistService _playlistService;
 
-    public UpdateCurrentUserPlaylistsHandler(IPlaylistService playlistService) => _playlistService = playlistService;
+    public UpdateCurrentUserPlaylistsHandler(IPlaylistService playlistService)
+    {
+        _playlistService = playlistService;
+    }
 
     /// <summary>
     ///     Update Current user's playlists

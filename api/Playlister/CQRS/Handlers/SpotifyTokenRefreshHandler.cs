@@ -25,8 +25,11 @@ public class SpotifyTokenRefreshHandler : IRequestHandler<RefreshTokenCommand, U
         string authParam =
             Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
 
-        SpotifyAccessToken token = await _api.RefreshTokenAsync(authParam,
-            new RefreshTokenCommand.BodyParams(command.RefreshToken), ct);
+        SpotifyAccessToken token = await _api.RefreshTokenAsync(
+            authParam,
+            new RefreshTokenCommand.BodyParams(command.RefreshToken),
+            ct
+        );
 
         return token.ToUserAccessToken();
     }

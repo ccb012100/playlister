@@ -23,8 +23,11 @@ public interface ISpotifyApi
     /// <param name="ct"></param>
     /// <returns></returns>
     [Get("/playlists/{playlistId}")]
-    Task<SimplifiedPlaylistObject> GetPlaylistAsync([Authorize] string token, string playlistId,
-        CancellationToken ct);
+    Task<SimplifiedPlaylistObject> GetPlaylistAsync(
+        [Authorize] string token,
+        string playlistId,
+        CancellationToken ct
+    );
 
     /// <summary>
     ///     Get a list of the playlists owned or followed by the current Spotify user.
@@ -35,8 +38,12 @@ public interface ISpotifyApi
     /// <param name="ct"></param>
     /// <returns></returns>
     [Get("/me/playlists?market=from_token")]
-    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync([Authorize] string token, int? offset,
-        int? limit, CancellationToken ct);
+    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
+        [Authorize] string token,
+        int? offset,
+        int? limit,
+        CancellationToken ct
+    );
 
     /// <summary>
     ///     Get full details of the items of a playlist owned by a Spotify user.
@@ -51,7 +58,13 @@ public interface ISpotifyApi
     /// <returns></returns>
     [Get(
         "/playlists/{playlistId}/tracks?market=from_token&" +
-        "fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))")]
-    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync([Authorize] string token, string playlistId,
-        int? offset, int? limit, CancellationToken ct);
+        "fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))"
+    )]
+    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
+        [Authorize] string token,
+        string playlistId,
+        int? offset,
+        int? limit,
+        CancellationToken ct
+    );
 }

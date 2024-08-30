@@ -29,5 +29,8 @@ public record Playlist
 
     public string LoggingTag => $"[{ToString()}]";
 
-    public override string ToString() => $"Playlist `{Id}` (\"{Name}\")";
+    public override string ToString()
+    {
+        return $"Playlist `{Id}` (\"{Name}\")";
+    }
 }

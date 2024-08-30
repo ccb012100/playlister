@@ -26,12 +26,23 @@ public record Track
     ///     Flatten the track's artists and the track's album's artists into a single collection.
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<Artist> GetAllContainedArtists() => Artists.Concat(Album.Artists);
+    public IEnumerable<Artist> GetAllContainedArtists()
+    {
+        return Artists.Concat(Album.Artists);
+    }
 
     /// <summary>
     ///     Get Track/Artist TrackId pair for each artist on the track.
     /// </summary>
     /// <returns>Collection of track id, artist id tuples</returns>
-    public IEnumerable<object> GetArtistIdPairings() =>
-        Artists.Select(a => new { TrackId = Id, ArtistId = a.Id });
+    public IEnumerable<object> GetArtistIdPairings()
+    {
+        return Artists.Select(
+            a => new
+            {
+                TrackId = Id,
+                ArtistId = a.Id
+            }
+        );
+    }
 }

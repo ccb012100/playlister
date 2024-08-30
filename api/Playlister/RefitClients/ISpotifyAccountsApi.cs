@@ -13,8 +13,10 @@ public interface ISpotifyAccountsApi
     /// <param name="ct"></param>
     /// <returns></returns>
     [Post("/api/token")]
-    Task<SpotifyAccessToken> RequestAccessTokenAsync([Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenCommand.BodyParams bodyParams,
-        CancellationToken ct);
+    Task<SpotifyAccessToken> RequestAccessTokenAsync(
+        [Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenCommand.BodyParams bodyParams,
+        CancellationToken ct
+    );
 
     /// <summary>
     ///     Get a Refresh Token for User from Spotify.
@@ -24,7 +26,10 @@ public interface ISpotifyAccountsApi
     /// <param name="ct"></param>
     /// <returns></returns>
     [Post("/api/token")]
-    Task<SpotifyAccessToken> RefreshTokenAsync([Authorize("Basic")] string authHeaderParam,
+    Task<SpotifyAccessToken> RefreshTokenAsync(
+        [Authorize("Basic")] string authHeaderParam,
         [Body(BodySerializationMethod.UrlEncoded)]
-        RefreshTokenCommand.BodyParams bodyParams, CancellationToken ct);
+        RefreshTokenCommand.BodyParams bodyParams,
+        CancellationToken ct
+    );
 }

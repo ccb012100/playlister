@@ -30,7 +30,9 @@ public class SpotifyAccessTokenHandler : IRequestHandler<GetAccessTokenCommand, 
                 RedirectUri = _options.CallbackUrl.ToString(),
                 ClientId = _options.ClientId,
                 ClientSecret = _options.ClientSecret
-            }, ct);
+            },
+            ct
+        );
 
         return token.ToUserAccessToken();
     }

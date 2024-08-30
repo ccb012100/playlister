@@ -126,7 +126,11 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             ImmutableArray<Track> tracks = items.Select(t => t.Track).ToImmutableArray();
             ImmutableArray<Album> albums = tracks.Select(t => t.Album).ToImmutableArray();
 
-            List<Task> tasks = new() { UpsertArtists(tracks, conn, transaction), UpsertAlbums(albums, conn, transaction) };
+            List<Task> tasks = new()
+            {
+                UpsertArtists(tracks, conn, transaction),
+                UpsertAlbums(albums, conn, transaction)
+            };
 
             await Task.WhenAll(tasks);
 
@@ -149,7 +153,8 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         {
             await conn.UpsertAsync(SqlQueries.Upsert.Playlist, plist, dbTransaction);
 
-            _logger.LogDebug("{PlaylistTag} Upserted Playlist {Playlist} {PlaylistId}",
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted Playlist {Playlist} {PlaylistId}",
                 plist.LoggingTag,
                 plist.Name,
                 plist.Id
@@ -173,7 +178,8 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
 
             await conn.UpsertAsync(SqlQueries.Upsert.PlaylistTrack, playlistTracks, dbTxn);
 
-            _logger.LogDebug("{PlaylistTag} Upserted {Upserted} PlaylistTracks",
+            _logger.LogDebug(
+                "{PlaylistTag} Upserted {Upserted} PlaylistTracks",
                 plist.LoggingTag,
                 playlistTracks.Length
             );

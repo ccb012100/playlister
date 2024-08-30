@@ -16,7 +16,10 @@ public class HttpLoggingMiddleware : DelegatingHandler
 
     private readonly string[] _types = { "html", "text", "xml", "json", "txt", "x-www-form-urlencoded" };
 
-    public HttpLoggingMiddleware(ILogger<HttpLoggingMiddleware> logger) => _logger = logger;
+    public HttpLoggingMiddleware(ILogger<HttpLoggingMiddleware> logger)
+    {
+        _logger = logger;
+    }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,

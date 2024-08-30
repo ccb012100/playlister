@@ -11,12 +11,15 @@ internal static class FluentMigratorExtensions
     /// <param name="tableWithColumnSyntax">The table to add the TrackId column to</param>
     /// <returns></returns>
     public static ICreateTableColumnOptionOrWithColumnSyntax WithSpotifyIdColumn(
-        this ICreateTableWithColumnSyntax tableWithColumnSyntax) =>
-        tableWithColumnSyntax
+        this ICreateTableWithColumnSyntax tableWithColumnSyntax
+    )
+    {
+        return tableWithColumnSyntax
             .WithColumn("id")
             .AsString()
             .NotNullable()
             .PrimaryKey();
+    }
 
     /// <summary>
     ///     Upsert <c>created_at</c> and <c>modified_at</c> columns on the table.
@@ -24,8 +27,16 @@ internal static class FluentMigratorExtensions
     /// <param name="tableWithColumnSyntax">The table to add the columns to</param>
     /// <returns></returns>
     public static ICreateTableColumnOptionOrWithColumnSyntax WithTimeStamps(
-        this ICreateTableWithColumnSyntax tableWithColumnSyntax) =>
-        tableWithColumnSyntax
-            .WithColumn("created_at").AsDateTime().NotNullable().WithDefault(SystemMethods.CurrentUTCDateTime)
-            .WithColumn("modified_at").AsDateTime().Nullable();
+        this ICreateTableWithColumnSyntax tableWithColumnSyntax
+    )
+    {
+        return tableWithColumnSyntax
+            .WithColumn("created_at")
+            .AsDateTime()
+            .NotNullable()
+            .WithDefault(SystemMethods.CurrentUTCDateTime)
+            .WithColumn("modified_at")
+            .AsDateTime()
+            .Nullable();
+    }
 }

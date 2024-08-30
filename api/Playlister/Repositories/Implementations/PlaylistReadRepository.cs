@@ -8,7 +8,10 @@ public class PlaylistReadRepository : IPlaylistReadRepository
 {
     private readonly IConnectionFactory _connectionFactory;
 
-    public PlaylistReadRepository(IConnectionFactory connectionFactory) => _connectionFactory = connectionFactory;
+    public PlaylistReadRepository(IConnectionFactory connectionFactory)
+    {
+        _connectionFactory = connectionFactory;
+    }
 
     public async Task<IEnumerable<Playlist>> GetAllAsync()
     {

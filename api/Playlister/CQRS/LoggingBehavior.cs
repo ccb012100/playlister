@@ -13,17 +13,26 @@ public class LoggingBehavior<TRequest, TResponse> : IPipelineBehavior<TRequest, 
 {
     private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
 
-    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger) => _logger = logger;
+    public LoggingBehavior(ILogger<LoggingBehavior<TRequest, TResponse>> logger)
+    {
+        _logger = logger;
+    }
 
     public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
     {
         _logger.LogTrace(
-            "{RequestType} => Mediator Request: {Request}", typeof(TRequest).Name, request.PrettyPrint());
+            "{RequestType} => Mediator Request: {Request}",
+            typeof(TRequest).Name,
+            request.PrettyPrint()
+        );
 
         TResponse response = await next();
 
         _logger.LogTrace(
-            "{ResponseType} => Mediator Response: {Response}", typeof(TResponse).Name, response.PrettyPrint());
+            "{ResponseType} => Mediator Response: {Response}",
+            typeof(TResponse).Name,
+            response.PrettyPrint()
+        );
 
         return response;
     }

@@ -29,7 +29,9 @@ public class Startup
     public void ConfigureServices(IServiceCollection services)
     {
         services
-            .AddCors(o => o.AddPolicy(CorsPolicyName,
+            .AddCors(
+                o => o.AddPolicy(
+                    CorsPolicyName,
                     corsBuilder =>
                     {
                         corsBuilder.WithOrigins("https://localhost:5001").WithMethods("GET", "POST").AllowAnyHeader().AllowCredentials();
@@ -46,19 +48,23 @@ public class Startup
             .AddHttpClientWithPollyPolicy()
             .AddRefitClients()
             .AddControllersWithViews()
-            .AddJsonOptions(options =>
-            {
-                options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-            });
+            .AddJsonOptions(
+                options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                }
+            );
 
         services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-            .AddCookie(options =>
-            {
-                options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
-                options.SlidingExpiration = true;
-                options.AccessDeniedPath = "/Forbidden/";
-            });
+            .AddCookie(
+                options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
+                    options.SlidingExpiration = true;
+                    options.AccessDeniedPath = "/Forbidden/";
+                }
+            );
 
         services.AddEndpointsApiExplorer().AddSwaggerGen();
 

@@ -24,9 +24,12 @@ public static class PollyUtility
                         throw new InvalidOperationException("Could not find valid RetryAfter header."),
                     async (_, timespan, retryAttempt, _) =>
                     {
-                        svc.GetService<ILogger<SpotifyApiService>>()?.LogWarning(
-                            "Received a 429 HTTP response; delaying for {TotalSeconds} seconds, then making retry attempt {AttemptCount}",
-                            timespan.TotalSeconds, retryAttempt);
+                        svc.GetService<ILogger<SpotifyApiService>>()
+                            ?.LogWarning(
+                                "Received a 429 HTTP response; delaying for {TotalSeconds} seconds, then making retry attempt {AttemptCount}",
+                                timespan.TotalSeconds,
+                                retryAttempt
+                            );
 
                         await Task.CompletedTask;
                     }

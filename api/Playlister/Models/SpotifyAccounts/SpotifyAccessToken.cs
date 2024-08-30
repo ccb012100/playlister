@@ -50,6 +50,13 @@ public record SpotifyAccessToken
     public string RefreshToken { get; init; }
 
     /// <remarks>make non-nullable</remarks>
-    public UserAccessToken ToUserAccessToken() =>
-        new() { AccessToken = AccessToken, Expiration = DateTime.Now.AddSeconds(ExpiresIn), RefreshToken = RefreshToken };
+    public UserAccessToken ToUserAccessToken()
+    {
+        return new UserAccessToken
+        {
+            AccessToken = AccessToken,
+            Expiration = DateTime.Now.AddSeconds(ExpiresIn),
+            RefreshToken = RefreshToken
+        };
+    }
 }

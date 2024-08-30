@@ -11,7 +11,10 @@ public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Un
 {
     private readonly IPlaylistService _playlistService;
 
-    public UpdatePlaylistsHandler(IPlaylistService playlistService) => _playlistService = playlistService;
+    public UpdatePlaylistsHandler(IPlaylistService playlistService)
+    {
+        _playlistService = playlistService;
+    }
 
     /// <summary>
     /// </summary>
@@ -20,8 +23,14 @@ public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Un
     /// <returns>Number of playlists handled</returns>
     public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
     {
-        await Task.Run(() => _playlistService.UpdatePlaylistsAsync(command.AccessToken,
-            command.Playlists.Select(p => p.ToPlaylist()), ct), ct);
+        await Task.Run(
+            () => _playlistService.UpdatePlaylistsAsync(
+                command.AccessToken,
+                command.Playlists.Select(p => p.ToPlaylist()),
+                ct
+            ),
+            ct
+        );
 
         return new Unit();
     }

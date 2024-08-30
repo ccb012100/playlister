@@ -26,7 +26,8 @@ public class AccessTokenUtility : IAccessTokenUtility
 
         if (!AuthenticationHeaderValue.TryParse(
                 _httpContextAccessor.HttpContext.Request.Headers.Authorization,
-                out AuthenticationHeaderValue? authHeader))
+                out AuthenticationHeaderValue? authHeader
+            ))
         {
             throw new InvalidOperationException("No Authorization header found on HttpContext.Request");
         }

@@ -16,8 +16,13 @@ public interface ISpotifyApiService
     /// <param name="limit">Number of items to return</param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(string accessToken, string playlistId, int? offset,
-        int? limit, CancellationToken ct);
+    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
+        string accessToken,
+        string playlistId,
+        int? offset,
+        int? limit,
+        CancellationToken ct
+    );
 
     /// <summary>
     /// </summary>
@@ -38,8 +43,12 @@ public interface ISpotifyApiService
     /// </param>
     /// <param name="limit">The maximum number of playlists to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c></param>
     /// <returns></returns>
-    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct,
-        int? offset = null, int? limit = 50);
+    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
+        string accessToken,
+        CancellationToken ct,
+        int? offset = null,
+        int? limit = 50
+    );
 
     /// <summary>
     ///     Get the current user's playlists.
@@ -48,8 +57,11 @@ public interface ISpotifyApiService
     /// <param name="next">URI of the next page of playlists</param>
     /// <param name="ct"></param>
     /// <returns>A <c>PagingObject</c> containing the playlists requested in the <paramref name="next" /> Uri parameter</returns>
-    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(string accessToken, Uri next,
-        CancellationToken ct);
+    Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
+        string accessToken,
+        Uri next,
+        CancellationToken ct
+    );
 
     /// <summary>
     ///     Get Playlist

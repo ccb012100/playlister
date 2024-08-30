@@ -79,8 +79,9 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
     /// </summary>
     public Uri Uri { get; init; }
 
-    public Playlist ToPlaylist() =>
-        new()
+    public Playlist ToPlaylist()
+    {
+        return new Playlist
         {
             Id = Id,
             SnapshotId = SnapshotId,
@@ -90,4 +91,5 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
             Public = Public,
             Count = Tracks.Total
         };
+    }
 }

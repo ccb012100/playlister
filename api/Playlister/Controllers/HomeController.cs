@@ -9,9 +9,9 @@ namespace Playlister.Controllers;
 public class HomeController : Controller
 {
     public const string Name = "Home";
+    private readonly IHostApplicationLifetime _appLifetime;
 
     private readonly IMediator _mediator;
-    private readonly IHostApplicationLifetime _appLifetime;
 
     public HomeController(IMediator mediator, IHostApplicationLifetime appLifetime)
     {
@@ -28,7 +28,7 @@ public class HomeController : Controller
 
     public Task<IActionResult> Me()
     {
-        return Task.FromResult<IActionResult>(View(model: new HomeViewModel()));
+        return Task.FromResult<IActionResult>(View(new HomeViewModel()));
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
@@ -44,11 +44,13 @@ public class HomeController : Controller
     [HttpPost("stop-application")]
     public ActionResult StopApplication()
     {
-        Task.Factory.StartNew(() =>
-        {
-            Thread.Sleep(3_000);
-            _appLifetime.StopApplication();
-        });
+        Task.Factory.StartNew(
+            () =>
+            {
+                Thread.Sleep(3_000);
+                _appLifetime.StopApplication();
+            }
+        );
 
         return NoContent();
     }

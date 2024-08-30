@@ -100,19 +100,28 @@ public class PlaylistService : IPlaylistService
         {
             _logger.LogWarning(
                 "{PlaylistTag} The number of tracks returned from the API does not match Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}",
-                playlist.LoggingTag, playlist.Count, allItems.Count);
+                playlist.LoggingTag,
+                playlist.Count,
+                allItems.Count
+            );
         }
 
         string playlistId = playlist.Id;
 
-        ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(x =>
-                new DistinctPlaylistTracks.DistinctPlaylistTrack(playlistId, x.Track.Id, x.AddedAt))
+        ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(
+                x =>
+                    new DistinctPlaylistTracks.DistinctPlaylistTrack(playlistId, x.Track.Id, x.AddedAt)
+            )
             .ToImmutableArray();
 
         playlist = playlist with { CountUnique = uniqueTracks.Length };
 
-        _logger.LogInformation("{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})", playlist.LoggingTag,
-            uniqueTracks.Length, playlist.Count);
+        _logger.LogInformation(
+            "{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})",
+            playlist.LoggingTag,
+            uniqueTracks.Length,
+            playlist.Count
+        );
 
         await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
 
@@ -368,7 +377,11 @@ public class PlaylistService : IPlaylistService
     /// <returns></returns>
     private async Task PopulateCaches()
     {
-        List<Task> tasks = new() { PopulatePlaylistCache(), PopulateMissingTracksCache() };
+        List<Task> tasks = new()
+        {
+            PopulatePlaylistCache(),
+            PopulateMissingTracksCache()
+        };
 
         await Task.WhenAll(tasks);
 

@@ -11,7 +11,10 @@ public class SyncPlaylistsHandler : IRequestHandler<SyncPlaylistCommand, Unit>
 {
     private readonly IPlaylistService _playlistService;
 
-    public SyncPlaylistsHandler(IPlaylistService playlistService) => _playlistService = playlistService;
+    public SyncPlaylistsHandler(IPlaylistService playlistService)
+    {
+        _playlistService = playlistService;
+    }
 
     /// <summary>
     /// </summary>

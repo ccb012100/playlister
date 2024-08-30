@@ -24,7 +24,7 @@ public class CurrentUserController : BaseController
     }
 
     /// <summary>
-    ///     Get the User who was assigned the Access Token in the Request <see cref="Playlister.Services.TokenService.UserTokenCookieName"/> cookie.
+    ///     Get the User who was assigned the Access Token in the Request <see cref="Playlister.Services.TokenService.UserTokenCookieName" /> cookie.
     /// </summary>
     /// <returns></returns>
     [HttpGet("me")]
@@ -60,11 +60,13 @@ public class CurrentUserController : BaseController
     [HttpPost("stop-application")]
     public ActionResult StopApplication()
     {
-        Task.Factory.StartNew(() =>
-        {
-            Thread.Sleep(3_000);
-            _appLifetime.StopApplication();
-        });
+        Task.Factory.StartNew(
+            () =>
+            {
+                Thread.Sleep(3_000);
+                _appLifetime.StopApplication();
+            }
+        );
 
         return NoContent();
     }

@@ -39,8 +39,13 @@ public static class UrlUtility
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Error trying to open url {Url} on OS [{OS}]\nOS Description{OSDescription}", url, os,
-                RuntimeInformation.OSDescription);
+            logger.LogError(
+                ex,
+                "Error trying to open url {Url} on OS [{OS}]\nOS Description{OSDescription}",
+                url,
+                os,
+                RuntimeInformation.OSDescription
+            );
         }
     }
 }

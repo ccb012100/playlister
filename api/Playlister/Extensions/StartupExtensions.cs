@@ -99,7 +99,8 @@ public static class StartupExtensions
             .Validate(
                 o => o.CallbackUrl == new Uri("https://localhost:5001/login")
                      || o.CallbackUrl == new Uri("https://localhost:5001/app/home/login"),
-                "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>")
+                "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>"
+            )
             .ValidateOnStart();
 
         builder.Services.AddOptions<DebuggingOptions>()
@@ -141,22 +142,24 @@ public static class StartupExtensions
 
     public static void AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
     {
-        builder.UseEndpoints(endpoints =>
-        {
-            if (env.IsDevelopment())
+        builder.UseEndpoints(
+            endpoints =>
             {
-                endpoints.MapGet( // view app settings at ~/debug
-                    "/debug",
-                    async context =>
-                        await context.Response.WriteAsync(
-                            (config as IConfigurationRoot)!.GetDebugView()
-                        )
-                );
-            }
+                if (env.IsDevelopment())
+                {
+                    endpoints.MapGet( // view app settings at ~/debug
+                        "/debug",
+                        async context =>
+                            await context.Response.WriteAsync(
+                                (config as IConfigurationRoot)!.GetDebugView()
+                            )
+                    );
+                }
 
-            endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
-            endpoints.MapControllers();
-        });
+                endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
+                endpoints.MapControllers();
+            }
+        );
     }
 
     public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)

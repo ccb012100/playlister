@@ -10,11 +10,16 @@ public class GetCurrentUserPlaylistsHandler
 {
     private readonly IPlaylistService _playlistService;
 
-    public GetCurrentUserPlaylistsHandler(IPlaylistService playlistService) =>
+    public GetCurrentUserPlaylistsHandler(IPlaylistService playlistService)
+    {
         _playlistService = playlistService;
+    }
 
     public async Task<IEnumerable<Playlist>> Handle(
         GetCurrentUserPlaylistsCommand command,
         CancellationToken ct
-    ) => await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
+    )
+    {
+        return await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
+    }
 }
