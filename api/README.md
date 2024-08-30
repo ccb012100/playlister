@@ -10,6 +10,10 @@ Uses a single **Sqlite** database.
 
 Uses [ASP.NET Core MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) without any style sheets or JavaScript libraries.
 
+## CQRS
+
+The app uses [MediatR](https://github.com/jbogard/MediatR) to generally follow the Command Query Responsibility Segregation (CQRS) pattern.
+
 ## JSON serialization
 
 The .NET `System.Text.Json` serializer/deserializer
