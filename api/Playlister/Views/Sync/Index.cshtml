@@ -4,12 +4,12 @@
 @{
     ViewData["Title"] = "sync all playlists";
 }
-
-<div class="text-center">
-    <h1 class="display-4">Sync All Playlists</h1>
+<!DOCTYPE html>
+<div>
+    <h1>Sync All Playlists</h1>
     <div>Model: <pre>@Model.PrettyPrint()</pre></div>
     <div id="results">
-        <p>Syncing...</p>
+        <p>Syncing&hellip;</p>
     </div>
 </div>
 <script type="text/javascript">
@@ -21,14 +21,15 @@
 
         try {
             const response = await fetch(url, { method: "POST", credentials: 'include' });
-            let {totalSynced, elapsed, updated} = await response.json()
+            let {totalSynced, elapsed, updated, deleted} = await response.json()
             document.getElementById(resultsId).innerHTML = `<p><b style="color:darkgreen">Sync succeeded:</p><p>Total: ${
             totalSynced
             }</p><p>Number Updated: ${
             updated
             }</p><p>Elapsed: ${
             elapsed
-            }</p></b>`;
+            }</p><p>Deleted: ${
+            deleted} tracks</p></b>`;
             console.log();
         } catch (e) {
             console.error(e);

@@ -1,8 +1,8 @@
-using System.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.DTOs;
 using Playlister.Extensions;
 using Playlister.Utilities;
 
@@ -22,11 +22,9 @@ public class PlaylistController : BaseController
     }
 
     [HttpPost("{playlistId}/tracks")]
-    public async Task<ActionResult> UpdateTracks(string playlistId)
+    public Task<ActionResult> UpdateTracks(string playlistId)
     {
-        await Mediator.Send(new UpdatePlaylistCommand(AuthHeaderAccessToken, playlistId));
-
-        return NoContent();
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -35,11 +33,9 @@ public class PlaylistController : BaseController
     /// <param name="playlistId">ID of the Playlist to update</param>
     /// <returns></returns>
     [HttpPost($"sync/{{{nameof(playlistId)}}}")]
-    public async Task<ActionResult> SyncPlaylist(string playlistId)
+    public Task<ActionResult> SyncPlaylist(string playlistId)
     {
-        await Mediator.Send(new SyncPlaylistCommand(AuthHeaderAccessToken, playlistId));
-
-        return NoContent();
+        throw new NotImplementedException();
     }
 
     /// <summary>
@@ -47,9 +43,9 @@ public class PlaylistController : BaseController
     /// </summary>
     /// <returns></returns>
     [HttpPost("sync")]
-    public async Task<ActionResult<(int totalSynced, string elapsed, int updated)>> SyncAllPlaylists()
+    public async Task<ActionResult<SyncResultDto>> SyncAllPlaylists()
     {
-        ((int total, int updated), TimeSpan elapsed) = await RunInTimer(async () =>
+        ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(async () =>
             await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken))
         );
 
@@ -61,6 +57,6 @@ public class PlaylistController : BaseController
             elapsedStr
         );
 
-        return Ok((total, elapsedStr, updated));
+        return Ok(new SyncResultDto { TotalSynced = total, Deleted = deleted, Elapsed = elapsed.ToDisplayString(), Updated = updated });
     }
 }

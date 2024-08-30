@@ -1,10 +1,12 @@
+using Playlister.Controllers;
+
 namespace Playlister.ViewModels;
 
 public class HomeViewModel
 {
-    public required Uri SpotifyAuthUrl { get; init; }
+    private const string Index = "Index";
 
-    public string? RequestId { get; init; }
+    public Link[] Links { get; } = { new("Sync playlists", Index, SyncController.Name) };
 
-    public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
+    public record Link(string DisplayText, string Action, string Controller);
 }

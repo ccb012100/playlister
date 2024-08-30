@@ -9,6 +9,8 @@ namespace Playlister.Controllers;
 
 public class LoginController : Controller
 {
+    public const string Name = "Login";
+
     private readonly IAuthService _authService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<LoginController> _logger;
@@ -46,9 +48,7 @@ public class LoginController : Controller
 
         AuthenticationProperties authProperties = new()
         {
-            AllowRefresh = true,
-            IsPersistent = true,
-            IssuedUtc = DateTimeOffset.Now // TODO: set RedirectUri
+            AllowRefresh = true, IsPersistent = true, IssuedUtc = DateTimeOffset.Now // TODO: set RedirectUri
         };
 
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
@@ -59,6 +59,6 @@ public class LoginController : Controller
 
         return returnUrl is not null
             ? LocalRedirectPreserveMethod(returnUrl)
-            : RedirectToAction(nameof(SyncController.Index), "Sync");
+            : RedirectToAction(nameof(HomeController.Me), HomeController.Name);
     }
 }

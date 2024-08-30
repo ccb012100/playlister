@@ -18,8 +18,6 @@ public abstract class BaseController : Controller
         _accessTokenUtility = accessTokenUtility;
     }
 
-    protected string AuthHeaderAccessToken => _accessTokenUtility.GetAccessTokenFromRequestAuthHeader();
-
     protected string CookieAccessToken => _accessTokenUtility.GetTokenFromUserCookie();
 
     /// <summary>

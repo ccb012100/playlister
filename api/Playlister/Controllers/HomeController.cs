@@ -8,6 +8,8 @@ namespace Playlister.Controllers;
 
 public class HomeController : Controller
 {
+    public const string Name = "Home";
+
     private readonly IMediator _mediator;
     private readonly IHostApplicationLifetime _appLifetime;
 
@@ -22,6 +24,11 @@ public class HomeController : Controller
     {
         // TODO: check for auth cookie and if it's already there, just redirect to Sync
         return Redirect((await _mediator.Send(new GetAuthUrlCommand())).ToString());
+    }
+
+    public Task<IActionResult> Me()
+    {
+        return Task.FromResult<IActionResult>(View(model: new HomeViewModel()));
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

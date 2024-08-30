@@ -3,7 +3,6 @@ using System.Text.Json.Serialization;
 using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Http;
-using Playlister.Configuration;
 using Playlister.Extensions;
 using Playlister.Middleware;
 
@@ -62,7 +61,6 @@ public class Startup
             });
 
         services.AddEndpointsApiExplorer().AddSwaggerGen();
-        services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
 
         DefaultTypeMap.MatchNamesWithUnderscores = true; // set Dapper to be compatible with snake_case table names
 
@@ -113,11 +111,7 @@ public class Startup
             .UseCors(CorsPolicyName)
             .UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict })
             .UseMiddleware<GlobalErrorHandlerMiddleware>()
-            .UseMiddleware<TokenValidationMiddleware>()
             .AddEndpoints(Configuration, _environment);
-
-        // ~/app/* URLs will serve up the SPA default page (index.html)
-        app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
     }
 
     private void OnEvent(ILogger logger, string @event)
