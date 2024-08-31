@@ -9,7 +9,7 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers;
 
-[ValidateAuthHeaderToken]
+[ValidateTokenCookie]
 [ApiController]
 [Route("api/playlists")]
 public class PlaylistController : BaseController

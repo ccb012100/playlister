@@ -38,7 +38,7 @@ public class SpotifyAuthorizationController : BaseController
         return Ok(token);
     }
 
-    [ValidateAuthHeaderToken]
+    [ValidateTokenCookie]
     [HttpPost("token/refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
     {

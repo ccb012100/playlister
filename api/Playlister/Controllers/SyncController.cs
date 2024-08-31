@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Playlister.Attributes;
 using Playlister.ViewModels;
 
 namespace Playlister.Controllers;
 
+[ValidateTokenCookie]
 public class SyncController : Controller
 {
     public const string Name = "Sync";

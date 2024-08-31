@@ -9,6 +9,7 @@ using Playlister.Utilities;
 
 namespace Playlister.Controllers;
 
+[ValidateTokenCookie]
 [ApiController]
 [Route("api/user")]
 public class UserController : BaseController
@@ -16,17 +17,14 @@ public class UserController : BaseController
     public const string Name = "User";
 
     private readonly ILogger<UserController> _logger;
-    private readonly IHostApplicationLifetime _appLifetime;
 
     public UserController(
         ILogger<UserController> logger,
         IMediator mediator,
-        IAccessTokenUtility tokenUtility,
-        IHostApplicationLifetime appLifetime
+        IAccessTokenUtility tokenUtility
     ) : base(mediator, tokenUtility)
     {
         _logger = logger;
-        _appLifetime = appLifetime;
     }
 
     /// <summary>

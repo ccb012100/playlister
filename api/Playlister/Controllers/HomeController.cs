@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.ViewModels;
 
@@ -41,6 +42,7 @@ public class HomeController : Controller
     ///     Stop the application
     /// </summary>
     /// <returns></returns>
+    [ValidateTokenCookie]
     [HttpPost("stop-application")]
     public ActionResult StopApplication()
     {
