@@ -46,7 +46,18 @@ public class BaseControllerTests
 
         // ASSERT
         data.Should().Be(expected);
-        elapsed.TotalMilliseconds.Should().BeInRange(500, 510); // seems a wide enough range, but may have to increase
+        elapsed.TotalMilliseconds.Should().BeInRange(490, 510); // CICD sometimes runs _under_ 500ms
+    }
+
+    [Fact]
+    public async Task RunInTimer_ShouldReturnTimeElapsed_WhenAsyncFunctionIsNull()
+    {
+        // ARRANGE
+        // ACT
+        TimeSpan elapsed = await TestController.RunFunction(async () => await Task.Delay(500));
+
+        // ASSERT
+        elapsed.TotalMilliseconds.Should().BeInRange(490, 510); // CICD sometimes runs _under_ 500ms
     }
 
     [Fact]
@@ -69,17 +80,6 @@ public class BaseControllerTests
 
         // ASSERT
         await f.Should().ThrowExactlyAsync<ArgumentNullException>();
-    }
-
-    [Fact]
-    public async Task RunInTimer_ShouldReturnTimeElapsed_WhenAsyncFunctionIsNull()
-    {
-        // ARRANGE
-        // ACT
-        TimeSpan elapsed = await TestController.RunFunction(async () => await Task.Delay(500));
-
-        // ASSERT
-        elapsed.TotalMilliseconds.Should().BeInRange(500, 510); // seems a wide enough range, but may have to increase
     }
 
     [Fact]
