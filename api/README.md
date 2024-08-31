@@ -1,5 +1,7 @@
 # playlister
 
+[![.NET](https://github.com/ccb012100/playlister/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ccb012100/playlister/actions/workflows/dotnet.yml)
+
 Tool to download your Spotify Playlists into a SQLite database.
 
 ## Database
@@ -87,7 +89,7 @@ EOF
 - CI/CD
     - [ ] dotnet format
     - [ ] Test coverage
-    - [ ] Add badges to README
+    - [x] Add badges to README
     - [ ] Codecov
     - [x] Add CI/CD pipeline with GitHub Actions
     - [x] Build/format/test
