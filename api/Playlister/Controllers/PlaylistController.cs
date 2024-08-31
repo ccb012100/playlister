@@ -1,7 +1,7 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.CQRS.Handlers;
 using Playlister.DTOs;
 using Playlister.Extensions;
 using Playlister.Models;
@@ -15,11 +15,26 @@ namespace Playlister.Controllers;
 public class PlaylistController : BaseController
 {
     private readonly ILogger<PlaylistController> _logger;
+    private readonly GetCurrentUserPlaylistsHandler _getCurrentUserPlaylistsHandler;
+    private readonly SyncCurrentUserPlaylistsHandler _syncCurrentUserPlaylistsHandler;
+    private readonly SyncPlaylistHandler _syncPlaylistHandler;
+    private readonly ForceSyncPlaylistHandler _forceSyncPlaylistHandler;
 
-    public PlaylistController(IMediator mediator, IAccessTokenUtility tokenUtility, ILogger<PlaylistController> logger)
-        : base(mediator, tokenUtility)
+    public PlaylistController(
+        IAccessTokenUtility tokenUtility,
+        ILogger<PlaylistController> logger,
+        GetCurrentUserPlaylistsHandler getCurrentUserPlaylistsHandler,
+        SyncCurrentUserPlaylistsHandler syncCurrentUserPlaylistsHandler,
+        SyncPlaylistHandler syncPlaylistHandler,
+        ForceSyncPlaylistHandler forceSyncPlaylistHandler
+    )
+        : base(tokenUtility)
     {
         _logger = logger;
+        _getCurrentUserPlaylistsHandler = getCurrentUserPlaylistsHandler;
+        _syncCurrentUserPlaylistsHandler = syncCurrentUserPlaylistsHandler;
+        _syncPlaylistHandler = syncPlaylistHandler;
+        _forceSyncPlaylistHandler = forceSyncPlaylistHandler;
     }
 
     /// <summary>
@@ -31,7 +46,7 @@ public class PlaylistController : BaseController
     {
         (IEnumerable<Playlist> lists, TimeSpan elapsed) = await RunInTimer(
             async () =>
-                await Mediator.Send(new GetCurrentUserPlaylistsCommand(CookieToken))
+                await _getCurrentUserPlaylistsHandler.Handle(new GetCurrentUserPlaylistsCommand(CookieToken))
         );
 
         _logger.LogInformation(
@@ -52,7 +67,7 @@ public class PlaylistController : BaseController
     {
         ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(
             async () =>
-                await Mediator.Send(new SyncCurrentUserPlaylistsCommand(CookieToken))
+                await _syncCurrentUserPlaylistsHandler.Handle(new SyncCurrentUserPlaylistsCommand(CookieToken))
         );
 
         string elapsedStr = elapsed.ToDisplayString();
@@ -83,7 +98,7 @@ public class PlaylistController : BaseController
     [HttpPost($"sync/{{{nameof(playlistId)}}}")]
     public async Task<ActionResult> SyncPlaylist(string playlistId)
     {
-        await Mediator.Send(new SyncPlaylistCommand(CookieToken, playlistId));
+        await _syncPlaylistHandler.Handle(new SyncPlaylistCommand(CookieToken, playlistId));
 
         return NoContent();
     }
@@ -96,7 +111,7 @@ public class PlaylistController : BaseController
     [HttpPost($"sync/{{{nameof(playlistId)}}}/force")]
     public async Task<ActionResult> ForceSyncPlaylist(string playlistId)
     {
-        await Mediator.Send(new ForceSyncPlaylistCommand(CookieToken, playlistId));
+        await _forceSyncPlaylistHandler.Handle(new ForceSyncPlaylistCommand(CookieToken, playlistId));
 
         return NoContent();
     }

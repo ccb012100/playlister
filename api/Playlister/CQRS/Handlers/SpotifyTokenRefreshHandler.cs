@@ -1,5 +1,5 @@
 using System.Text;
-using MediatR;
+
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Commands;
@@ -9,7 +9,7 @@ using Playlister.RefitClients;
 
 namespace Playlister.CQRS.Handlers;
 
-public class SpotifyTokenRefreshHandler : IRequestHandler<RefreshTokenCommand, UserAccessToken>
+public class SpotifyTokenRefreshHandler : ICommandHandler
 {
     private readonly ISpotifyAccountsApi _api;
     private readonly SpotifyOptions _options;
@@ -20,7 +20,7 @@ public class SpotifyTokenRefreshHandler : IRequestHandler<RefreshTokenCommand, U
         _options = options.Value;
     }
 
-    public async Task<UserAccessToken> Handle(RefreshTokenCommand command, CancellationToken ct)
+    public async Task<UserAccessToken> Handle(RefreshTokenCommand command, CancellationToken ct = default)
     {
         string authParam =
             Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));

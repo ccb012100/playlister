@@ -1,9 +1,7 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
-using Playlister.Extensions;
-using Playlister.Models;
+using Playlister.CQRS.Handlers;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
 
@@ -14,17 +12,15 @@ namespace Playlister.Controllers;
 [Route("api/user")]
 public class UserController : BaseController
 {
-    public const string Name = "User";
-
-    private readonly ILogger<UserController> _logger;
+    private readonly GetCurrentUserHandler _getCurrentUserHandler;
 
     public UserController(
         ILogger<UserController> logger,
-        IMediator mediator,
-        IAccessTokenUtility tokenUtility
-    ) : base(mediator, tokenUtility)
+        IAccessTokenUtility tokenUtility,
+        GetCurrentUserHandler getCurrentUserHandler
+    ) : base(tokenUtility)
     {
-        _logger = logger;
+        _getCurrentUserHandler = getCurrentUserHandler;
     }
 
     /// <summary>
@@ -34,8 +30,6 @@ public class UserController : BaseController
     [HttpGet("me")]
     public async Task<PrivateUserObject> GetFromCookie()
     {
-        PrivateUserObject user = await Mediator.Send(new GetCurrentUserCommand(CookieToken));
-
-        return user;
+        return await _getCurrentUserHandler.Handle(new GetCurrentUserCommand(CookieToken));
     }
 }

@@ -1,16 +1,12 @@
 using System.ComponentModel.DataAnnotations;
-using MediatR;
-using Playlister.Models;
 using Refit;
-
-#pragma warning disable 8618
 
 namespace Playlister.CQRS.Commands;
 
 /// <summary>
 ///     Request to get an Access Token from Spotify
 /// </summary>
-public record GetAccessTokenCommand : IRequest<UserAccessToken>
+public record GetAccessTokenCommand : Command
 {
     /// <summary>
     ///     The authorization code returned from the initial request to the Spotify Account /authorize endpoint.

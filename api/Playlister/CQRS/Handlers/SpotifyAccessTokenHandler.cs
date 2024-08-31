@@ -1,4 +1,4 @@
-using MediatR;
+
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Commands;
@@ -8,7 +8,7 @@ using Playlister.RefitClients;
 
 namespace Playlister.CQRS.Handlers;
 
-public class SpotifyAccessTokenHandler : IRequestHandler<GetAccessTokenCommand, UserAccessToken>
+public class SpotifyAccessTokenHandler : ICommandHandler
 {
     private readonly ISpotifyAccountsApi _api;
     private readonly SpotifyOptions _options;
@@ -19,7 +19,7 @@ public class SpotifyAccessTokenHandler : IRequestHandler<GetAccessTokenCommand, 
         _options = options.Value;
     }
 
-    public async Task<UserAccessToken> Handle(GetAccessTokenCommand command, CancellationToken ct)
+    public async Task<UserAccessToken> Handle(GetAccessTokenCommand command, CancellationToken ct = default)
     {
         // TODO: validate that the `state` value matches the original value sent to user
         // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API

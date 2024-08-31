@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using MediatR;
+using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Utilities;
 
@@ -9,13 +9,17 @@ namespace Playlister.Controllers;
 [Route("api/[controller]")]
 public abstract class BaseController : Controller
 {
-    private readonly IAccessTokenUtility _accessTokenUtility;
-    protected readonly IMediator Mediator;
+    public string Name { get; }
 
-    protected BaseController(IMediator mediator, IAccessTokenUtility accessTokenUtility)
+    private readonly IAccessTokenUtility _accessTokenUtility;
+
+    protected BaseController(IAccessTokenUtility accessTokenUtility)
     {
-        Mediator = mediator;
+        ArgumentNullException.ThrowIfNull(accessTokenUtility);
+
         _accessTokenUtility = accessTokenUtility;
+
+        Name = GetType().Name.Replace("Controller", null);
     }
 
     protected string CookieToken => _accessTokenUtility.GetTokenFromUserCookie();

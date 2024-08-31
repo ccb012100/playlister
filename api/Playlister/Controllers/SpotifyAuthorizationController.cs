@@ -1,7 +1,7 @@
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.CQRS.Handlers;
 using Playlister.Models;
 using Playlister.Utilities;
 
@@ -11,7 +11,22 @@ namespace Playlister.Controllers;
 [Route("api/auth")]
 public class SpotifyAuthorizationController : BaseController
 {
-    public SpotifyAuthorizationController(IMediator mediator, IAccessTokenUtility tokenUtility) : base(mediator, tokenUtility) { }
+    private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
+    private readonly SpotifyAccessTokenHandler _tokenHandler;
+    private readonly SpotifyTokenRefreshHandler _spotifyTokenRefreshHandler;
+
+    public SpotifyAuthorizationController(
+        IAccessTokenUtility tokenUtility,
+        SpotifyAuthUrlHandler spotifyAuthUrlHandler,
+        SpotifyAccessTokenHandler tokenHandler,
+        SpotifyTokenRefreshHandler spotifyTokenRefreshHandler
+    ) : base
+        (tokenUtility)
+    {
+        _spotifyAuthUrlHandler = spotifyAuthUrlHandler;
+        _tokenHandler = tokenHandler;
+        _spotifyTokenRefreshHandler = spotifyTokenRefreshHandler;
+    }
 
     /// <summary>
     ///     Get the Spotify Accounts URL to direct user
@@ -20,7 +35,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        Uri authUrl = await Mediator.Send(new GetAuthUrlCommand());
+        Uri authUrl = await _spotifyAuthUrlHandler.Handle(new GetAuthUrlCommand());
 
         return Ok(authUrl);
     }
@@ -33,7 +48,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpPost("token")]
     public async Task<IActionResult> GetAccessToken([FromBody] GetAccessTokenCommand tokenCommand)
     {
-        UserAccessToken token = await Mediator.Send(tokenCommand);
+        UserAccessToken token = await _tokenHandler.Handle(tokenCommand);
 
         return Ok(token);
     }
@@ -42,7 +57,7 @@ public class SpotifyAuthorizationController : BaseController
     [HttpPost("token/refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
     {
-        UserAccessToken userAccessToken = await Mediator.Send(refreshTokenCommand);
+        UserAccessToken userAccessToken = await _spotifyTokenRefreshHandler.Handle(refreshTokenCommand);
 
         return Ok(userAccessToken);
     }

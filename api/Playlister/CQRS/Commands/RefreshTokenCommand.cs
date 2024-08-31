@@ -1,6 +1,4 @@
 using System.ComponentModel.DataAnnotations;
-using MediatR;
-using Playlister.Models;
 using Refit;
 
 namespace Playlister.CQRS.Commands;
@@ -8,7 +6,7 @@ namespace Playlister.CQRS.Commands;
 /// <summary>
 ///     Request to refresh Spotify Access Token
 /// </summary>
-public record RefreshTokenCommand : IRequest<UserAccessToken>
+public record RefreshTokenCommand : Command
 {
     public RefreshTokenCommand(string refreshToken)
     {

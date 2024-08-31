@@ -10,7 +10,7 @@ public static class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        builder.ValidateConfiguration();
+        builder.AddAndValidateConfiguration();
         builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
         builder.WebHost.UseKestrel(PrintDevelopmentConfiguration);
 

@@ -1,4 +1,3 @@
-using MediatR;
 using Playlister.CQRS.Commands;
 using Playlister.Services;
 
@@ -7,7 +6,7 @@ namespace Playlister.CQRS.Handlers;
 /// <summary>
 ///     Sync the Playlist in the command to the DB.
 /// </summary>
-public class SyncPlaylistHandler : IRequestHandler<SyncPlaylistCommand, Unit>
+public class SyncPlaylistHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
@@ -21,7 +20,7 @@ public class SyncPlaylistHandler : IRequestHandler<SyncPlaylistCommand, Unit>
     /// <param name="command"></param>
     /// <param name="ct"></param>
     /// <returns>Number of playlists handled</returns>
-    public async Task<Unit> Handle(SyncPlaylistCommand command, CancellationToken ct)
+    public async Task<Unit> Handle(SyncPlaylistCommand command, CancellationToken ct = default)
     {
         await Task.Run(
             () => _playlistService.SyncPlaylistAsync(

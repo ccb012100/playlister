@@ -15,7 +15,6 @@
     <PackageReference Include="FluentMigrator.Runner" Version="5.2.0"/>
     <PackageReference Include="FluentValidator" Version="2.0.4"/>
     <PackageReference Include="Flurl" Version="4.0.0"/>
-    <PackageReference Include="Mediatr" Version="12.4.0"/>
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.8"/>
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="8.0.8"/>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.8"/>
@@ -70,5 +69,9 @@
     <_ContentIncludedByDefault Remove="Components\Pages\Weather.razor"/>
     <_ContentIncludedByDefault Remove="Components\Routes.razor"/>
     <_ContentIncludedByDefault Remove="Components\_Imports.razor"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\User\" />
   </ItemGroup>
 </Project>

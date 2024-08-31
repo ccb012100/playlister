@@ -23,7 +23,7 @@ public static class TimeSpanExtensions
             // elapsed >= 1 hour
             >= 3600 => $"{elapsed.Hours}h{elapsed.Minutes}min{elapsed.Seconds}s",
             // elapsed > 2 minutes
-            > 120 => $"{elapsed.Minutes}min{elapsed.Seconds}.{elapsed.Milliseconds:fff}s",
+            > 120 => $"{elapsed.Minutes}min{elapsed.Seconds}.{elapsed.Milliseconds}s",
             // 2 minutes > elapsed >= 1 minute
             >= 60 => $"{elapsed.TotalSeconds:N2}s",
             //  1 minute > elapsed >= 1 second

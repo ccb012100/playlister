@@ -1,9 +1,8 @@
 using System.Reflection;
 using FluentMigrator.Runner;
-using MediatR;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
-using Playlister.CQRS;
+using Playlister.CQRS.Handlers;
 using Playlister.Middleware;
 using Playlister.Models;
 using Playlister.RefitClients;
@@ -17,18 +16,6 @@ namespace Playlister.Extensions;
 
 public static class StartupExtensions
 {
-    public static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration config, IWebHostEnvironment env)
-    {
-        if (env.IsDevelopment())
-        {
-            services.Configure<DebuggingOptions>(config.GetSection(DebuggingOptions.Debugging));
-        }
-
-        return services
-            .Configure<SpotifyOptions>(config.GetSection(SpotifyOptions.Spotify))
-            .Configure<DatabaseOptions>(config.GetSection(DatabaseOptions.Database));
-    }
-
     public static IServiceCollection AddServices(this IServiceCollection services)
     {
         return services
@@ -36,13 +23,29 @@ public static class StartupExtensions
             .AddSingleton<IConnectionFactory, ConnectionFactory>()
             .AddScoped<IPlaylistService, PlaylistService>()
             .AddScoped<IAuthService, AuthService>()
+            .AddHandlers()
             .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+    }
+
+    private static IServiceCollection AddHandlers(this IServiceCollection services)
+    {
+        return services
+            .AddTransient<SyncPlaylistHandler>()
+            .AddTransient<ForceSyncPlaylistHandler>()
+            .AddTransient<GetCurrentUserHandler>()
+            .AddTransient<GetCurrentUserPlaylistsHandler>()
+            .AddTransient<SpotifyAccessTokenHandler>()
+            .AddTransient<ForceSyncPlaylistHandler>()
+            .AddTransient<SpotifyAuthUrlHandler>()
+            .AddTransient<SpotifyTokenRefreshHandler>()
+            .AddTransient<SyncPlaylistsHandler>()
+            .AddTransient<SyncPlaylistHandler>()
+            .AddTransient<ForceSyncPlaylistHandler>();
     }
 
     public static IServiceCollection AddMiddleware(this IServiceCollection services)
     {
         return services.AddTransient<HttpLoggingMiddleware>();
-        //.AddTransient<SpotifyAuthHeaderMiddleware>();
     }
 
     public static void ConfigureFluentMigrator(this IServiceCollection services)
@@ -91,7 +94,7 @@ public static class StartupExtensions
         return services;
     }
 
-    public static void ValidateConfiguration(this WebApplicationBuilder builder)
+    public static void AddAndValidateConfiguration(this WebApplicationBuilder builder)
     {
         builder.Services.AddOptions<SpotifyOptions>()
             .Bind(builder.Configuration.GetSection(SpotifyOptions.Spotify))
@@ -128,7 +131,7 @@ public static class StartupExtensions
     {
         if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
         {
-            services.AddScoped(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
+            // TODO
         }
     }
 

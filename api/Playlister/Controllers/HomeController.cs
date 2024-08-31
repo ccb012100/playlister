@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
+using Playlister.CQRS.Handlers;
 using Playlister.ViewModels;
 
 namespace Playlister.Controllers;
@@ -11,20 +11,19 @@ public class HomeController : Controller
 {
     public const string Name = "Home";
     private readonly IHostApplicationLifetime _appLifetime;
+    private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
 
-    private readonly IMediator _mediator;
-
-    public HomeController(IMediator mediator, IHostApplicationLifetime appLifetime)
+    public HomeController(IHostApplicationLifetime appLifetime, SpotifyAuthUrlHandler spotifyAuthUrlHandler)
     {
-        _mediator = mediator;
         _appLifetime = appLifetime;
+        _spotifyAuthUrlHandler = spotifyAuthUrlHandler;
     }
 
     /// Navigate to Spotify login
     public async Task<IActionResult> Index()
     {
         // TODO: check for auth cookie and if it's already there, just redirect to Sync
-        return Redirect((await _mediator.Send(new GetAuthUrlCommand())).ToString());
+        return Redirect((await _spotifyAuthUrlHandler.Handle(new GetAuthUrlCommand())).ToString());
     }
 
     public Task<IActionResult> Main()

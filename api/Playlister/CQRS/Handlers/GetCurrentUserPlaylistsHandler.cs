@@ -1,4 +1,4 @@
-using MediatR;
+
 using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Services;
@@ -6,7 +6,7 @@ using Playlister.Services;
 namespace Playlister.CQRS.Handlers;
 
 public class GetCurrentUserPlaylistsHandler
-    : IRequestHandler<GetCurrentUserPlaylistsCommand, IEnumerable<Playlist>>
+    : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
@@ -17,7 +17,7 @@ public class GetCurrentUserPlaylistsHandler
 
     public async Task<IEnumerable<Playlist>> Handle(
         GetCurrentUserPlaylistsCommand command,
-        CancellationToken ct
+        CancellationToken ct = default
     )
     {
         return await _playlistService.GetUserPlaylistsAsync(command.AccessToken, ct);

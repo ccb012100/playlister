@@ -38,8 +38,6 @@ public class Startup
                     }
                 )
             )
-            .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>())
-            .AddConfigOptions(Configuration, _environment)
             .AddHttpContextAccessor()
             .AddMiddleware()
             .AddServices()
