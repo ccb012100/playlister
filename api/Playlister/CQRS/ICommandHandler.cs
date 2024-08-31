@@ -1,3 +1,3 @@
-namespace Playlister.CQRS.Handlers;
+namespace Playlister.CQRS;
 
 public interface ICommandHandler;

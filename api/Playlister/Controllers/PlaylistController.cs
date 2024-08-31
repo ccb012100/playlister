@@ -14,11 +14,11 @@ namespace Playlister.Controllers;
 [Route("api/playlists")]
 public class PlaylistController : BaseController
 {
-    private readonly ILogger<PlaylistController> _logger;
+    private readonly ForceSyncPlaylistHandler _forceSyncPlaylistHandler;
     private readonly GetCurrentUserPlaylistsHandler _getCurrentUserPlaylistsHandler;
+    private readonly ILogger<PlaylistController> _logger;
     private readonly SyncCurrentUserPlaylistsHandler _syncCurrentUserPlaylistsHandler;
     private readonly SyncPlaylistHandler _syncPlaylistHandler;
-    private readonly ForceSyncPlaylistHandler _forceSyncPlaylistHandler;
 
     public PlaylistController(
         IAccessTokenUtility tokenUtility,

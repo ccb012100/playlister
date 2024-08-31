@@ -1,12 +1,10 @@
-
 using Playlister.CQRS.Commands;
 using Playlister.Models;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class GetCurrentUserPlaylistsHandler
-    : ICommandHandler
+public class GetCurrentUserPlaylistsHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 

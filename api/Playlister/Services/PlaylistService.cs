@@ -116,7 +116,7 @@ public class PlaylistService : IPlaylistService
 
         Playlist playlist = playlistObject.ToPlaylist();
 
-        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct, forceSync: true);
+        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct, true);
     }
 
     public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)

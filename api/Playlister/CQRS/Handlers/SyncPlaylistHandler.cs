@@ -20,7 +20,7 @@ public class SyncPlaylistHandler : ICommandHandler
     /// <param name="command"></param>
     /// <param name="ct"></param>
     /// <returns>Number of playlists handled</returns>
-    public async Task<Unit> Handle(SyncPlaylistCommand command, CancellationToken ct = default)
+    public async Task Handle(SyncPlaylistCommand command, CancellationToken ct = default)
     {
         await Task.Run(
             () => _playlistService.SyncPlaylistAsync(
@@ -30,7 +30,5 @@ public class SyncPlaylistHandler : ICommandHandler
             ),
             ct
         );
-
-        return new Unit();
     }
 }

@@ -1,34 +1,23 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Http;
 using Playlister.Extensions;
 using Playlister.Middleware;
+using Playlister.Models;
 
 namespace Playlister;
 
 public class Startup
 {
     private const string CorsPolicyName = "CorsPolicy";
-    private readonly IWebHostEnvironment _environment;
-    private readonly string? _namespace;
-
-    public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-    {
-        Configuration = configuration;
-        _environment = environment;
-        _namespace = GetType().Namespace;
-    }
-
-    private IConfiguration Configuration { get; }
 
     /// <summary>
     ///     This follows the old .NET pattern
     /// </summary>
-    public void ConfigureServices(IServiceCollection services)
+    public static WebApplicationBuilder ConfigureServices(WebApplicationBuilder builder)
     {
-        services
+        builder.Services
             .AddCors(
                 o => o.AddPolicy(
                     CorsPolicyName,
@@ -54,7 +43,8 @@ public class Startup
                 }
             );
 
-        services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        builder.Services
+            .AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
             .AddCookie(
                 options =>
                 {
@@ -64,33 +54,35 @@ public class Startup
                 }
             );
 
-        services.AddEndpointsApiExplorer().AddSwaggerGen();
+        builder.Services
+            .AddEndpointsApiExplorer()
+            .AddSwaggerGen()
+            .ConfigureFluentMigrator();
 
-        DefaultTypeMap.MatchNamesWithUnderscores = true; // set Dapper to be compatible with snake_case table names
-
-        if (_environment.IsDevelopment())
+        if (builder.Environment.IsDevelopment())
         {
-            services.AddDebuggingOptions();
+            builder.Services.AddDebuggingOptions();
         }
 
-        services.ConfigureFluentMigrator();
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true; // For compatibility with snake_case table names
+
+        return builder;
     }
 
     /// <summary>
     ///     This follows the old .NET pattern
     /// </summary>
-    public void Configure(
-        WebApplication app,
-        IHostApplicationLifetime appLifetime
-    )
+    public static WebApplication ConfigureWebApplication(WebApplication app)
     {
+        string @namespace = typeof(Startup).Namespace!;
         // Log Application lifetime events
         ILogger<Startup> logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Startup>();
-        appLifetime.ApplicationStarted.Register(() => OnEvent(logger, "Started"));
-        appLifetime.ApplicationStopping.Register(() => OnEvent(logger, "Stopping"));
-        appLifetime.ApplicationStopped.Register(() => OnEvent(logger, "Stopped"));
+        app.Lifetime.ApplicationStarted.Register(() => OnEvent(logger, "Started", @namespace));
+        app.Lifetime.ApplicationStopping.Register(() => OnEvent(logger, "Stopping", @namespace));
+        app.Lifetime.ApplicationStopped.Register(() => OnEvent(logger, "Stopped", @namespace));
 
         app.UseHttpsRedirection()
+            .UseStaticFiles()
             .UseRouting()
             .UseAuthentication()
             // TODO: .UseAntiforgery()
@@ -98,7 +90,7 @@ public class Startup
 
         app.MapDefaultControllerRoute();
 
-        if (_environment.IsDevelopment())
+        if (app.Environment.IsDevelopment())
         {
             app.UseDeveloperExceptionPage()
                 .UseSwagger()
@@ -111,15 +103,35 @@ public class Startup
             app.UseHsts();
         }
 
-        app.UseStaticFiles()
-            .UseCors(CorsPolicyName)
+        app.UseCors(CorsPolicyName)
             .UseCookiePolicy(new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict })
             .UseMiddleware<GlobalErrorHandlerMiddleware>()
-            .AddEndpoints(Configuration, _environment);
+            .UseEndpoints(
+                endpoints =>
+                {
+                    if (app.Environment.IsDevelopment())
+                    {
+                        endpoints.MapGet( // view app configuration at /debug
+                            "/debug",
+                            async context =>
+                                await context.Response.WriteAsync(
+                                    (app.Configuration as IConfigurationRoot)!.GetDebugView()
+                                )
+                        );
+                    }
+
+                    endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
+                    endpoints.MapControllers();
+                }
+            );
+
+        app.UseStatusCodePagesWithReExecute("/Home/Error", "?statusCode={0}");
+
+        return app;
     }
 
-    private void OnEvent(ILogger logger, string @event)
+    private static void OnEvent(ILogger logger, string @event, string @namespace)
     {
-        logger.LogInformation("{Namespace} {Event}", _namespace, @event);
+        logger.LogInformation("{Namespace} {Event}", @namespace, @event);
     }
 }

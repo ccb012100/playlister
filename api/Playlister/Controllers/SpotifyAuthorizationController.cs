@@ -12,8 +12,8 @@ namespace Playlister.Controllers;
 public class SpotifyAuthorizationController : BaseController
 {
     private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
-    private readonly SpotifyAccessTokenHandler _tokenHandler;
     private readonly SpotifyTokenRefreshHandler _spotifyTokenRefreshHandler;
+    private readonly SpotifyAccessTokenHandler _tokenHandler;
 
     public SpotifyAuthorizationController(
         IAccessTokenUtility tokenUtility,

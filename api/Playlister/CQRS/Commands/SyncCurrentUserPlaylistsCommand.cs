@@ -1,5 +1,3 @@
-
-
 namespace Playlister.CQRS.Commands;
 
 /// <summary>

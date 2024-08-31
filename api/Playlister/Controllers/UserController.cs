@@ -15,7 +15,6 @@ public class UserController : BaseController
     private readonly GetCurrentUserHandler _getCurrentUserHandler;
 
     public UserController(
-        ILogger<UserController> logger,
         IAccessTokenUtility tokenUtility,
         GetCurrentUserHandler getCurrentUserHandler
     ) : base(tokenUtility)

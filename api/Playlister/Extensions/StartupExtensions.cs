@@ -4,7 +4,6 @@ using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Handlers;
 using Playlister.Middleware;
-using Playlister.Models;
 using Playlister.RefitClients;
 using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
@@ -30,17 +29,15 @@ public static class StartupExtensions
     private static IServiceCollection AddHandlers(this IServiceCollection services)
     {
         return services
-            .AddTransient<SyncPlaylistHandler>()
             .AddTransient<ForceSyncPlaylistHandler>()
             .AddTransient<GetCurrentUserHandler>()
             .AddTransient<GetCurrentUserPlaylistsHandler>()
             .AddTransient<SpotifyAccessTokenHandler>()
-            .AddTransient<ForceSyncPlaylistHandler>()
             .AddTransient<SpotifyAuthUrlHandler>()
             .AddTransient<SpotifyTokenRefreshHandler>()
-            .AddTransient<SyncPlaylistsHandler>()
+            .AddTransient<SyncCurrentUserPlaylistsHandler>()
             .AddTransient<SyncPlaylistHandler>()
-            .AddTransient<ForceSyncPlaylistHandler>();
+            .AddTransient<SyncPlaylistsHandler>();
     }
 
     public static IServiceCollection AddMiddleware(this IServiceCollection services)
@@ -62,7 +59,8 @@ public static class StartupExtensions
                     c.AddSQLite()
                         .WithGlobalConnectionString(connectionString)
                         .ScanIn(Assembly.GetExecutingAssembly())
-                        .For.All()
+                        .For
+                        .All()
             )
             .AddLogging(c => c.AddFluentMigratorConsole())
             .BuildServiceProvider(false);
@@ -94,9 +92,10 @@ public static class StartupExtensions
         return services;
     }
 
-    public static void AddAndValidateConfiguration(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddAndValidateConfiguration(this WebApplicationBuilder builder)
     {
-        builder.Services.AddOptions<SpotifyOptions>()
+        builder.Services
+            .AddOptions<SpotifyOptions>()
             .Bind(builder.Configuration.GetSection(SpotifyOptions.Spotify))
             .ValidateDataAnnotations()
             .Validate(
@@ -106,15 +105,19 @@ public static class StartupExtensions
             )
             .ValidateOnStart();
 
-        builder.Services.AddOptions<DebuggingOptions>()
+        builder.Services
+            .AddOptions<DebuggingOptions>()
             .Bind(builder.Configuration.GetSection(DebuggingOptions.Debugging))
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
-        builder.Services.AddOptions<DatabaseOptions>()
+        builder.Services
+            .AddOptions<DatabaseOptions>()
             .Bind(builder.Configuration.GetSection(DatabaseOptions.Database))
             .ValidateDataAnnotations()
             .ValidateOnStart();
+
+        return builder;
     }
 
     private static IHttpClientBuilder AddHttpLoggingMiddleware(
@@ -137,38 +140,14 @@ public static class StartupExtensions
 
     public static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        // these need to be added as Transient to prevent DI exceptions in Mediatr
         return services
-            .AddTransient<IPlaylistReadRepository, PlaylistReadRepository>()
-            .AddTransient<IPlaylistWriteRepository, PlaylistWriteRepository>();
-    }
-
-    public static void AddEndpoints(this IApplicationBuilder builder, IConfiguration config, IWebHostEnvironment env)
-    {
-        builder.UseEndpoints(
-            endpoints =>
-            {
-                if (env.IsDevelopment())
-                {
-                    endpoints.MapGet( // view app settings at ~/debug
-                        "/debug",
-                        async context =>
-                            await context.Response.WriteAsync(
-                                (config as IConfigurationRoot)!.GetDebugView()
-                            )
-                    );
-                }
-
-                endpoints.MapGet("/info", async context => await context.Response.WriteAsJsonAsync(new AppInfo()));
-                endpoints.MapControllers();
-            }
-        );
+            .AddScoped<IPlaylistReadRepository, PlaylistReadRepository>()
+            .AddScoped<IPlaylistWriteRepository, PlaylistWriteRepository>();
     }
 
     public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
     {
-        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>()
-            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>().AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
         return services;
     }

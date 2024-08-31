@@ -10,19 +10,10 @@ public static class Program
     {
         WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-        builder.AddAndValidateConfiguration();
         builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
         builder.WebHost.UseKestrel(PrintDevelopmentConfiguration);
 
-        Startup startup = new(builder.Configuration, builder.Environment);
-
-        startup.ConfigureServices(builder.Services);
-
-        WebApplication app = builder.Build();
-
-        startup.Configure(app, app.Lifetime);
-
-        app.Run();
+        Startup.ConfigureWebApplication(Startup.ConfigureServices(builder.AddAndValidateConfiguration()).Build()).Run();
     }
 
     /// <summary>

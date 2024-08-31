@@ -1,5 +1,4 @@
 using System.Text;
-
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Commands;

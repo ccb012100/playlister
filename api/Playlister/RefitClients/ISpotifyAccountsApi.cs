@@ -14,7 +14,8 @@ public interface ISpotifyAccountsApi
     /// <returns></returns>
     [Post("/api/token")]
     Task<SpotifyAccessToken> RequestAccessTokenAsync(
-        [Body(BodySerializationMethod.UrlEncoded)] GetAccessTokenCommand.BodyParams bodyParams,
+        [Body(BodySerializationMethod.UrlEncoded)]
+        GetAccessTokenCommand.BodyParams bodyParams,
         CancellationToken ct
     );
 

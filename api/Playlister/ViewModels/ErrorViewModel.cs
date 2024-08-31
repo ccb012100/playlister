@@ -9,6 +9,8 @@ namespace Playlister.ViewModels;
 [IgnoreAntiforgeryToken]
 public class ErrorViewModel : PageModel
 {
+    public required int? ResponseStatusCode { get; init; }
+
     public string? RequestId { get; set; }
 
     public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);

@@ -1,4 +1,3 @@
-
 using Playlister.Models.SpotifyApi;
 
 namespace Playlister.CQRS.Commands;

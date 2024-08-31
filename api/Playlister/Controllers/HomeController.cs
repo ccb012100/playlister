@@ -32,9 +32,24 @@ public class HomeController : Controller
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error()
+    public IActionResult Error(int? statusCode)
     {
-        return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        return statusCode switch
+        {
+            404 => View("NotFound", new NotFoundViewModel { Path = Request.Path }),
+            _ => View(
+                new ErrorViewModel
+                {
+                    RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier,
+                    ResponseStatusCode = statusCode
+                }
+            )
+        };
+    }
+
+    public IActionResult NotFound(string route)
+    {
+        return View(new NotFoundViewModel { Path = route });
     }
 
     /// <summary>

@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Utilities;
 
@@ -9,8 +8,6 @@ namespace Playlister.Controllers;
 [Route("api/[controller]")]
 public abstract class BaseController : Controller
 {
-    public string Name { get; }
-
     private readonly IAccessTokenUtility _accessTokenUtility;
 
     protected BaseController(IAccessTokenUtility accessTokenUtility)
@@ -22,6 +19,8 @@ public abstract class BaseController : Controller
         Name = GetType().Name.Replace("Controller", null);
     }
 
+    public string Name { get; }
+
     protected string CookieToken => _accessTokenUtility.GetTokenFromUserCookie();
 
     /// <summary>
@@ -32,6 +31,8 @@ public abstract class BaseController : Controller
     /// <returns>A <see cref="ValueTuple{T1,T2}" /> containing the data returned from <paramref name="func" /> and the time it took to run it.</returns>
     protected static async Task<(T data, TimeSpan elapsed)> RunInTimer<T>(Func<Task<T>> func)
     {
+        ArgumentNullException.ThrowIfNull(func);
+
         Stopwatch sw = new();
         sw.Start();
 
@@ -47,8 +48,10 @@ public abstract class BaseController : Controller
     /// </summary>
     /// <param name="func">The function to run</param>
     /// <returns>The time it took to run <paramref name="func" /></returns>
-    protected static async Task<TimeSpan> RunInTimer(Func<Task> func)
+    protected static async Task<TimeSpan> RunInTimer(Func<Task>? func)
     {
+        ArgumentNullException.ThrowIfNull(func);
+
         Stopwatch sw = new();
         sw.Start();
 

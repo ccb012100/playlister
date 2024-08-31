@@ -31,7 +31,8 @@ public class AuthService : IAuthService
          * &state=34fFs29kd09
          */
         // TODO: cache `state` so that it can be validated on the access token command
-        return _options.AccountsApiBaseAddress.AppendPathSegment("authorize")
+        return _options.AccountsApiBaseAddress
+            .AppendPathSegment("authorize")
             .AppendQueryParam("response_type", "code")
             .AppendQueryParam("client_id", _options.ClientId)
             .AppendQueryParam("redirect_uri", _options.CallbackUrl)
