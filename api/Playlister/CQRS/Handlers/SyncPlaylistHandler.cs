@@ -5,13 +5,13 @@ using Playlister.Services;
 namespace Playlister.CQRS.Handlers;
 
 /// <summary>
-///     Add or Update the Playlists in command to the db.
+///     Sync the Playlist in the command to the DB.
 /// </summary>
-public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Unit>
+public class SyncPlaylistHandler : IRequestHandler<SyncPlaylistCommand, Unit>
 {
     private readonly IPlaylistService _playlistService;
 
-    public UpdatePlaylistsHandler(IPlaylistService playlistService)
+    public SyncPlaylistHandler(IPlaylistService playlistService)
     {
         _playlistService = playlistService;
     }
@@ -21,12 +21,12 @@ public class UpdatePlaylistsHandler : IRequestHandler<UpdatePlaylistsCommand, Un
     /// <param name="command"></param>
     /// <param name="ct"></param>
     /// <returns>Number of playlists handled</returns>
-    public async Task<Unit> Handle(UpdatePlaylistsCommand command, CancellationToken ct)
+    public async Task<Unit> Handle(SyncPlaylistCommand command, CancellationToken ct)
     {
         await Task.Run(
-            () => _playlistService.UpdatePlaylistsAsync(
+            () => _playlistService.SyncPlaylistAsync(
                 command.AccessToken,
-                command.Playlists.Select(p => p.ToPlaylist()),
+                command.PlaylistId,
                 ct
             ),
             ct

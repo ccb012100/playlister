@@ -1,6 +1,5 @@
 using System.Collections.Immutable;
 using System.Diagnostics;
-using Playlister.CQRS.Commands;
 using Playlister.Extensions;
 using Playlister.Models;
 using Playlister.Models.SpotifyApi;
@@ -32,6 +31,104 @@ public class PlaylistService : IPlaylistService
 
         _ = s_playlistCache.Initialize(PopulateCaches);
     }
+
+    #region public
+
+    public async Task<ImmutableArray<Playlist>> GetUserPlaylistsAsync(
+        string accessToken,
+        CancellationToken ct
+    )
+    {
+        PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylistsAsync(
+            accessToken,
+            ct
+        );
+
+        List<Playlist> lists = page.Items.Select(i => i.ToPlaylist()).ToList();
+
+        while (page.Next is not null)
+        {
+            page = await _api.GetCurrentUserPlaylistsAsync(accessToken, page.Next, ct);
+
+            lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
+        }
+
+        return lists.ToImmutableArray();
+    }
+
+    public async Task<int> SyncPlaylistsAsync(
+        string accessToken,
+        IEnumerable<Playlist> playlists,
+        CancellationToken ct
+    )
+    {
+        Stopwatch sw = Stopwatch.StartNew();
+
+        foreach (Playlist playlist in playlists.AsParallel())
+        {
+            await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
+        }
+
+        sw.Stop();
+
+        switch (s_updatedPlaylistsCache.Items.IsEmpty)
+        {
+            case true:
+                _logger.LogInformation(
+                    "There were no changed playlists found. Time elapsed: {Elapsed}",
+                    sw.Elapsed.ToDisplayString()
+                );
+
+                return 0;
+            case false:
+                int changedPlaylistCount = s_updatedPlaylistsCache.Items.Count;
+
+                _logger.LogInformation(
+                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
+                    sw.Elapsed.ToDisplayString(),
+                    changedPlaylistCount
+                );
+
+                return changedPlaylistCount;
+        }
+    }
+
+    public async Task SyncPlaylistAsync(
+        string accessToken,
+        string playlistId,
+        CancellationToken ct
+    )
+    {
+        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
+
+        Playlist playlist = playlistObject.ToPlaylist();
+
+        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
+    }
+
+    public async Task ForceSyncPlaylistAsync(
+        string accessToken,
+        string playlistId,
+        CancellationToken ct
+    )
+    {
+        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
+
+        Playlist playlist = playlistObject.ToPlaylist();
+
+        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct, forceSync: true);
+    }
+
+    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    {
+        _logger.LogDebug("Deleting orphaned PlaylistTracks...");
+
+        return await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
+    }
+
+    #endregion
+
+    #region private
 
     /// <summary>
     ///     Update the data for the specified Playlist
@@ -77,13 +174,13 @@ public class PlaylistService : IPlaylistService
         );
 
         /*
-         * NOTE: this takes 10s of seconds to udpate the largest playlists (once the track count starts getting into
+         * NOTE: this takes 10s of seconds to update the largest playlists (once the track count starts getting into
          * the thousands; I would like to update this to only grab changes made after the last sync, but the
          * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
          */
 
         /*
-         * PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
+         * TODO,PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
          *       Then grab those pages in parallel and combine into a single collection.
          */
 
@@ -195,106 +292,6 @@ public class PlaylistService : IPlaylistService
 
         // if the playlist isn't in the cache, it has all its tracks
         return !found;
-    }
-
-    #region public
-
-    public async Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(
-        string accessToken,
-        CancellationToken ct
-    )
-    {
-        PagingObject<SimplifiedPlaylistObject> page = await _api.GetCurrentUserPlaylistsAsync(
-            accessToken,
-            ct
-        );
-
-        List<Playlist> lists = page.Items.Select(i => i.ToPlaylist()).ToList();
-
-        while (page.Next is not null)
-        {
-            page = await _api.GetCurrentUserPlaylistsAsync(accessToken, page.Next, ct);
-
-            lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
-        }
-
-        return lists.ToImmutableArray();
-    }
-
-    public async Task<int> UpdatePlaylistsAsync(
-        string accessToken,
-        IEnumerable<Playlist> playlists,
-        CancellationToken ct
-    )
-    {
-        Stopwatch sw = Stopwatch.StartNew();
-
-        foreach (Playlist playlist in playlists.AsParallel())
-        {
-            await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
-        }
-
-        sw.Stop();
-
-        switch (s_updatedPlaylistsCache.Items.IsEmpty)
-        {
-            case true:
-                _logger.LogInformation(
-                    "There were no changed playlists found. Time elapsed: {Elapsed}",
-                    sw.Elapsed.ToDisplayString()
-                );
-
-                return 0;
-            case false:
-                int changedPlaylistCount = s_updatedPlaylistsCache.Items.Count;
-
-                _logger.LogInformation(
-                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
-                    sw.Elapsed.ToDisplayString(),
-                    changedPlaylistCount
-                );
-
-                return changedPlaylistCount;
-        }
-    }
-
-    public async Task SyncPlaylistAsync(
-        string accessToken,
-        string playlistId,
-        CancellationToken ct
-    )
-    {
-        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
-
-        Playlist playlist = playlistObject.ToPlaylist();
-
-        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
-    }
-
-    public async Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct)
-    {
-        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(
-            command.AccessToken,
-            command.PlaylistId,
-            ct
-        );
-
-        Playlist playlist = playlistObject.ToPlaylist();
-
-        await UpdatePlaylistAsync(
-            command.AccessToken,
-            playlist,
-            command.Offset,
-            command.Limit,
-            ct
-        );
-    }
-
-    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
-    {
-        _logger.LogDebug("Deleting orphaned PlaylistTracks...");
-
-        return await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
     }
 
     #endregion

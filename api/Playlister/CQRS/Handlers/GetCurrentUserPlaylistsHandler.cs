@@ -20,6 +20,6 @@ public class GetCurrentUserPlaylistsHandler
         CancellationToken ct
     )
     {
-        return await _playlistService.GetCurrentUserPlaylistsAsync(command.AccessToken, ct);
+        return await _playlistService.GetUserPlaylistsAsync(command.AccessToken, ct);
     }
 }

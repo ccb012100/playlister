@@ -4,6 +4,7 @@ using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.DTOs;
 using Playlister.Extensions;
+using Playlister.Models;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers;
@@ -21,21 +22,25 @@ public class PlaylistController : BaseController
         _logger = logger;
     }
 
-    [HttpPost("{playlistId}/tracks")]
-    public Task<ActionResult> UpdateTracks(string playlistId)
-    {
-        throw new NotImplementedException();
-    }
-
     /// <summary>
-    ///     Sync the specified playlist
+    ///     Get the current user's Playlists.
     /// </summary>
-    /// <param name="playlistId">ID of the Playlist to update</param>
-    /// <returns></returns>
-    [HttpPost($"sync/{{{nameof(playlistId)}}}")]
-    public Task<ActionResult> SyncPlaylist(string playlistId)
+    /// <returns>All Playlists owned by the current user</returns>
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists()
     {
-        throw new NotImplementedException();
+        (IEnumerable<Playlist> lists, TimeSpan elapsed) = await RunInTimer(
+            async () =>
+                await Mediator.Send(new GetCurrentUserPlaylistsCommand(CookieToken))
+        );
+
+        _logger.LogInformation(
+            "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
+            lists.Count(),
+            elapsed.ToDisplayString()
+        );
+
+        return Ok(lists);
     }
 
     /// <summary>
@@ -47,7 +52,7 @@ public class PlaylistController : BaseController
     {
         ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(
             async () =>
-                await Mediator.Send(new UpdateCurrentUserPlaylistsCommand(CookieAccessToken))
+                await Mediator.Send(new SyncCurrentUserPlaylistsCommand(CookieToken))
         );
 
         string elapsedStr = elapsed.ToDisplayString();
@@ -68,5 +73,31 @@ public class PlaylistController : BaseController
                 Updated = updated
             }
         );
+    }
+
+    /// <summary>
+    ///     Sync the specified playlist
+    /// </summary>
+    /// <param name="playlistId">ID of the Playlist to update</param>
+    /// <returns></returns>
+    [HttpPost($"sync/{{{nameof(playlistId)}}}")]
+    public async Task<ActionResult> SyncPlaylist(string playlistId)
+    {
+        await Mediator.Send(new SyncPlaylistCommand(CookieToken, playlistId));
+
+        return NoContent();
+    }
+
+    /// <summary>
+    ///     Sync the specified playlist, regardless of wether it's changed since the last snapshot
+    /// </summary>
+    /// <param name="playlistId">ID of the Playlist to update</param>
+    /// <returns></returns>
+    [HttpPost($"sync/{{{nameof(playlistId)}}}/force")]
+    public async Task<ActionResult> ForceSyncPlaylist(string playlistId)
+    {
+        await Mediator.Send(new ForceSyncPlaylistCommand(CookieToken, playlistId));
+
+        return NoContent();
     }
 }

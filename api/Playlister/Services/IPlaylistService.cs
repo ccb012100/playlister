@@ -7,11 +7,6 @@ namespace Playlister.Services;
 public interface IPlaylistService
 {
     /// <summary>
-    ///     Update the playlist specified in the <paramref name="command"></paramref> parameter.
-    /// </summary>
-    Task UpdatePlaylistAsync(UpdatePlaylistCommand command, CancellationToken ct);
-
-    /// <summary>
     ///     Update the playlists provided.<br /><br />
     ///     <b>Note:</b> The items in <paramref name="playlists" /> are directly compared to the versions in the database,
     ///     so the caller should be providing current versions retrieved from Spotify's API.
@@ -23,18 +18,22 @@ public interface IPlaylistService
     /// </param>
     /// <param name="ct"></param>
     /// <returns>The number of playlists updated.</returns>
-    Task<int> UpdatePlaylistsAsync(string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct);
+    Task<int> SyncPlaylistsAsync(string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct);
 
     /// <summary>
-    ///     The full lists of playlists for the current user.
+    ///     The full lists of playlists for the current user associated with the supplied Access Token.
     /// </summary>
-    Task<ImmutableArray<Playlist>> GetCurrentUserPlaylistsAsync(string accessToken, CancellationToken ct);
+    Task<ImmutableArray<Playlist>> GetUserPlaylistsAsync(string accessToken, CancellationToken ct);
 
     /// <summary>
-    ///     Sync the specified playlist.<br /><br />
-    ///     This will do a full sync, even if the snapshot ID has not changed since the last update.
+    ///     Sync the specified playlist.
     /// </summary>
     Task SyncPlaylistAsync(string accessToken, string playlistId, CancellationToken ct);
+
+    /// <summary>
+    ///     Sync the specified playlist, regardless of whether the snapshot ID has changed since the last update.
+    /// </summary>
+    Task ForceSyncPlaylistAsync(string accessToken, string playlistId, CancellationToken ct);
 
     /// <summary>
     ///     Delete tracks without any Playlist associations

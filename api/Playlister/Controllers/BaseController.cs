@@ -18,7 +18,7 @@ public abstract class BaseController : Controller
         _accessTokenUtility = accessTokenUtility;
     }
 
-    protected string CookieAccessToken => _accessTokenUtility.GetTokenFromUserCookie();
+    protected string CookieToken => _accessTokenUtility.GetTokenFromUserCookie();
 
     /// <summary>
     ///     Run a function inside a timer and return the data it produces

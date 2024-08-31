@@ -4,7 +4,7 @@ using MediatR;
 namespace Playlister.CQRS.Commands;
 
 /// <summary>
-///     Request to Sync the Playlist data stored in the database.
+///     Command to Sync the Playlist data stored in the database.
 /// </summary>
 public record SyncPlaylistCommand(string AccessToken, string PlaylistId) : IRequest<Unit>
 {

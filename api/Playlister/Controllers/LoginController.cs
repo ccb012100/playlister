@@ -65,6 +65,6 @@ public class LoginController : Controller
 
         return returnUrl is not null
             ? LocalRedirectPreserveMethod(returnUrl)
-            : RedirectToAction(nameof(HomeController.Me), HomeController.Name);
+            : RedirectToAction(nameof(HomeController.Main), HomeController.Name);
     }
 }

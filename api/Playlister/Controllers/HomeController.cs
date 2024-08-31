@@ -26,7 +26,7 @@ public class HomeController : Controller
         return Redirect((await _mediator.Send(new GetAuthUrlCommand())).ToString());
     }
 
-    public Task<IActionResult> Me()
+    public Task<IActionResult> Main()
     {
         return Task.FromResult<IActionResult>(View(new HomeViewModel()));
     }
