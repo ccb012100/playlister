@@ -12,8 +12,8 @@ Uses [ASP.NET Core MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) with
 
 ## CQRS
 
-The app generally follows the Command Query Responsibility Segregation (CQRS) pattern (though Commands sometimes return values), but it _does_ not
-use [MediatR](https://github.com/jbogard/MediatR), which adds to much abstraction/indirection for my tastes.
+The app generally follows the Command Query Responsibility Segregation (CQRS) pattern (though Commands sometimes return values), but it does _not_
+use [MediatR](https://github.com/jbogard/MediatR), which adds too much abstraction/indirection for my tastes.
 
 ## JSON serialization
 
