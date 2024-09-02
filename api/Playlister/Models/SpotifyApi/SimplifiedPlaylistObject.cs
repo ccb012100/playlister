@@ -17,7 +17,7 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
     /// <summary>
     ///     Known external URLs for this playlist.
     /// </summary>
-    public required ExternalUrlObject ExternalUrls { get; init; }
+    public ExternalUrlObject? ExternalUrls { get; init; }
 
     /// <summary>
     ///     Images for the playlist. The array may be empty or contain up to three images.

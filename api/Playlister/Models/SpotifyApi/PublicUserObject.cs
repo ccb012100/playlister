@@ -10,12 +10,12 @@ public record PublicUserObject
     /// <summary>
     ///     Known public external URLs for this user.
     /// </summary>
-    public required ExternalUrlObject ExternalUrls { get; init; }
+    public ExternalUrlObject? ExternalUrls { get; init; }
 
     /// <summary>
     ///     Information about the followers of this user.
     /// </summary>
-    public required FollowersObject Followers { get; init; }
+    public FollowersObject? Followers { get; init; }
 
     /// <summary>
     ///     A link to the Web API endpoint for this user.
@@ -30,7 +30,7 @@ public record PublicUserObject
     /// <summary>
     ///     The user’s profile image.
     /// </summary>
-    public required IEnumerable<ImageObject> Images { get; init; }
+    public IEnumerable<ImageObject>? Images { get; init; }
 
     /// <summary>
     ///     The object type: <c>user</c>.

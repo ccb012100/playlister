@@ -3,3 +3,7 @@ main {
     align-content: center;
     text-align: center;
 }
+
+pre {
+    text-align: left;
+}

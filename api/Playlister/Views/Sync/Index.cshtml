@@ -23,12 +23,12 @@
             let {totalSynced, elapsed, updated, deleted} = await response.json()
             document.getElementById(resultsId).innerHTML = `<p><b style="color:darkgreen">Sync succeeded:</p><p>Total: ${
             totalSynced
-            }</p><p>Number Updated: ${
+            } Playlists</p><p>Updated: ${
             updated
-            }</p><p>Elapsed: ${
+            } Playlist(s)</p><p>Elapsed: ${
             elapsed
             }</p><p>Deleted: ${
-            deleted} tracks</p></b>`;
+            deleted} Track(s)</p></b>`;
             console.log();
         } catch (e) {
             console.error(e);
