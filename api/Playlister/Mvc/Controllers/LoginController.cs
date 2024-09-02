@@ -41,7 +41,7 @@ public class LoginController : Controller
         // Spotify sets the "error" query param if authentication failed
         if (error is not null)
         {
-            _logger.LogError( "Spotify auth returned an error: {AuthError}", error );
+            _logger.LogError( "Spotify auth returned an error: {AuthError}", error.ReplaceLineEndings( string.Empty ) );
 
             throw new InvalidOperationException( $"Error authenticating with Spotify: {error}" );
         }
@@ -61,7 +61,8 @@ public class LoginController : Controller
         {
             AllowRefresh = true,
             IsPersistent = true,
-            IssuedUtc = DateTimeOffset.Now // TODO: set RedirectUri
+            IssuedUtc = DateTimeOffset.Now
+            // TODO: set RedirectUri
         };
 
         await HttpContext.SignInAsync( CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal( claimsIdentity ), authProperties );
