@@ -1,13 +1,13 @@
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
-using Playlister.CQRS.Commands;
+using Playlister.CQRS.Queries;
 using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;
 
 namespace Playlister.CQRS.Handlers;
 
-public class SpotifyAccessTokenHandler : ICommandHandler
+public class SpotifyAccessTokenHandler
 {
     private readonly ISpotifyAccountsApi _api;
     private readonly SpotifyOptions _options;
@@ -18,14 +18,14 @@ public class SpotifyAccessTokenHandler : ICommandHandler
         _options = options.Value;
     }
 
-    public async Task<AuthenticationToken> Handle( GetAccessTokenCommand command, CancellationToken ct = default )
+    public async Task<AuthenticationToken> Handle( GetAccessTokenQuery query, CancellationToken ct = default )
     {
         // TODO: validate that the `state` value matches the original value sent to user
         // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
         SpotifyAccessToken token = await _api.RequestAccessTokenAsync(
-            new GetAccessTokenCommand.BodyParams
+            new GetAccessTokenQuery.BodyParams
             {
-                Code = command.Code,
+                Code = query.Code,
                 RedirectUri = _options.CallbackUrl.ToString(),
                 ClientId = _options.ClientId,
                 ClientSecret = _options.ClientSecret

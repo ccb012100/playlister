@@ -1,9 +1,9 @@
-using Playlister.CQRS.Commands;
+using Playlister.CQRS.Queries;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class SpotifyAuthUrlHandler : ICommandHandler
+public class SpotifyAuthUrlHandler
 {
     private readonly IAuthService _authService;
 
@@ -12,7 +12,7 @@ public class SpotifyAuthUrlHandler : ICommandHandler
         _authService = authService;
     }
 
-    public Task<Uri> Handle( GetAuthUrlCommand command, CancellationToken ct = default )
+    public Task<Uri> Handle( GetAuthUrlQuery query, CancellationToken ct = default )
     {
         return Task.FromResult( _authService.GetSpotifyAuthUrl() );
     }

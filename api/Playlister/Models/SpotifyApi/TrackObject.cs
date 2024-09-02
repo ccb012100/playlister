@@ -1,5 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
-
 namespace Playlister.Models.SpotifyApi;
 
 public record TrackObject : SimplifiedTrackObject

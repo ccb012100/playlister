@@ -1,5 +1,5 @@
 using Playlister.Models.SpotifyApi;
 
-namespace Playlister.ViewModels;
+namespace Playlister.Mvc.ViewModels;
 
 public record MeViewModel( PrivateUserObject User );

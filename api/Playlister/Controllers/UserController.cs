@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
-using Playlister.CQRS.Commands;
 using Playlister.CQRS.Handlers;
+using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyApi;
 using Playlister.Utilities;
 
@@ -12,14 +12,14 @@ namespace Playlister.Controllers;
 [Route( "api/user" )]
 public class UserController : BaseApiController
 {
-    private readonly GetCurrentUserHandler _getCurrentUserHandler;
+    private readonly CurrentUserHandler _currentUserHandler;
 
     public UserController(
         IAccessTokenUtility tokenUtility,
-        GetCurrentUserHandler getCurrentUserHandler
+        CurrentUserHandler currentUserHandler
     ) : base( tokenUtility )
     {
-        _getCurrentUserHandler = getCurrentUserHandler;
+        _currentUserHandler = currentUserHandler;
     }
 
     /// <summary>
@@ -29,6 +29,6 @@ public class UserController : BaseApiController
     [HttpGet( "me" )]
     public async Task<PrivateUserObject> GetFromCookie()
     {
-        return await _getCurrentUserHandler.Handle( new GetCurrentUserCommand( CookieToken ) );
+        return await _currentUserHandler.Get( new GetCurrentUserQuery( CookieToken ) );
     }
 }

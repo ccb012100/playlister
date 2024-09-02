@@ -3,10 +3,10 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using Playlister.Models;
+using Playlister.Models.SpotifyAccounts;
 using Playlister.Services;
 
-namespace Playlister.Controllers;
+namespace Playlister.Mvc.Controllers;
 
 public class LoginController : Controller
 {
@@ -28,6 +28,7 @@ public class LoginController : Controller
     /// <param name="state">The value of the <c>state</c> parameter supplied in the request; used to prevent CSRF attacks</param>
     /// <param name="error">Error message populated if authentication failed</param>
     /// <param name="returnUrl">Local URL to redirect to after successful authentication</param>
+    /// <param name="ct"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"><paramref name="error" /> is not <c>null</c></exception>
     public async Task<IActionResult> Index(

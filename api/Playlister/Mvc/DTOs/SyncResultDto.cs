@@ -1,4 +1,4 @@
-namespace Playlister.DTOs;
+namespace Playlister.Mvc.DTOs;
 
 public record SyncResultDto
 {

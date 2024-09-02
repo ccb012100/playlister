@@ -2,9 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.CQRS.Handlers;
-using Playlister.DTOs;
+using Playlister.CQRS.Queries;
 using Playlister.Extensions;
 using Playlister.Models;
+using Playlister.Mvc.DTOs;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers;
@@ -14,27 +15,21 @@ namespace Playlister.Controllers;
 [Route( "api/playlists" )]
 public class PlaylistController : BaseApiController
 {
-    private readonly ForceSyncPlaylistHandler _forceSyncPlaylistHandler;
-    private readonly GetCurrentUserPlaylistsHandler _getCurrentUserPlaylistsHandler;
+    private readonly CurrentUserHandler _currentUserHandler;
     private readonly ILogger<PlaylistController> _logger;
-    private readonly SyncCurrentUserPlaylistsHandler _syncCurrentUserPlaylistsHandler;
-    private readonly SyncPlaylistHandler _syncPlaylistHandler;
+    private readonly PlaylistSyncHandler _playlistSyncHandler;
 
     public PlaylistController(
         IAccessTokenUtility tokenUtility,
         ILogger<PlaylistController> logger,
-        GetCurrentUserPlaylistsHandler getCurrentUserPlaylistsHandler,
-        SyncCurrentUserPlaylistsHandler syncCurrentUserPlaylistsHandler,
-        SyncPlaylistHandler syncPlaylistHandler,
-        ForceSyncPlaylistHandler forceSyncPlaylistHandler
+        CurrentUserHandler currentUserHandler,
+        PlaylistSyncHandler playlistSyncHandler
     )
         : base( tokenUtility )
     {
         _logger = logger;
-        _getCurrentUserPlaylistsHandler = getCurrentUserPlaylistsHandler;
-        _syncCurrentUserPlaylistsHandler = syncCurrentUserPlaylistsHandler;
-        _syncPlaylistHandler = syncPlaylistHandler;
-        _forceSyncPlaylistHandler = forceSyncPlaylistHandler;
+        _currentUserHandler = currentUserHandler;
+        _playlistSyncHandler = playlistSyncHandler;
     }
 
     /// <summary>
@@ -46,7 +41,7 @@ public class PlaylistController : BaseApiController
     {
         (IEnumerable<Playlist> lists, TimeSpan elapsed) = await RunInTimer(
             async () =>
-                await _getCurrentUserPlaylistsHandler.Handle( new GetCurrentUserPlaylistsCommand( CookieToken ), ct )
+                await _currentUserHandler.GetPlaylists( new GetCurrentUserPlaylistsQuery( CookieToken ), ct )
         );
 
         _logger.LogInformation(
@@ -67,7 +62,7 @@ public class PlaylistController : BaseApiController
     {
         ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(
             async () =>
-                await _syncCurrentUserPlaylistsHandler.Handle( new SyncCurrentUserPlaylistsCommand( CookieToken ), ct )
+                await _playlistSyncHandler.SyncAllForCurrentUser( new SyncCurrentUserPlaylistsCommand( CookieToken ), ct )
         );
 
         string elapsedStr = elapsed.ToDisplayString();
@@ -94,24 +89,26 @@ public class PlaylistController : BaseApiController
     ///     Sync the specified playlist
     /// </summary>
     /// <param name="playlistId">ID of the Playlist to update</param>
+    /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost( $"sync/{{{nameof(playlistId)}}}" )]
     public async Task<ActionResult> SyncPlaylist( string playlistId, CancellationToken ct )
     {
-        await _syncPlaylistHandler.Handle( new SyncPlaylistCommand( CookieToken, playlistId ), ct );
+        await _playlistSyncHandler.SyncSingle( new SyncPlaylistCommand( CookieToken, playlistId ), ct );
 
         return NoContent();
     }
 
     /// <summary>
-    ///     Sync the specified playlist, regardless of wether it's changed since the last snapshot
+    ///     Sync the specified playlist, regardless of whether it's changed since the last snapshot
     /// </summary>
     /// <param name="playlistId">ID of the Playlist to update</param>
+    /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost( $"sync/{{{nameof(playlistId)}}}/force" )]
     public async Task<ActionResult> ForceSyncPlaylist( string playlistId, CancellationToken ct )
     {
-        await _forceSyncPlaylistHandler.Handle( new ForceSyncPlaylistCommand( CookieToken, playlistId ), ct );
+        await _playlistSyncHandler.ForceSync( new ForceSyncPlaylistCommand( CookieToken, playlistId ), ct );
 
         return NoContent();
     }

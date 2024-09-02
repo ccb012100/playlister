@@ -5,7 +5,7 @@ namespace Playlister.CQRS.Commands;
 /// <summary>
 ///     Command to Sync the Playlist data stored in the database.
 /// </summary>
-public record SyncPlaylistCommand( string AccessToken, string PlaylistId ) : Command
+public record SyncPlaylistCommand( string AccessToken, string PlaylistId )
 {
     /// <summary>
     ///     The index of the first track to return.

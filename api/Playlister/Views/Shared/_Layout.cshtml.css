@@ -1,5 +1,5 @@
-/* TODO: these styles are not being picked up */
 main {
+    margin: 25px;
     align-content: center;
     text-align: center;
 }

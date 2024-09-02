@@ -2,8 +2,7 @@ using System.Security.Authentication;
 using Flurl;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
-using Playlister.CQRS.Commands;
-using Playlister.Models;
+using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;
 
@@ -57,7 +56,7 @@ public class AuthService : IAuthService
         }
 
         SpotifyAccessToken token = await _spotifyAccountsApi.RequestAccessTokenAsync(
-            new GetAccessTokenCommand.BodyParams
+            new GetAccessTokenQuery.BodyParams
             {
                 Code = auth.Code,
                 RedirectUri = _options.CallbackUrl.ToString(),

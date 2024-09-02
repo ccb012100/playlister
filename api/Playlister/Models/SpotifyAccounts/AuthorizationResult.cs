@@ -1,4 +1,4 @@
-namespace Playlister.Models;
+namespace Playlister.Models.SpotifyAccounts;
 
 /// <summary>
 ///     Represents the values supplied in successful redirect back to the application from <b>Spotify's</b> authorization dialog

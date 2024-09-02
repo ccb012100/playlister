@@ -1,14 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 using Refit;
 
-namespace Playlister.CQRS.Commands;
+namespace Playlister.CQRS.Queries;
 
 /// <summary>
 ///     Request to refresh Spotify Access Token
 /// </summary>
-public record RefreshTokenCommand : Command
+public record RefreshTokenQuery
 {
-    public RefreshTokenCommand( string refreshToken )
+    public RefreshTokenQuery( string refreshToken )
     {
         RefreshToken = refreshToken;
     }

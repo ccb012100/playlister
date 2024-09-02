@@ -1,4 +1,4 @@
-using Playlister.CQRS.Commands;
+using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyAccounts;
 using Refit;
 
@@ -15,7 +15,7 @@ public interface ISpotifyAccountsApi
     [Post( "/api/token" )]
     Task<SpotifyAccessToken> RequestAccessTokenAsync(
         [Body( BodySerializationMethod.UrlEncoded )]
-        GetAccessTokenCommand.BodyParams bodyParams,
+        GetAccessTokenQuery.BodyParams bodyParams,
         CancellationToken ct
     );
 
@@ -30,7 +30,7 @@ public interface ISpotifyAccountsApi
     Task<SpotifyAccessToken> RefreshTokenAsync(
         [Authorize( "Basic" )] string authHeaderParam,
         [Body( BodySerializationMethod.UrlEncoded )]
-        RefreshTokenCommand.BodyParams bodyParams,
+        RefreshTokenQuery.BodyParams bodyParams,
         CancellationToken ct
     );
 }
