@@ -1,0 +1,9 @@
+/* TODO: these styles are not being picked up */
+main {
+    align-content: center;
+    text-align: center;
+}
+
+pre {
+    text-align: left;
+}

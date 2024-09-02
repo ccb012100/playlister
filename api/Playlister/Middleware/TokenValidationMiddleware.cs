@@ -1,88 +1,81 @@
-using System.Net.Http.Headers;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.Extensions.Logging;
 using Playlister.Attributes;
+using Playlister.Services;
 
-namespace Playlister.Middleware
+namespace Playlister.Middleware;
+
+/// <summary>
+///     Validates endpoints marked with the <see cref="ValidateTokenCookieAttribute" /> attribute. If the <see cref="HttpRequest" /> does not contain a
+///     <c>"user-token"</c> cookie, or the value it contains is invalid, the <see cref="HttpResponse" /> is redirected back to <c>/Home</c> to go through
+///     the
+///     authentication flow
+/// </summary>
+public class TokenValidationMiddleware
 {
-    public class TokenValidationMiddleware
+    private readonly ILogger<TokenValidationMiddleware> _logger;
+    private readonly RequestDelegate _next;
+
+    public TokenValidationMiddleware(
+        RequestDelegate next,
+        ILogger<TokenValidationMiddleware> logger
+    )
     {
-        private readonly ILogger<TokenValidationMiddleware> _logger;
-        private readonly RequestDelegate _next;
+        _next = next;
+        _logger = logger;
+    }
 
-        public TokenValidationMiddleware(
-            RequestDelegate next,
-            ILogger<TokenValidationMiddleware> logger
-        )
+    public async Task Invoke( HttpContext context )
+    {
+        _logger.LogTrace( $"Entered {nameof(TokenValidationMiddleware)}" );
+        Endpoint? endpoint = context.Features.Get<IEndpointFeature>()!.Endpoint;
+        ValidateTokenCookieAttribute? attribute = endpoint?.Metadata.GetMetadata<ValidateTokenCookieAttribute>();
+
+        switch (attribute, endpoint)
         {
-            _next = next;
-            _logger = logger;
+            case (null, null):
+                {
+                    _logger.LogDebug(
+                        "There is no {Attribute} for {Path}; skipping validation",
+                        nameof(ValidateTokenCookieAttribute),
+                        context.Request.GetDisplayUrl()
+                    );
+
+                    break;
+                }
+            case (null, not null):
+                {
+                    _logger.LogDebug(
+                        "There is no {Attribute} on the endpoint {Endpoint}; skipping validation",
+                        nameof(ValidateTokenCookieAttribute),
+                        endpoint.DisplayName
+                    );
+
+                    break;
+                }
+            case (not null, _):
+                {
+                    string? cookie = context.Request.Cookies[TokenService.UserTokenCookieName];
+
+                    if (!TokenService.TryValidateCookie( cookie, out string? errorMessage ))
+                    {
+                        _logger.LogDebug(
+                            "Token in \"{Cookie}\" cookie failed validation: {Error}",
+                            nameof(TokenService.UserTokenCookieName),
+                            errorMessage
+                        );
+
+                        context.Response.Redirect( "Home/Index" );
+
+                        return;
+                    }
+
+                    _logger.LogDebug( "Token is valid" );
+
+                    break;
+                }
         }
 
-        public async Task Invoke(HttpContext context)
-        {
-            _logger.LogDebug($"Entered {nameof(TokenValidationMiddleware)}");
-            Endpoint? endpoint = context.Features.Get<IEndpointFeature>()!.Endpoint;
-            ValidateTokenAttribute? attribute = endpoint?.Metadata.GetMetadata<ValidateTokenAttribute>();
-
-            if (attribute is null)
-            {
-                _logger.LogDebug(
-                    "There is no ValidateTokenAttribute on the endpoint {DisplayName}",
-                    endpoint?.DisplayName
-                );
-
-                await _next(context); // call action in Controller
-
-                return;
-            }
-
-            // valid if there is an AccessToken header with a valid token
-            if (
-                !AuthenticationHeaderValue.TryParse(
-                    context.Request.Headers["Authorization"],
-                    out AuthenticationHeaderValue? authHeader
-                )
-            )
-            {
-                _logger.LogWarning(
-                    "Was unable to parse an AuthenticationHeaderValue from the Request"
-                );
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-                return;
-            }
-
-            _logger.LogDebug("Validating access to endpoint {DisplayName}", endpoint?.DisplayName);
-
-            if (authHeader.Scheme != "Bearer")
-            {
-                _logger.LogWarning(
-                    "Authorization header has invalid Scheme {Scheme}",
-                    authHeader.Scheme
-                );
-
-                context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-
-                return;
-            }
-
-            string authToken = authHeader.Parameter!;
-            _logger.LogDebug("auth token = {AuthToken}", authToken);
-
-            if (!string.IsNullOrWhiteSpace(authToken))
-            {
-                _logger.LogDebug("Token is valid");
-                await _next(context);
-
-                return;
-            }
-
-            _logger.LogWarning("Auth token was not found in the Authorization Header");
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-        }
+        await _next( context );
     }
 }

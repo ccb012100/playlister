@@ -1,21 +1,19 @@
-#pragma warning disable 8618
-namespace Playlister.Models.SpotifyApi
+namespace Playlister.Models.SpotifyApi;
+
+public record ExternalIdObject
 {
-    public record ExternalIdObject
-    {
-        /// <summary>
-        ///     International Article Number
-        /// </summary>
-        public string Ean { get; init; }
+    /// <summary>
+    ///     International Article Number
+    /// </summary>
+    public required string Ean { get; init; }
 
-        /// <summary>
-        ///     International Standard Recording Code
-        /// </summary>
-        public string Isrc { get; init; }
+    /// <summary>
+    ///     International Standard Recording Code
+    /// </summary>
+    public required string Isrc { get; init; }
 
-        /// <summary>
-        ///     Universal Product Code
-        /// </summary>
-        public string Upc { get; init; }
-    }
+    /// <summary>
+    ///     Universal Product Code
+    /// </summary>
+    public required string Upc { get; init; }
 }

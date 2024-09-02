@@ -1,13 +1,12 @@
-namespace Playlister.Configuration
+namespace Playlister.Configuration;
+
+public record DebuggingOptions
 {
-    public record DebuggingOptions
-    {
-        public const string Debugging = "Debugging";
+    public const string Debugging = "Debugging";
 
-        public bool PrintEnvironmentInfo { get; init; } = false;
+    public bool PrintEnvironmentInfo { get; init; }
 
-        public bool UseLoggingBehavior { get; init; } = false;
+    public bool UseLoggingBehavior { get; init; }
 
-        public bool UseHttpLoggingMiddleware { get; init; } = false;
-    }
+    public bool UseHttpLoggingMiddleware { get; init; }
 }

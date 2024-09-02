@@ -1,138 +1,139 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Dapper;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Http;
-using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using Playlister.Extensions;
 using Playlister.Middleware;
-using Playlister.Utilities;
+using Playlister.Models;
 
-namespace Playlister
+namespace Playlister;
+
+public class Startup
 {
-    public class Startup
+    private const string CorsPolicyName = "CorsPolicy";
+
+    /// <summary>
+    ///     This follows the old .NET pattern
+    /// </summary>
+    public static WebApplicationBuilder ConfigureServices( WebApplicationBuilder builder )
     {
-        private const string CorsPolicyName = "CorsPolicy";
-        private readonly IWebHostEnvironment _environment;
-        private readonly string? _namespace;
-
-        public Startup(IConfiguration configuration, IWebHostEnvironment environment)
-        {
-            Configuration = configuration;
-            _environment = environment;
-            _namespace = GetType().Namespace;
-        }
-
-        private IConfiguration Configuration { get; }
-
-        // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection services)
-        {
-            services
-                .AddCors(
-                    o =>
-                        o.AddPolicy(
-                            CorsPolicyName,
-                            corsBuilder =>
-                            {
-                                corsBuilder
-                                    .WithOrigins("https://localhost:5001")
-                                    .WithMethods("GET", "POST")
-                                    .AllowAnyHeader()
-                                    .AllowCredentials();
-                            }
-                        )
-                )
-                .AddMediatR(cfg => cfg.RegisterServicesFromAssemblyContaining<Startup>())
-                .AddConfigOptions(Configuration, _environment)
-                .AddHttpContextAccessor()
-                .AddMiddleware()
-                .AddServices()
-                .AddRepositories()
-                .AddSwaggerGen(
-                    c =>
-                        c.SwaggerDoc("v1", new OpenApiInfo { Title = "Playlister", Version = "v1" })
-                )
-                .Configure<HttpClientFactoryOptions>(options => options.SuppressHandlerScope = true)
-                .AddHttpClientWithPollyPolicy()
-                .AddRefitClients()
-                .AddControllers()
-                .AddJsonOptions(options =>
-                {
-                    options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
-                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
-                });
-
-            services.AddSpaStaticFiles(configuration => { configuration.RootPath = "ClientApp"; });
-
-            // set Dapper to be compatible with snake_case table names
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
-
-            if (_environment.IsDevelopment())
-            {
-                services.AddDebuggingOptions();
-            }
-
-            services.ConfigureFluentMigrator();
-        }
-
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(
-            IApplicationBuilder app,
-            ILoggerFactory loggerFactory,
-            IHostApplicationLifetime appLifetime
-        )
-        {
-            ILogger<Startup> logger = loggerFactory.CreateLogger<Startup>();
-            appLifetime.ApplicationStarted.Register(() => OnStarted(logger));
-            appLifetime.ApplicationStopping.Register(() => OnStopping(logger));
-            appLifetime.ApplicationStopped.Register(() => OnStopped(logger));
-
-            if (_environment.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage()
-                    .UseSwagger()
-                    .UseSwaggerUI(c =>
+        builder.Services
+            .AddCors(
+                o => o.AddPolicy(
+                    CorsPolicyName,
+                    corsBuilder =>
                     {
-                        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Playlister v1");
-                        c.RoutePrefix = string.Empty; // serve on ~/
-                    });
-            }
-            else
-            {
-                // The default HSTS value is 30 days.
-                // You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseExceptionHandler("/Error").UseHsts();
-            }
+                        corsBuilder.WithOrigins( "https://localhost:5001" ).WithMethods( "GET", "POST" ).AllowAnyHeader().AllowCredentials();
+                    }
+                )
+            )
+            .AddHttpContextAccessor()
+            .AddMiddleware()
+            .AddServices()
+            .AddRepositories()
+            .Configure<HttpClientFactoryOptions>( options => options.SuppressHandlerScope = true )
+            .AddHttpClientWithPollyPolicy()
+            .AddRefitClients()
+            .AddControllersWithViews()
+            .AddJsonOptions(
+                options =>
+                {
+                    options.JsonSerializerOptions.Converters.Add( new JsonStringEnumConverter() );
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+                }
+            );
 
-            app.UseHttpsRedirection()
-                .UseRouting()
-                .UseStaticFiles()
-                .UseCors(CorsPolicyName)
-                .UseMiddleware<GlobalErrorHandlerMiddleware>()
-                .UseMiddleware<TokenValidationMiddleware>()
-                .AddEndpoints(Configuration, _environment);
+        builder.Services
+            .AddAuthentication( CookieAuthenticationDefaults.AuthenticationScheme )
+            .AddCookie(
+                options =>
+                {
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes( 20 );
+                    options.SlidingExpiration = true;
+                    options.AccessDeniedPath = "/Forbidden/";
+                }
+            );
 
-            // ~/app/* URLs will serve up the SPA default page (index.html)
-            app.UseSpa(spa => { spa.Options.SourcePath = "/app"; });
-        }
+        builder.Services
+            .AddEndpointsApiExplorer()
+            .AddSwaggerGen()
+            .ConfigureFluentMigrator();
 
-        private void OnStarted(ILogger logger)
+        if (builder.Environment.IsDevelopment())
         {
-            logger.LogInformation("{Namespace} Started", _namespace);
-
-            UrlUtility.OpenUrl("https://localhost:5001/app/home", logger);
+            builder.Services.AddDebuggingOptions();
         }
 
-        private void OnStopping(ILogger logger) =>
-            logger.LogInformation("{Namespace} Stopping", _namespace);
+        DefaultTypeMap.MatchNamesWithUnderscores = true; // For compatibility with snake_case table names
 
-        private void OnStopped(ILogger logger) =>
-            logger.LogInformation("{Namespace} Stopped", _namespace);
+        return builder;
+    }
+
+    /// <summary>
+    ///     This follows the old .NET pattern
+    /// </summary>
+    public static WebApplication ConfigureWebApplication( WebApplication app )
+    {
+        string @namespace = typeof(Startup).Namespace!;
+        // Log Application lifetime events
+        ILogger<Startup> logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Startup>();
+        app.Lifetime.ApplicationStarted.Register( () => OnEvent( logger, "Started", @namespace ) );
+        app.Lifetime.ApplicationStopping.Register( () => OnEvent( logger, "Stopping", @namespace ) );
+        app.Lifetime.ApplicationStopped.Register( () => OnEvent( logger, "Stopped", @namespace ) );
+
+        app.UseHttpsRedirection()
+            .UseStaticFiles()
+            .UseRouting()
+            .UseAuthentication()
+            // TODO: .UseAntiforgery()
+            .UseAuthorization();
+
+        app.MapDefaultControllerRoute();
+
+        if (app.Environment.IsDevelopment())
+        {
+            app.UseDeveloperExceptionPage()
+                .UseSwagger()
+                .UseSwaggerUI();
+        }
+        else
+        {
+            app.UseExceptionHandler( "/Home/Error", true );
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
+        }
+
+        app.UseCors( CorsPolicyName )
+            .UseCookiePolicy( new CookiePolicyOptions { MinimumSameSitePolicy = SameSiteMode.Strict } )
+            .UseMiddleware<GlobalErrorHandlerMiddleware>()
+            .UseMiddleware<TokenValidationMiddleware>()
+            .UseEndpoints(
+                endpoints =>
+                {
+                    if (app.Environment.IsDevelopment())
+                    {
+                        endpoints.MapGet( // view app configuration at /debug
+                            "/debug",
+                            async context =>
+                                await context.Response.WriteAsync(
+                                    (app.Configuration as IConfigurationRoot)!.GetDebugView()
+                                )
+                        );
+                    }
+
+                    endpoints.MapGet( "/info", async context => await context.Response.WriteAsJsonAsync( new AppInfo() ) );
+                    endpoints.MapControllers();
+                }
+            );
+
+        app.UseStatusCodePagesWithReExecute( "/Home/Error", "?statusCode={0}" );
+
+        return app;
+    }
+
+    private static void OnEvent( ILogger logger, string @event, string @namespace )
+    {
+        logger.LogInformation( "{Namespace} {Event}", @namespace, @event );
     }
 }

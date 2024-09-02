@@ -1,0 +1,12 @@
+@model Playlister.ViewModels.HomeViewModel
+
+@{
+    ViewData["Title"] = "Home";
+}
+
+<div>
+    @foreach ((string displayText, string action, string controller) in Model.Links)
+    {
+        <div>@Html.ActionLink(displayText, action, controller)</div>
+    }
+</div>

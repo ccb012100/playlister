@@ -1,60 +1,51 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
+using Playlister.Configuration;
+using Playlister.Extensions;
 
-namespace Playlister
+namespace Playlister;
+
+public static class Program
 {
-    public static class Program
+    public static void Main( string[] args )
     {
-        public static void Main(string[] args) => CreateWebHostBuilder(args).Build().Run();
+        WebApplicationBuilder builder = WebApplication.CreateBuilder( args );
 
-        internal static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
-            WebHost
-                .CreateDefaultBuilder(args)
-                .ConfigureLogging(
-                    (context, builder) => { builder.AddFile(context.Configuration.GetSection("Logging")); }
-                )
-                .UseKestrel(LogDevelopmentConfiguration)
-                .UseStartup<Startup>();
+        builder.Logging.AddFile( builder.Configuration.GetSection( "Logging" ) );
+        builder.WebHost.UseKestrel( PrintDevelopmentConfiguration );
 
-        private static void LogDevelopmentConfiguration(
-            WebHostBuilderContext context,
-            KestrelServerOptions options
-        )
+        Startup.ConfigureWebApplication( Startup.ConfigureServices( builder.AddAndValidateConfiguration() ).Build() ).Run();
+    }
+
+    /// <summary>
+    ///     If enabled, print the Application's Configuration to the Console
+    /// </summary>
+    /// <param name="context"></param>
+    /// <param name="options"></param>
+    private static void PrintDevelopmentConfiguration(
+        WebHostBuilderContext context,
+        KestrelServerOptions options
+    )
+    {
+        if (context.HostingEnvironment.IsDevelopment() && context.Configuration.Get<DebuggingOptions>() is { PrintEnvironmentInfo: true })
         {
-            if (context.HostingEnvironment.IsDevelopment())
-            {
-                IConfigurationSection debug = context.Configuration.GetChildren().First(c => c.Key == "Debugging");
-                IConfigurationSection printEnv = debug.GetChildren().First(x => x.Key == "PrintEnvironmentInfo");
-
-                if (bool.Parse(printEnv.Value!))
-                {
-                    ShowConfig(context.Configuration);
-                }
-            }
+            WriteToConsole( context.Configuration );
         }
 
-        /// <summary>
-        ///     Write App Configuration to Console
-        /// </summary>
-        /// <param name="configuration"></param>
-        private static void ShowConfig(IConfiguration configuration)
+        return;
+
+        void WriteToConsole( IConfiguration configuration )
         {
             List<IConfigurationSection> children = configuration.GetChildren().ToList();
 
-            if (children.Any())
+            if (children.Count == 0)
             {
-                foreach (IConfigurationSection section in children)
-                {
-                    ShowConfig(section);
-                    Console.WriteLine($"{section.Path} => {section.Value}");
-                }
+                return;
+            }
+
+            foreach (IConfigurationSection section in children)
+            {
+                WriteToConsole( section );
+                Console.WriteLine( $"{section.Path} => {section.Value}" );
             }
         }
     }

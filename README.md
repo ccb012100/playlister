@@ -1,5 +1,8 @@
 # playlister
 
+[![.NET](https://github.com/ccb012100/playlister/actions/workflows/dotnet.yml/badge.svg)](https://github.com/ccb012100/playlister/actions/workflows/dotnet.yml)
+[![CodeQL](https://github.com/ccb012100/playlister/actions/workflows/codeql.yml/badge.svg)](https://github.com/ccb012100/playlister/actions/workflows/codeql.yml)
+
 Tool to download your **Spotify** Playlists into a **SQLite** database and search them.
 
 The [api](/api/) folder contains the **.NET** API/UI for syncing your **Spotify** data to **SQLite**.

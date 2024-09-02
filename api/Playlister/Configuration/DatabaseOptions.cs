@@ -1,10 +1,10 @@
-#pragma warning disable 8618
-namespace Playlister.Configuration
-{
-    public record DatabaseOptions
-    {
-        public const string Database = "Database";
+using System.ComponentModel.DataAnnotations;
 
-        public string ConnectionString { get; init; }
-    }
+namespace Playlister.Configuration;
+
+public record DatabaseOptions
+{
+    public const string Database = "Database";
+
+    [Required] public required string ConnectionString { get; init; }
 }

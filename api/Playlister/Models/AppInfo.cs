@@ -1,16 +1,13 @@
-using System;
-using System.IO;
 using System.Reflection;
 
-namespace Playlister.Models
+namespace Playlister.Models;
+
+public class AppInfo
 {
-    public class AppInfo
-    {
-        private static readonly Assembly s_assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
+    private static readonly Assembly s_assembly = Assembly.GetEntryAssembly() ?? Assembly.GetCallingAssembly();
 
-        public DateTime AssemblyBuildTime { get; } =
-            File.GetLastWriteTime(s_assembly.Location);
+    public DateTime AssemblyBuildTime { get; } =
+        File.GetLastWriteTime( s_assembly.Location );
 
-        public string Location { get; } = s_assembly.Location;
-    }
+    public string Location { get; } = s_assembly.Location;
 }

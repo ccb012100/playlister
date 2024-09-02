@@ -1,57 +1,44 @@
-using System;
-using System.Net.Http.Headers;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
+using Playlister.Services;
 
-namespace Playlister.Utilities
+namespace Playlister.Utilities;
+
+public class AccessTokenUtility : IAccessTokenUtility
 {
-    public class AccessTokenUtility : IAccessTokenUtility
+    private readonly IHttpContextAccessor _httpContextAccessor;
+
+    public AccessTokenUtility( IHttpContextAccessor httpContextAccessor )
     {
-        private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ILogger<AccessTokenUtility> _logger;
+        _httpContextAccessor = httpContextAccessor;
+    }
 
-        public AccessTokenUtility(
-            IHttpContextAccessor contextAccessor,
-            ILogger<AccessTokenUtility> logger
-        )
+    /// <summary>
+    ///     To avoid unhandled <see cref="InvalidOperationException" />s, this should only be used by methods marked with the
+    ///     <see cref="Playlister.Attributes .ValidateTokenCookieAttribute" />
+    /// </summary>
+    /// <returns>The user token</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     The method is called outside an <see cref="HttpContext" />
+    ///     or the <c>"user-token"</c> cookie is missing/has an invalid value
+    /// </exception>
+    public string GetTokenFromUserCookie()
+    {
+        if (_httpContextAccessor.HttpContext is null)
         {
-            _contextAccessor = contextAccessor;
-            _logger = logger;
+            throw new InvalidOperationException( "HttpContext is null" );
         }
 
-        public string GetAccessTokenFromCurrentHttpContext()
+        string? cookie = _httpContextAccessor.HttpContext.Request.Cookies[TokenService.UserTokenCookieName];
+
+        if (string.IsNullOrWhiteSpace( cookie ))
         {
-            if (_contextAccessor is null)
-            {
-                throw new InvalidOperationException("IHttpContextAccessor is null");
-            }
-
-            if (_contextAccessor.HttpContext is null)
-            {
-                throw new InvalidOperationException("httpContext");
-            }
-
-            if (
-                !AuthenticationHeaderValue.TryParse(
-                    _contextAccessor.HttpContext.Request.Headers["Authorization"],
-                    out AuthenticationHeaderValue? authHeader
-                )
-            )
-            {
-                throw new InvalidOperationException(
-                    "No Authorization header found on HttpContext.Request"
-                );
-            }
-
-            string token =
-                authHeader.Parameter
-                ?? throw new NullReferenceException(
-                    "The Authentication Header was present, but the Parameter was null"
-                );
-
-            _logger.LogDebug("Found access token {Token} on HttpContext", token);
-
-            return token;
+            throw new InvalidOperationException( $"{TokenService.UserTokenCookieName} cookie missing!" );
         }
+
+        if (!Guid.TryParse( cookie, out Guid viewToken ))
+        {
+            throw new InvalidOperationException( $"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}" );
+        }
+
+        return TokenService.GetToken( viewToken ).AccessToken;
     }
 }
