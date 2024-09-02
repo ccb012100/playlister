@@ -9,7 +9,7 @@ public class SpotifyApiService : ISpotifyApiService
 {
     private readonly ISpotifyApi _spotifyApi;
 
-    public SpotifyApiService(HttpClient client, ISpotifyApi spotifyApi)
+    public SpotifyApiService( HttpClient client, ISpotifyApi spotifyApi )
     {
         _spotifyApi = spotifyApi;
         Client = client;
@@ -26,7 +26,7 @@ public class SpotifyApiService : ISpotifyApiService
     )
     {
         Client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", accessToken);
+            new AuthenticationHeaderValue( "Bearer", accessToken );
 
         return await _spotifyApi.GetPlaylistTracksAsync(
             accessToken,
@@ -44,9 +44,9 @@ public class SpotifyApiService : ISpotifyApiService
     )
     {
         Client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", accessToken);
+            new AuthenticationHeaderValue( "Bearer", accessToken );
 
-        return (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>(next, ct))!;
+        return (await Client.GetFromJsonAsync<PagingObject<PlaylistItem>>( next, ct ))!;
     }
 
     public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
@@ -56,7 +56,7 @@ public class SpotifyApiService : ISpotifyApiService
         int? limit = 50
     )
     {
-        return await _spotifyApi.GetCurrentUserPlaylistsAsync(accessToken, offset, limit, ct);
+        return await _spotifyApi.GetCurrentUserPlaylistsAsync( accessToken, offset, limit, ct );
     }
 
     public async Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
@@ -66,10 +66,10 @@ public class SpotifyApiService : ISpotifyApiService
     )
     {
         Client.DefaultRequestHeaders.Authorization =
-            new AuthenticationHeaderValue("Bearer", accessToken);
+            new AuthenticationHeaderValue( "Bearer", accessToken );
 
         return (
-            await Client.GetFromJsonAsync<PagingObject<SimplifiedPlaylistObject>>(next, ct)
+            await Client.GetFromJsonAsync<PagingObject<SimplifiedPlaylistObject>>( next, ct )
         )!;
     }
 
@@ -79,6 +79,6 @@ public class SpotifyApiService : ISpotifyApiService
         CancellationToken ct
     )
     {
-        return await _spotifyApi.GetPlaylistAsync(accessToken, playlistId, ct);
+        return await _spotifyApi.GetPlaylistAsync( accessToken, playlistId, ct );
     }
 }

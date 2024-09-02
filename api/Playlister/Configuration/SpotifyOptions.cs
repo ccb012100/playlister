@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 
-#pragma warning disable 8618
-
 namespace Playlister.Configuration;
 
 public record SpotifyOptions

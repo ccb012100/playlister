@@ -10,7 +10,7 @@ public class SyncPlaylistHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
-    public SyncPlaylistHandler(IPlaylistService playlistService)
+    public SyncPlaylistHandler( IPlaylistService playlistService )
     {
         _playlistService = playlistService;
     }
@@ -20,7 +20,7 @@ public class SyncPlaylistHandler : ICommandHandler
     /// <param name="command"></param>
     /// <param name="ct"></param>
     /// <returns>Number of playlists handled</returns>
-    public async Task Handle(SyncPlaylistCommand command, CancellationToken ct = default)
+    public async Task Handle( SyncPlaylistCommand command, CancellationToken ct = default )
     {
         await Task.Run(
             () => _playlistService.SyncPlaylistAsync(

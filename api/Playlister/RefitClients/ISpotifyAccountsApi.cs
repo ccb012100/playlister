@@ -12,9 +12,9 @@ public interface ISpotifyAccountsApi
     /// <param name="bodyParams"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [Post("/api/token")]
+    [Post( "/api/token" )]
     Task<SpotifyAccessToken> RequestAccessTokenAsync(
-        [Body(BodySerializationMethod.UrlEncoded)]
+        [Body( BodySerializationMethod.UrlEncoded )]
         GetAccessTokenCommand.BodyParams bodyParams,
         CancellationToken ct
     );
@@ -26,10 +26,10 @@ public interface ISpotifyAccountsApi
     /// <param name="bodyParams"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [Post("/api/token")]
+    [Post( "/api/token" )]
     Task<SpotifyAccessToken> RefreshTokenAsync(
-        [Authorize("Basic")] string authHeaderParam,
-        [Body(BodySerializationMethod.UrlEncoded)]
+        [Authorize( "Basic" )] string authHeaderParam,
+        [Body( BodySerializationMethod.UrlEncoded )]
         RefreshTokenCommand.BodyParams bodyParams,
         CancellationToken ct
     );

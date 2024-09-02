@@ -10,14 +10,14 @@ public class ForceSyncPlaylistHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
-    public ForceSyncPlaylistHandler(IPlaylistService playlistService)
+    public ForceSyncPlaylistHandler( IPlaylistService playlistService )
     {
         _playlistService = playlistService;
     }
 
-    public async Task<Unit> Handle(ForceSyncPlaylistCommand command, CancellationToken ct = default)
+    public async Task<Unit> Handle( ForceSyncPlaylistCommand command, CancellationToken ct = default )
     {
-        await Task.Run(() => _playlistService.ForceSyncPlaylistAsync(command.AccessToken, command.PlaylistId, ct), ct);
+        await Task.Run( () => _playlistService.ForceSyncPlaylistAsync( command.AccessToken, command.PlaylistId, ct ), ct );
 
         return new Unit();
     }

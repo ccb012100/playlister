@@ -6,14 +6,14 @@ namespace Playlister;
 
 public static class Program
 {
-    public static void Main(string[] args)
+    public static void Main( string[] args )
     {
-        WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+        WebApplicationBuilder builder = WebApplication.CreateBuilder( args );
 
-        builder.Logging.AddFile(builder.Configuration.GetSection("Logging"));
-        builder.WebHost.UseKestrel(PrintDevelopmentConfiguration);
+        builder.Logging.AddFile( builder.Configuration.GetSection( "Logging" ) );
+        builder.WebHost.UseKestrel( PrintDevelopmentConfiguration );
 
-        Startup.ConfigureWebApplication(Startup.ConfigureServices(builder.AddAndValidateConfiguration()).Build()).Run();
+        Startup.ConfigureWebApplication( Startup.ConfigureServices( builder.AddAndValidateConfiguration() ).Build() ).Run();
     }
 
     /// <summary>
@@ -28,12 +28,12 @@ public static class Program
     {
         if (context.HostingEnvironment.IsDevelopment() && context.Configuration.Get<DebuggingOptions>() is { PrintEnvironmentInfo: true })
         {
-            WriteToConsole(context.Configuration);
+            WriteToConsole( context.Configuration );
         }
 
         return;
 
-        void WriteToConsole(IConfiguration configuration)
+        void WriteToConsole( IConfiguration configuration )
         {
             List<IConfigurationSection> children = configuration.GetChildren().ToList();
 
@@ -44,8 +44,8 @@ public static class Program
 
             foreach (IConfigurationSection section in children)
             {
-                WriteToConsole(section);
-                Console.WriteLine($"{section.Path} => {section.Value}");
+                WriteToConsole( section );
+                Console.WriteLine( $"{section.Path} => {section.Value}" );
             }
         }
     }

@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 public record PagingObject<T>
@@ -7,12 +5,12 @@ public record PagingObject<T>
     /// <summary>
     ///     A link to the Web API endpoint returning the full result of the request
     /// </summary>
-    public Uri Href { get; init; }
+    public required Uri Href { get; init; }
 
     /// <summary>
     ///     The requested data.
     /// </summary>
-    public IEnumerable<T> Items { get; init; }
+    public required IEnumerable<T> Items { get; init; }
 
     /// <summary>
     ///     The maximum number of items in the response (as set in the query or by default).

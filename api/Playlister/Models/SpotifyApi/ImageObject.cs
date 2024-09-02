@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 public record ImageObject
@@ -12,7 +10,7 @@ public record ImageObject
     /// <summary>
     ///     The source URL of the image.
     /// </summary>
-    public Uri Url { get; init; }
+    public required Uri Url { get; init; }
 
     /// <summary>
     ///     The image width in pixels. If unknown: <c>null</c> or not returned.

@@ -8,7 +8,7 @@ namespace Playlister.CQRS.Commands;
 /// </summary>
 public record RefreshTokenCommand : Command
 {
-    public RefreshTokenCommand(string refreshToken)
+    public RefreshTokenCommand( string refreshToken )
     {
         RefreshToken = refreshToken;
     }
@@ -19,13 +19,15 @@ public record RefreshTokenCommand : Command
 
     public record BodyParams
     {
-        public BodyParams(string refreshToken)
+        public BodyParams( string refreshToken )
         {
             RefreshToken = refreshToken;
         }
 
-        [Required] [AliasAs("grant_type")] public string GrantType { get; init; } = "refresh_token";
+        [Required] [AliasAs( "grant_type" )] public string GrantType { get; init; } = "refresh_token";
 
-        [Required] [AliasAs("refresh_token")] public string RefreshToken { get; init; }
+        [Required]
+        [AliasAs( "refresh_token" )]
+        public string RefreshToken { get; init; }
     }
 }

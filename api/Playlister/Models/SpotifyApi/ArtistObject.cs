@@ -1,4 +1,3 @@
-#pragma warning disable 8618
 namespace Playlister.Models.SpotifyApi;
 
 public record ArtistObject : SimplifiedArtistObject
@@ -6,12 +5,12 @@ public record ArtistObject : SimplifiedArtistObject
     /// <summary>
     ///     Information about the followers of the artist.
     /// </summary>
-    public FollowersObject Followers { get; init; }
+    public required FollowersObject Followers { get; init; }
 
     /// <summary>
     ///     Images of the artist in various sizes, widest first.
     /// </summary>
-    public ICollection<ImageObject> Images { get; init; }
+    public required ICollection<ImageObject> Images { get; init; }
 
     /// <summary>
     ///     The popularity of the artist.

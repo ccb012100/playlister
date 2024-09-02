@@ -12,8 +12,8 @@ public interface ISpotifyApi
     /// <param name="token"></param>
     /// <param name="ct"></param>
     /// <returns>The User who was assigned the provided Access Token.</returns>
-    [Get("/me")]
-    Task<PrivateUserObject> GetCurrentUserAsync([Authorize] string token, CancellationToken ct);
+    [Get( "/me" )]
+    Task<PrivateUserObject> GetCurrentUserAsync( [Authorize] string token, CancellationToken ct );
 
     /// <summary>
     ///     Get playlist.
@@ -22,7 +22,7 @@ public interface ISpotifyApi
     /// <param name="playlistId">Spotify Id of the playlist</param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [Get("/playlists/{playlistId}")]
+    [Get( "/playlists/{playlistId}" )]
     Task<SimplifiedPlaylistObject> GetPlaylistAsync(
         [Authorize] string token,
         string playlistId,
@@ -37,7 +37,7 @@ public interface ISpotifyApi
     /// <param name="limit">The maximum number of items to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.</param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [Get("/me/playlists?market=from_token")]
+    [Get( "/me/playlists?market=from_token" )]
     Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
         [Authorize] string token,
         int? offset,

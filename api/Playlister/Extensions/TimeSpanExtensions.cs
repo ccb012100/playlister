@@ -8,7 +8,7 @@ public static class TimeSpanExtensions
     /// <param name="elapsed"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <returns>A number with units (e.g. <c>"1.23s"</c>,<c>123.2ms</c>, etc.</returns>
-    public static string ToDisplayString(this TimeSpan elapsed)
+    public static string ToDisplayString( this TimeSpan elapsed )
     {
         // <https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-timespan-format-strings>
         if (elapsed.TotalNanoseconds == 0)

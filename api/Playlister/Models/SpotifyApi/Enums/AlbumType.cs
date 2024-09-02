@@ -4,7 +4,7 @@ namespace Playlister.Models.SpotifyApi.Enums;
 
 public enum AlbumType
 {
-    [EnumMember(Value = "album")] Album,
-    [EnumMember(Value = "single")] Single,
-    [EnumMember(Value = "compilation")] Compilation
+    [EnumMember( Value = "album" )] Album,
+    [EnumMember( Value = "single" )] Single,
+    [EnumMember( Value = "compilation" )] Compilation
 }

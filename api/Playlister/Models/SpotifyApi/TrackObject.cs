@@ -1,4 +1,4 @@
-#pragma warning disable 8618
+using System.Diagnostics.CodeAnalysis;
 
 namespace Playlister.Models.SpotifyApi;
 
@@ -7,17 +7,17 @@ public record TrackObject : SimplifiedTrackObject
     /// <summary>
     ///     The album on which the track appears. The album object includes a link in <c>href</c> to full information about the album.
     /// </summary>
-    public SimplifiedAlbumObject Album { get; init; }
+    public required SimplifiedAlbumObject Album { get; init; }
 
     /// <summary>
     ///     The artists who performed the track. Each artist object includes a link in <c>href</c> to more detailed information about the artist.
     /// </summary>
-    public new IEnumerable<ArtistObject> Artists { get; init; }
+    public new required IEnumerable<ArtistObject> Artists { get; init; }
 
     /// <summary>
     ///     Known external IDs for the track.
     /// </summary>
-    public ExternalIdObject ExternalIds { get; init; }
+    public required ExternalIdObject ExternalIds { get; init; }
 
     /// <summary>
     ///     The popularity of the track. The value will be between <c>0</c> and <c>100</c>, with <c>100</c> being the most popular.

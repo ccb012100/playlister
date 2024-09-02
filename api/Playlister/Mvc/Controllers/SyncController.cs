@@ -11,6 +11,6 @@ public class SyncController : Controller
 
     public Task<IActionResult> Index()
     {
-        return Task.FromResult<IActionResult>(View(new SyncViewModel()));
+        return Task.FromResult<IActionResult>( View( new SyncViewModel() ) );
     }
 }

@@ -23,14 +23,14 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         _logger = logger;
     }
 
-    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    public async Task<int> DeleteOrphanedPlaylistTracksAsync( CancellationToken ct )
     {
         Stopwatch sw = new();
         sw.Start();
 
         await using SqliteConnection connection = _connectionFactory.Connection;
-        await connection.OpenAsync(ct);
-        DbTransaction txn = await connection.BeginTransactionAsync(ct);
+        await connection.OpenAsync( ct );
+        DbTransaction txn = await connection.BeginTransactionAsync( ct );
 
         try
         {
@@ -49,14 +49,14 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         }
         catch (SqliteException)
         {
-            _logger.LogCritical("SqliteException thrown while trying to delete orphaned PlaylistTracks");
+            _logger.LogCritical( "SqliteException thrown while trying to delete orphaned PlaylistTracks" );
 
             throw;
         }
         finally
         {
             sw.Stop();
-            await txn.CommitAsync(ct);
+            await txn.CommitAsync( ct );
         }
     }
 
@@ -67,8 +67,8 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
     )
     {
         await using SqliteConnection connection = _connectionFactory.Connection;
-        await connection.OpenAsync(ct);
-        DbTransaction txn = await connection.BeginTransactionAsync(ct);
+        await connection.OpenAsync( ct );
+        DbTransaction txn = await connection.BeginTransactionAsync( ct );
 
         try
         {
@@ -79,7 +79,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
              *  Due to FKs, these have to be upserted in a certain order
              */
 
-            await UpsertPlaylist(playlist, connection, txn);
+            await UpsertPlaylist( playlist, connection, txn );
 
             // convert to avoid multiple enumerations
             ImmutableArray<PlaylistItem> items = playlistItems.ToImmutableArray();
@@ -87,7 +87,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             // The DB calls will blow up if the collection is empty
             if (items.Length > 0)
             {
-                await UpsertPlaylistItems(playlist, items, connection, txn);
+                await UpsertPlaylistItems( playlist, items, connection, txn );
                 sw.Stop();
 
                 _logger.LogInformation(
@@ -100,7 +100,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
                 return;
             }
 
-            _logger.LogDebug("{PlaylistTag} Upserted 0 tracks", playlist.LoggingTag);
+            _logger.LogDebug( "{PlaylistTag} Upserted 0 tracks", playlist.LoggingTag );
 
             sw.Stop();
         }
@@ -116,33 +116,33 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         }
         finally
         {
-            await txn.CommitAsync(ct);
+            await txn.CommitAsync( ct );
         }
 
         return;
 
-        async Task UpsertPlaylistItems(Playlist plist, ImmutableArray<PlaylistItem> items, SqliteConnection conn, DbTransaction transaction)
+        async Task UpsertPlaylistItems( Playlist plist, ImmutableArray<PlaylistItem> items, SqliteConnection conn, DbTransaction transaction )
         {
-            ImmutableArray<Track> tracks = items.Select(t => t.Track).ToImmutableArray();
-            ImmutableArray<Album> albums = tracks.Select(t => t.Album).ToImmutableArray();
+            ImmutableArray<Track> tracks = items.Select( t => t.Track ).ToImmutableArray();
+            ImmutableArray<Album> albums = tracks.Select( t => t.Album ).ToImmutableArray();
 
             List<Task> tasks = new()
             {
-                UpsertArtists(tracks, conn, transaction),
-                UpsertAlbums(albums, conn, transaction)
+                UpsertArtists( tracks, conn, transaction ),
+                UpsertAlbums( albums, conn, transaction )
             };
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll( tasks );
 
             tasks.Clear();
 
-            await UpsertTracks(plist, tracks, conn, transaction); // Track has FK to Album
+            await UpsertTracks( plist, tracks, conn, transaction ); // Track has FK to Album
 
-            tasks.Add(UpsertPlaylistTracks(plist, items, conn, transaction)); // has FK to Playlist, Track
-            tasks.Add(UpsertAlbumArtists(albums, conn, transaction)); // has FK to Album, Artist
-            tasks.Add(UpsertTrackArtist(tracks, conn, transaction)); // has FK to Artist, Track
+            tasks.Add( UpsertPlaylistTracks( plist, items, conn, transaction ) ); // has FK to Playlist, Track
+            tasks.Add( UpsertAlbumArtists( albums, conn, transaction ) ); // has FK to Album, Artist
+            tasks.Add( UpsertTrackArtist( tracks, conn, transaction ) ); // has FK to Artist, Track
 
-            await Task.WhenAll(tasks);
+            await Task.WhenAll( tasks );
         }
 
         async Task UpsertPlaylist(
@@ -151,7 +151,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dbTransaction
         )
         {
-            await conn.UpsertAsync(SqlQueries.Upsert.Playlist, plist, dbTransaction);
+            await conn.UpsertAsync( SqlQueries.Upsert.Playlist, plist, dbTransaction );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted Playlist {Playlist} {PlaylistId}",
@@ -174,9 +174,9 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
                 plistItems.Length
             );
 
-            ImmutableArray<PlaylistTrack> playlistTracks = plistItems.Select(x => x.ToPlaylistTrack(plist)).ToImmutableArray();
+            ImmutableArray<PlaylistTrack> playlistTracks = plistItems.Select( x => x.ToPlaylistTrack( plist ) ).ToImmutableArray();
 
-            await conn.UpsertAsync(SqlQueries.Upsert.PlaylistTrack, playlistTracks, dbTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.PlaylistTrack, playlistTracks, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} PlaylistTracks",
@@ -192,7 +192,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dbTxn
         )
         {
-            await conn.UpsertAsync(SqlQueries.Upsert.Track, tracks, dbTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.Track, tracks, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} Tracks",
@@ -207,9 +207,9 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dtTxn
         )
         {
-            ImmutableArray<object> trackArtists = tracks.SelectMany(x => x.GetArtistIdPairings()).ToImmutableArray();
+            ImmutableArray<object> trackArtists = tracks.SelectMany( x => x.GetArtistIdPairings() ).ToImmutableArray();
 
-            await conn.UpsertAsync(SqlQueries.Upsert.TrackArtist, trackArtists, dtTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.TrackArtist, trackArtists, dtTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} TrackArtists",
@@ -224,7 +224,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dbTxn
         )
         {
-            await conn.UpsertAsync(SqlQueries.Upsert.Album, albums, dbTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.Album, albums, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} Albums",
@@ -239,9 +239,9 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dbTxn
         )
         {
-            ImmutableArray<Artist> artists = tracks.SelectMany(x => x.GetAllContainedArtists()).ToImmutableArray();
+            ImmutableArray<Artist> artists = tracks.SelectMany( x => x.GetAllContainedArtists() ).ToImmutableArray();
 
-            await conn.UpsertAsync(SqlQueries.Upsert.Artist, artists, dbTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.Artist, artists, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} Artists",
@@ -256,9 +256,9 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dbTxn
         )
         {
-            ImmutableArray<AlbumArtistPair> albumArtists = albums.SelectMany(a => a.GetAlbumArtistPairings()).ToImmutableArray();
+            ImmutableArray<AlbumArtistPair> albumArtists = albums.SelectMany( a => a.GetAlbumArtistPairings() ).ToImmutableArray();
 
-            await conn.UpsertAsync(SqlQueries.Upsert.AlbumArtist, albumArtists, dbTxn);
+            await conn.UpsertAsync( SqlQueries.Upsert.AlbumArtist, albumArtists, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted {Upserted} AlbumArtists",

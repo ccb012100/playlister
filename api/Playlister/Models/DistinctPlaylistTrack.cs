@@ -8,5 +8,5 @@ public class DistinctPlaylistTracks
     /// <param name="PlaylistId"></param>
     /// <param name="TrackId"></param>
     /// <param name="AddedAt"></param>
-    public record DistinctPlaylistTrack(string PlaylistId, string TrackId, DateTime AddedAt);
+    public record DistinctPlaylistTrack( string PlaylistId, string TrackId, DateTime AddedAt );
 }

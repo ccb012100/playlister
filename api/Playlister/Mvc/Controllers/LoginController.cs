@@ -3,19 +3,18 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
+using Playlister.Models;
 using Playlister.Services;
 
 namespace Playlister.Controllers;
 
 public class LoginController : Controller
 {
-    public const string Name = "Login";
-
     private readonly IAuthService _authService;
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly ILogger<LoginController> _logger;
 
-    public LoginController(ILogger<LoginController> logger, IAuthService authService, IHttpContextAccessor httpContextAccessor)
+    public LoginController( ILogger<LoginController> logger, IAuthService authService, IHttpContextAccessor httpContextAccessor )
     {
         _logger = logger;
         _authService = authService;
@@ -35,18 +34,26 @@ public class LoginController : Controller
         [FromQuery] string code,
         [FromQuery] string state,
         [FromQuery] string? error,
-        [FromQuery] string? returnUrl
+        [FromQuery] string? returnUrl,
+        CancellationToken ct = default
     )
     {
         // Spotify sets the "error" query param if authentication failed
         if (error is not null)
         {
-            _logger.LogError("Spotify auth returned an error: {AuthError}", error);
+            _logger.LogError( "Spotify auth returned an error: {AuthError}", error );
 
-            throw new InvalidOperationException($"Error authenticating with Spotify: {error}");
+            throw new InvalidOperationException( $"Error authenticating with Spotify: {error}" );
         }
 
-        Guid viewToken = await _authService.GetAccessToken(code);
+        Guid viewToken = await _authService.GetAccessToken(
+            new AuthorizationResult
+            {
+                Code = code,
+                State = state
+            },
+            ct
+        );
 
         ClaimsIdentity claimsIdentity = new(Array.Empty<Claim>(), CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -57,14 +64,14 @@ public class LoginController : Controller
             IssuedUtc = DateTimeOffset.Now // TODO: set RedirectUri
         };
 
-        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal(claimsIdentity), authProperties);
+        await HttpContext.SignInAsync( CookieAuthenticationDefaults.AuthenticationScheme, new ClaimsPrincipal( claimsIdentity ), authProperties );
 
-        Response.Headers.Authorization = new StringValues($"Bearer {viewToken}");
+        Response.Headers.Authorization = new StringValues( $"Bearer {viewToken}" );
 
-        _httpContextAccessor.HttpContext!.Response.Cookies.Append(TokenService.UserTokenCookieName, viewToken.ToString());
+        _httpContextAccessor.HttpContext!.Response.Cookies.Append( TokenService.UserTokenCookieName, viewToken.ToString() );
 
         return returnUrl is not null
-            ? LocalRedirectPreserveMethod(returnUrl)
-            : RedirectToAction(nameof(HomeController.Main), HomeController.Name);
+            ? LocalRedirectPreserveMethod( returnUrl )
+            : RedirectToAction( nameof(HomeController.Main), HomeController.Name );
     }
 }

@@ -1,10 +1,11 @@
 using Playlister.Utilities;
 
-#pragma warning disable 8618
-
 namespace Playlister.Models;
 
-public record UserAccessToken
+/// <summary>
+///     Represents a <b>Spotify</b> Access Token
+/// </summary>
+public record AuthenticationToken
 {
     public required string AccessToken { get; init; }
     public required string? RefreshToken { get; init; }

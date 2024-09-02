@@ -12,7 +12,7 @@ public class SyncCurrentUserPlaylistsHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
-    public SyncCurrentUserPlaylistsHandler(IPlaylistService playlistService)
+    public SyncCurrentUserPlaylistsHandler( IPlaylistService playlistService )
     {
         _playlistService = playlistService;
     }
@@ -21,12 +21,12 @@ public class SyncCurrentUserPlaylistsHandler : ICommandHandler
     ///     Update Current user's playlists
     /// </summary>
     /// <returns>Number of playlists Updated.</returns>
-    public async Task<(int total, int updated, int deleted)> Handle(SyncCurrentUserPlaylistsCommand command, CancellationToken ct = default)
+    public async Task<(int total, int updated, int deleted)> Handle( SyncCurrentUserPlaylistsCommand command, CancellationToken ct = default )
     {
-        ImmutableArray<Playlist> playlists = await _playlistService.GetUserPlaylistsAsync(command.AccessToken, ct);
+        ImmutableArray<Playlist> playlists = await _playlistService.GetUserPlaylistsAsync( command.AccessToken, ct );
 
-        int updated = await _playlistService.SyncPlaylistsAsync(command.AccessToken, playlists, ct);
-        int deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync(ct);
+        int updated = await _playlistService.SyncPlaylistsAsync( command.AccessToken, playlists, ct );
+        int deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
 
         return (total: playlists.Length, updated, deleted);
     }

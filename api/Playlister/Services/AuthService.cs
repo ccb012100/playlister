@@ -1,7 +1,9 @@
+using System.Security.Authentication;
 using Flurl;
 using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Commands;
+using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;
 
@@ -10,11 +12,13 @@ namespace Playlister.Services;
 public class AuthService : IAuthService
 {
     private const string AuthScope = "user-read-private";
+    private static string s_state = Guid.Empty.ToString();
+
     private readonly SpotifyOptions _options;
 
     private readonly ISpotifyAccountsApi _spotifyAccountsApi;
 
-    public AuthService(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options)
+    public AuthService( ISpotifyAccountsApi api, IOptions<SpotifyOptions> options )
     {
         _options = options.Value;
         _spotifyAccountsApi = api;
@@ -30,27 +34,32 @@ public class AuthService : IAuthService
          * &scope=user-read-private%20user-read-email
          * &state=34fFs29kd09
          */
-        // TODO: cache `state` so that it can be validated on the access token command
+        s_state = Guid.NewGuid().ToString();
+
         return _options.AccountsApiBaseAddress
-            .AppendPathSegment("authorize")
-            .AppendQueryParam("response_type", "code")
-            .AppendQueryParam("client_id", _options.ClientId)
-            .AppendQueryParam("redirect_uri", _options.CallbackUrl)
-            .AppendQueryParam("scope", AuthScope)
-            .AppendQueryParam("state", Guid.NewGuid())
+            .AppendPathSegment( "authorize" )
+            .AppendQueryParam( "response_type", "code" )
+            .AppendQueryParam( "client_id", _options.ClientId )
+            .AppendQueryParam( "redirect_uri", _options.CallbackUrl )
+            .AppendQueryParam( "scope", AuthScope )
+            .AppendQueryParam( "state", s_state )
             .ToUri();
     }
 
-    public async Task<Guid> GetAccessToken(string code, CancellationToken ct = default)
+    public async Task<Guid> GetAccessToken( AuthorizationResult auth, CancellationToken ct = default )
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(code);
+        ArgumentException.ThrowIfNullOrWhiteSpace( auth.Code );
+        ArgumentException.ThrowIfNullOrWhiteSpace( auth.State );
 
-        // TODO: validate that the `state` value matches the original value sent to user
-        // TODO: Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+        if (auth.State != s_state)
+        {
+            throw new InvalidCredentialException( $"Invalid 'state' value: \"{s_state}\"! Expected \"{s_state}\"" );
+        }
+
         SpotifyAccessToken token = await _spotifyAccountsApi.RequestAccessTokenAsync(
             new GetAccessTokenCommand.BodyParams
             {
-                Code = code,
+                Code = auth.Code,
                 RedirectUri = _options.CallbackUrl.ToString(),
                 ClientId = _options.ClientId,
                 ClientSecret = _options.ClientSecret
@@ -58,6 +67,6 @@ public class AuthService : IAuthService
             ct
         );
 
-        return TokenService.AddToken(token.ToUserAccessToken());
+        return TokenService.SetToken( token.ToUserAccessToken() );
     }
 }

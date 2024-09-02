@@ -8,7 +8,7 @@ public class GetCurrentUserPlaylistsHandler : ICommandHandler
 {
     private readonly IPlaylistService _playlistService;
 
-    public GetCurrentUserPlaylistsHandler(IPlaylistService playlistService)
+    public GetCurrentUserPlaylistsHandler( IPlaylistService playlistService )
     {
         _playlistService = playlistService;
     }
@@ -18,6 +18,6 @@ public class GetCurrentUserPlaylistsHandler : ICommandHandler
         CancellationToken ct = default
     )
     {
-        return await _playlistService.GetUserPlaylistsAsync(command.AccessToken, ct);
+        return await _playlistService.GetUserPlaylistsAsync( command.AccessToken, ct );
     }
 }

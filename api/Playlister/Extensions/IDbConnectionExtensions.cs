@@ -23,12 +23,12 @@ public static class IDbConnectionExtensions
         IDbTransaction dbTxn
     )
     {
-        Debug.Assert(!items.IsDefaultOrEmpty);
-        Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
-        Debug.Assert(conn is not null);
-        Debug.Assert(dbTxn is not null);
+        Debug.Assert( !items.IsDefaultOrEmpty );
+        Debug.Assert( !string.IsNullOrWhiteSpace( sqlQuery ) );
+        Debug.Assert( conn is not null );
+        Debug.Assert( dbTxn is not null );
 
-        await conn.ExecuteAsync(sqlQuery, items, dbTxn);
+        await conn.ExecuteAsync( sqlQuery, items, dbTxn );
     }
 
     /// <summary>
@@ -47,12 +47,12 @@ public static class IDbConnectionExtensions
         IDbTransaction dbTxn
     )
     {
-        Debug.Assert(item is not null);
-        Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
-        Debug.Assert(conn is not null);
-        Debug.Assert(dbTxn is not null);
+        Debug.Assert( item is not null );
+        Debug.Assert( !string.IsNullOrWhiteSpace( sqlQuery ) );
+        Debug.Assert( conn is not null );
+        Debug.Assert( dbTxn is not null );
 
-        await conn.ExecuteAsync(sqlQuery, item, dbTxn);
+        await conn.ExecuteAsync( sqlQuery, item, dbTxn );
     }
 
     /// <summary>
@@ -71,12 +71,12 @@ public static class IDbConnectionExtensions
         IDbTransaction dbTxn
     )
     {
-        Debug.Assert(!items.IsDefaultOrEmpty);
-        Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
-        Debug.Assert(conn is not null);
-        Debug.Assert(dbTxn is not null);
+        Debug.Assert( !items.IsDefaultOrEmpty );
+        Debug.Assert( !string.IsNullOrWhiteSpace( sqlQuery ) );
+        Debug.Assert( conn is not null );
+        Debug.Assert( dbTxn is not null );
 
-        return await conn.ExecuteScalarAsync<int>(sqlQuery, items, dbTxn);
+        return await conn.ExecuteScalarAsync<int>( sqlQuery, items, dbTxn );
     }
 
     /// <summary>
@@ -92,10 +92,10 @@ public static class IDbConnectionExtensions
         IDbTransaction dbTxn
     )
     {
-        Debug.Assert(!string.IsNullOrWhiteSpace(sqlQuery));
-        Debug.Assert(conn is not null);
-        Debug.Assert(dbTxn is not null);
+        Debug.Assert( !string.IsNullOrWhiteSpace( sqlQuery ) );
+        Debug.Assert( conn is not null );
+        Debug.Assert( dbTxn is not null );
 
-        return await conn.ExecuteScalarAsync<int>(sqlQuery, dbTxn);
+        return await conn.ExecuteScalarAsync<int>( sqlQuery, dbTxn );
     }
 }

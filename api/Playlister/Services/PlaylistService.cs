@@ -29,7 +29,7 @@ public class PlaylistService : IPlaylistService
         _api = api;
         _logger = logger;
 
-        _ = s_playlistCache.Initialize(PopulateCaches);
+        _ = s_playlistCache.Initialize( PopulateCaches );
     }
 
     #region public
@@ -44,13 +44,13 @@ public class PlaylistService : IPlaylistService
             ct
         );
 
-        List<Playlist> lists = page.Items.Select(i => i.ToPlaylist()).ToList();
+        List<Playlist> lists = page.Items.Select( i => i.ToPlaylist() ).ToList();
 
         while (page.Next is not null)
         {
-            page = await _api.GetCurrentUserPlaylistsAsync(accessToken, page.Next, ct);
+            page = await _api.GetCurrentUserPlaylistsAsync( accessToken, page.Next, ct );
 
-            lists.AddRange(page.Items.Select(i => i.ToPlaylist()));
+            lists.AddRange( page.Items.Select( i => i.ToPlaylist() ) );
         }
 
         return lists.ToImmutableArray();
@@ -66,7 +66,7 @@ public class PlaylistService : IPlaylistService
 
         foreach (Playlist playlist in playlists.AsParallel())
         {
-            await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
+            await UpdatePlaylistAsync( accessToken, playlist, 0, 50, ct );
         }
 
         sw.Stop();
@@ -99,11 +99,11 @@ public class PlaylistService : IPlaylistService
         CancellationToken ct
     )
     {
-        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
+        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync( accessToken, playlistId, ct );
 
         Playlist playlist = playlistObject.ToPlaylist();
 
-        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct);
+        await UpdatePlaylistAsync( accessToken, playlist, 0, 50, ct );
     }
 
     public async Task ForceSyncPlaylistAsync(
@@ -112,18 +112,18 @@ public class PlaylistService : IPlaylistService
         CancellationToken ct
     )
     {
-        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync(accessToken, playlistId, ct);
+        SimplifiedPlaylistObject playlistObject = await _api.GetPlaylistAsync( accessToken, playlistId, ct );
 
         Playlist playlist = playlistObject.ToPlaylist();
 
-        await UpdatePlaylistAsync(accessToken, playlist, 0, 50, ct, true);
+        await UpdatePlaylistAsync( accessToken, playlist, 0, 50, ct, true );
     }
 
-    public async Task<int> DeleteOrphanedPlaylistTracksAsync(CancellationToken ct)
+    public async Task<int> DeleteOrphanedPlaylistTracksAsync( CancellationToken ct )
     {
-        _logger.LogDebug("Deleting orphaned PlaylistTracks...");
+        _logger.LogDebug( "Deleting orphaned PlaylistTracks..." );
 
-        return await _writeRepository.DeleteOrphanedPlaylistTracksAsync(ct);
+        return await _writeRepository.DeleteOrphanedPlaylistTracksAsync( ct );
     }
 
     #endregion
@@ -154,9 +154,9 @@ public class PlaylistService : IPlaylistService
             playlist.LoggingTag
         );
 
-        if (!forceSync && IsCurrent(playlist) && HasAllTracks(playlist))
+        if (!forceSync && IsCurrent( playlist ) && HasAllTracks( playlist ))
         {
-            _logger.LogDebug("{PlaylistTag} playlist is up-to-date. Skipping sync", playlist.LoggingTag);
+            _logger.LogDebug( "{PlaylistTag} playlist is up-to-date. Skipping sync", playlist.LoggingTag );
 
             return;
         }
@@ -189,8 +189,8 @@ public class PlaylistService : IPlaylistService
 
         while (page.Next is not null)
         {
-            page = await _api.GetPlaylistTracksAsync(accessToken, page.Next, ct);
-            allItems.AddRange(page.Items);
+            page = await _api.GetPlaylistTracksAsync( accessToken, page.Next, ct );
+            allItems.AddRange( page.Items );
         }
 
         if (allItems.Count != playlist.Count)
@@ -207,7 +207,7 @@ public class PlaylistService : IPlaylistService
 
         ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(
                 x =>
-                    new DistinctPlaylistTracks.DistinctPlaylistTrack(playlistId, x.Track.Id, x.AddedAt)
+                    new DistinctPlaylistTracks.DistinctPlaylistTrack( playlistId, x.Track.Id, x.AddedAt )
             )
             .ToImmutableArray();
 
@@ -220,12 +220,12 @@ public class PlaylistService : IPlaylistService
             playlist.Count
         );
 
-        await _writeRepository.UpsertAsync(playlist, uniqueTracks, ct);
+        await _writeRepository.UpsertAsync( playlist, uniqueTracks, ct );
 
         // only cache after data has been written to database
-        Cache(playlist);
-        CacheUpdatedPlaylist(playlist);
-        DecacheMissingTracks(playlist);
+        Cache( playlist );
+        CacheUpdatedPlaylist( playlist );
+        DecacheMissingTracks( playlist );
 
         sw.Stop();
 
@@ -241,13 +241,13 @@ public class PlaylistService : IPlaylistService
     /// </summary>
     /// <param name="playlist"></param>
     /// <returns></returns>
-    private bool IsCurrent(Playlist playlist)
+    private bool IsCurrent( Playlist playlist )
     {
-        Playlist? cachedPlaylist = GetFromCache(playlist.Id);
+        Playlist? cachedPlaylist = GetFromCache( playlist.Id );
 
         if (cachedPlaylist is null) // If the playlist isn't in the cache, then we haven't synced it before
         {
-            _logger.LogDebug("{PlaylistTag} was not found in the cache:\n\tSnapshotId:\t{SnapshotId}", playlist.LoggingTag, playlist.SnapshotId);
+            _logger.LogDebug( "{PlaylistTag} was not found in the cache:\n\tSnapshotId:\t{SnapshotId}", playlist.LoggingTag, playlist.SnapshotId );
 
             return false;
         }
@@ -265,7 +265,7 @@ public class PlaylistService : IPlaylistService
         }
 
         // if the SnapshotIds match, it hasn't changed since the last sync
-        _logger.LogDebug("{PlaylistTag} is unchanged since the last sync", playlist.LoggingTag);
+        _logger.LogDebug( "{PlaylistTag} is unchanged since the last sync", playlist.LoggingTag );
 
         return true;
     }
@@ -286,9 +286,9 @@ public class PlaylistService : IPlaylistService
     ///     <see langword="false" /> if the number of <see cref="PlaylistTrack" />s for <paramref name="playlist" /> in the database is less than its
     ///     <see cref="Playlist.Count" /> property; Otherwise, <see langword="true" />
     /// </returns>
-    private static bool HasAllTracks(Playlist playlist)
+    private static bool HasAllTracks( Playlist playlist )
     {
-        bool found = s_missingTracksCache.Items.ContainsKey(playlist.Id);
+        bool found = s_missingTracksCache.Items.ContainsKey( playlist.Id );
 
         // if the playlist isn't in the cache, it has all its tracks
         return !found;
@@ -298,41 +298,41 @@ public class PlaylistService : IPlaylistService
 
     #region cache
 
-    private void Cache(Playlist playlist)
+    private void Cache( Playlist playlist )
     {
         Playlist pl = s_playlistCache.Items.AddOrUpdate(
             playlist.Id,
             playlist,
-            (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : playlist
+            ( _, b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : playlist
         );
 
-        _logger.LogTrace("{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}", playlist.LoggingTag, pl.Name, pl.SnapshotId);
+        _logger.LogTrace( "{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}", playlist.LoggingTag, pl.Name, pl.SnapshotId );
     }
 
-    private Playlist? GetFromCache(string id)
+    private Playlist? GetFromCache( string id )
     {
-        bool found = s_playlistCache.Items.TryGetValue(id, out Playlist? playlist);
+        bool found = s_playlistCache.Items.TryGetValue( id, out Playlist? playlist );
 
         if (found)
         {
-            _logger.LogTrace("Found playlist {PlaylistId} in the cache: {Playlist}", id, playlist!.Name);
+            _logger.LogTrace( "Found playlist {PlaylistId} in the cache: {Playlist}", id, playlist!.Name );
         }
         else
         {
-            _logger.LogDebug("Playlist {PlaylistId} was not present in the cache", id);
+            _logger.LogDebug( "Playlist {PlaylistId} was not present in the cache", id );
         }
 
         return playlist;
     }
 
-    private void CacheMissingTracks((string, int) playlistWithCount)
+    private void CacheMissingTracks( (string, int) playlistWithCount )
     {
         (string playlistId, int count) = playlistWithCount;
 
         string _ = s_missingTracksCache.Items.AddOrUpdate(
             playlistId,
             count.ToString(),
-            (_, b) => b == null ? throw new ArgumentNullException(nameof(b)) : count.ToString()
+            ( _, b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : count.ToString()
         );
 
         _logger.LogDebug(
@@ -342,29 +342,29 @@ public class PlaylistService : IPlaylistService
         );
     }
 
-    private void DecacheMissingTracks(Playlist playlist)
+    private void DecacheMissingTracks( Playlist playlist )
     {
-        if (s_missingTracksCache.Items.Remove(playlist.Id, out string? _))
+        if (s_missingTracksCache.Items.Remove( playlist.Id, out string? _ ))
         {
-            _logger.LogTrace("{PlaylistTag} Removed {PlaylistId} playlist from the MissingTracks cache", playlist.LoggingTag, playlist.Id);
+            _logger.LogTrace( "{PlaylistTag} Removed {PlaylistId} playlist from the MissingTracks cache", playlist.LoggingTag, playlist.Id );
         }
         else
         {
-            _logger.LogTrace("{PlaylistTag} Playlist {PlaylistId} was not present in the MissingTracks cache", playlist.LoggingTag, playlist.Id);
+            _logger.LogTrace( "{PlaylistTag} Playlist {PlaylistId} was not present in the MissingTracks cache", playlist.LoggingTag, playlist.Id );
         }
     }
 
-    private void CacheUpdatedPlaylist(Playlist playlist)
+    private void CacheUpdatedPlaylist( Playlist playlist )
     {
-        bool added = s_updatedPlaylistsCache.Items.TryAdd(playlist.Id, playlist.Id);
+        bool added = s_updatedPlaylistsCache.Items.TryAdd( playlist.Id, playlist.Id );
 
         if (added)
         {
-            _logger.LogTrace("{PlaylistTag} Added playlist {PlaylistId} to the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id);
+            _logger.LogTrace( "{PlaylistTag} Added playlist {PlaylistId} to the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id );
         }
         else
         {
-            _logger.LogWarning("{PlaylistTag} Playlist {PlaylistId} was already in the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id);
+            _logger.LogWarning( "{PlaylistTag} Playlist {PlaylistId} was already in the UpdatedPlaylists cache", playlist.LoggingTag, playlist.Id );
         }
     }
 
@@ -380,17 +380,17 @@ public class PlaylistService : IPlaylistService
             PopulateMissingTracksCache()
         };
 
-        await Task.WhenAll(tasks);
+        await Task.WhenAll( tasks );
 
         return;
 
         async Task PopulatePlaylistCache()
         {
-            _logger.LogDebug("Populating Playlist cache...");
+            _logger.LogDebug( "Populating Playlist cache..." );
 
             IEnumerable<Playlist> playlists = await _readRepository.GetAllAsync();
 
-            playlists.AsParallel().ForAll(Cache);
+            playlists.AsParallel().ForAll( Cache );
 
             _logger.LogDebug(
                 "Playlist cache populated: {CacheItemsCount} items",
@@ -400,11 +400,11 @@ public class PlaylistService : IPlaylistService
 
         async Task PopulateMissingTracksCache()
         {
-            _logger.LogDebug("Populating MissingTracks cache...");
+            _logger.LogDebug( "Populating MissingTracks cache..." );
 
             IEnumerable<(string, int)> missingTracks = await _readRepository.GetPlaylistsWithMissingTracksAsync();
 
-            missingTracks.AsParallel().ForAll(CacheMissingTracks);
+            missingTracks.AsParallel().ForAll( CacheMissingTracks );
 
             _logger.LogDebug(
                 "MissingTracks cache populated: {CacheItemsCount} items",

@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 public record SimplifiedTrackObject : ISpotifyApiObject
@@ -7,12 +5,12 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     /// <summary>
     ///     The artists who performed the track. Each artist object includes a link in <c>href</c> to more detailed information about the artist.
     /// </summary>
-    public IEnumerable<SimplifiedArtistObject> Artists { get; init; }
+    public IEnumerable<SimplifiedArtistObject> Artists { get; init; } = null!;
 
     /// <summary>
     ///     A list of the countries in which the track can be played, identified by their <c>ISO 3166-1 alpha-2</c> code
     /// </summary>
-    public IEnumerable<string> AvailableMarkets { get; init; }
+    public required IEnumerable<string> AvailableMarkets { get; init; }
 
     /// <summary>
     ///     The disc number (usually <c>1</c> unless the album consists of more than one disc).
@@ -25,19 +23,19 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     public int DurationMs { get; init; }
 
     /// <summary>
-    ///     Whether or not the track has explicit lyrics (<c>true</c> = yes it does; <c>false</c> = no it does not OR unknown).
+    ///     Whether the track has explicit lyrics (<c>true</c> = yes it does; <c>false</c> = no it does not OR unknown).
     /// </summary>
     public bool Explicit { get; init; }
 
     /// <summary>
     ///     Known external URLs for this track.
     /// </summary>
-    public ExternalUrlObject ExternalUrls { get; init; }
+    public required ExternalUrlObject ExternalUrls { get; init; }
 
     /// <summary>
-    ///     Whether or not the track is from a local file.
+    ///     Whether the track is from a local file.
     /// </summary>
-    public string IsLocal { get; init; }
+    public required string IsLocal { get; init; }
 
     /// <summary>
     ///     Part of the response when Track Relinking is applied.
@@ -54,10 +52,10 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     /// <summary>
     ///     The name of the track.
     /// </summary>
-    public string Name { get; init; }
+    public required string Name { get; init; }
 
     /// <summary>
-    ///     A link to a 30 second preview (MP3 format) of the track. Can be <c>null</c>
+    ///     A link to a 30-second preview (MP3 format) of the track. Can be <c>null</c>
     /// </summary>
     public Uri? PreviewUrl { get; init; }
 
@@ -74,20 +72,20 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     /// <summary>
     ///     A link to the Web API endpoint providing full details of the track.
     /// </summary>
-    public Uri Href { get; init; }
+    public required Uri Href { get; init; }
 
     /// <summary>
     ///     The Spotify ID for the track.
     /// </summary>
-    public string Id { get; init; }
+    public required string Id { get; init; }
 
     /// <summary>
     ///     The object type: <c>track</c>.
     /// </summary>
-    public string Type { get; init; }
+    public required string Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for the track.
     /// </summary>
-    public Uri Uri { get; init; }
+    public required Uri Uri { get; init; }
 }

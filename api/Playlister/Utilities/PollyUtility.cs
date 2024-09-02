@@ -14,15 +14,15 @@ public static class PollyUtility
     /// </summary>
     public static readonly Func<IServiceProvider, HttpRequestMessage, IAsyncPolicy<HttpResponseMessage>>
         RetryAfterPolicy =
-            (svc, _) => Policy
-                .Handle<ApiException>(x => x.StatusCode == HttpStatusCode.TooManyRequests)
-                .OrResult<HttpResponseMessage>(r => r.StatusCode == HttpStatusCode.TooManyRequests)
+            ( svc, _ ) => Policy
+                .Handle<ApiException>( x => x.StatusCode == HttpStatusCode.TooManyRequests )
+                .OrResult<HttpResponseMessage>( r => r.StatusCode == HttpStatusCode.TooManyRequests )
                 .WaitAndRetryAsync(
                     3,
-                    (_, response, _) =>
+                    ( _, response, _ ) =>
                         response.Result?.Headers.RetryAfter?.Delta ??
-                        throw new InvalidOperationException("Could not find valid RetryAfter header."),
-                    async (_, timespan, retryAttempt, _) =>
+                        throw new InvalidOperationException( "Could not find valid RetryAfter header." ),
+                    async ( _, timespan, retryAttempt, _ ) =>
                     {
                         svc.GetService<ILogger<SpotifyApiService>>()
                             ?.LogWarning(

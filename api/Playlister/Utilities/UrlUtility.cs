@@ -7,34 +7,34 @@ public static class UrlUtility
 {
     // HACK: because of this => <https://github.com/dotnet/corefx/issues/10361>
     // ReSharper disable once UnusedMember.Global - not using it for now
-    public static void OpenUrl(string url, ILogger logger)
+    public static void OpenUrl( string url, ILogger logger )
     {
         string os = "other";
 
         try
         {
-            if (RuntimeInformation.OSDescription.Contains("microsoft-standard-WSL2"))
+            if (RuntimeInformation.OSDescription.Contains( "microsoft-standard-WSL2" ))
             {
                 os = "WSL2";
-                Process.Start("wslview", url);
+                Process.Start( "wslview", url );
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            else if (RuntimeInformation.IsOSPlatform( OSPlatform.Windows ))
             {
-                Process.Start(new ProcessStartInfo(url.Replace("&", "^&")) { UseShellExecute = true });
+                Process.Start( new ProcessStartInfo( url.Replace( "&", "^&" ) ) { UseShellExecute = true } );
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+            else if (RuntimeInformation.IsOSPlatform( OSPlatform.Linux ))
             {
                 os = "Linux";
-                Process.Start("open", url);
+                Process.Start( "open", url );
             }
-            else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+            else if (RuntimeInformation.IsOSPlatform( OSPlatform.OSX ))
             {
                 os = "OSX";
-                Process.Start("open", url);
+                Process.Start( "open", url );
             }
             else
             {
-                Process.Start(url);
+                Process.Start( url );
             }
         }
         catch (Exception ex)

@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 /// <summary>
@@ -7,14 +5,14 @@ namespace Playlister.Models.SpotifyApi;
 /// </summary>
 public record SimplifiedUserObject
 {
-    public ExternalUrlObject ExternalUrls { get; init; }
-    public Uri Href { get; init; }
-    public string Id { get; init; }
+    public required ExternalUrlObject ExternalUrls { get; init; }
+    public required Uri Href { get; init; }
+    public required string Id { get; init; }
 
     /// <summary>
     ///     Always "user"
     /// </summary>
-    public string Type { get; init; }
+    public required string Type { get; init; }
 
-    public string Uri { get; init; }
+    public required string Uri { get; init; }
 }

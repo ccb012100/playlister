@@ -13,20 +13,20 @@ public class SpotifyTokenRefreshHandler : ICommandHandler
     private readonly ISpotifyAccountsApi _api;
     private readonly SpotifyOptions _options;
 
-    public SpotifyTokenRefreshHandler(ISpotifyAccountsApi api, IOptions<SpotifyOptions> options)
+    public SpotifyTokenRefreshHandler( ISpotifyAccountsApi api, IOptions<SpotifyOptions> options )
     {
         _api = api;
         _options = options.Value;
     }
 
-    public async Task<UserAccessToken> Handle(RefreshTokenCommand command, CancellationToken ct = default)
+    public async Task<AuthenticationToken> Handle( RefreshTokenCommand command, CancellationToken ct = default )
     {
         string authParam =
-            Convert.ToBase64String(Encoding.UTF8.GetBytes($"{_options.ClientId}:{_options.ClientSecret}"));
+            Convert.ToBase64String( Encoding.UTF8.GetBytes( $"{_options.ClientId}:{_options.ClientSecret}" ) );
 
         SpotifyAccessToken token = await _api.RefreshTokenAsync(
             authParam,
-            new RefreshTokenCommand.BodyParams(command.RefreshToken),
+            new RefreshTokenCommand.BodyParams( command.RefreshToken ),
             ct
         );
 

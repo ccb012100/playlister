@@ -15,18 +15,18 @@ namespace Playlister.Extensions;
 
 public static class StartupExtensions
 {
-    public static IServiceCollection AddServices(this IServiceCollection services)
+    public static IServiceCollection AddServices( this IServiceCollection services )
     {
         return services
             .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
             .AddSingleton<IConnectionFactory, ConnectionFactory>()
             .AddScoped<IPlaylistService, PlaylistService>()
             .AddScoped<IAuthService, AuthService>()
-            .AddHandlers()
-            .AddTransient<IAccessTokenUtility, AccessTokenUtility>();
+            .AddTransient<IAccessTokenUtility, AccessTokenUtility>()
+            .AddHandlers();
     }
 
-    private static IServiceCollection AddHandlers(this IServiceCollection services)
+    private static IServiceCollection AddHandlers( this IServiceCollection services )
     {
         return services
             .AddTransient<ForceSyncPlaylistHandler>()
@@ -40,12 +40,12 @@ public static class StartupExtensions
             .AddTransient<SyncPlaylistsHandler>();
     }
 
-    public static IServiceCollection AddMiddleware(this IServiceCollection services)
+    public static IServiceCollection AddMiddleware( this IServiceCollection services )
     {
         return services.AddTransient<HttpLoggingMiddleware>();
     }
 
-    public static void ConfigureFluentMigrator(this IServiceCollection services)
+    public static void ConfigureFluentMigrator( this IServiceCollection services )
     {
         string connectionString = services
             .BuildServiceProvider()
@@ -57,63 +57,63 @@ public static class StartupExtensions
             .ConfigureRunner(
                 c =>
                     c.AddSQLite()
-                        .WithGlobalConnectionString(connectionString)
-                        .ScanIn(Assembly.GetExecutingAssembly())
+                        .WithGlobalConnectionString( connectionString )
+                        .ScanIn( Assembly.GetExecutingAssembly() )
                         .For
                         .All()
             )
-            .AddLogging(c => c.AddFluentMigratorConsole())
-            .BuildServiceProvider(false);
+            .AddLogging( c => c.AddFluentMigratorConsole() )
+            .BuildServiceProvider( false );
 
         using IServiceScope scope = serviceProvider.CreateScope();
         scope.ServiceProvider.GetRequiredService<IMigrationRunner>().MigrateUp();
     }
 
-    public static IServiceCollection AddRefitClients(this IServiceCollection services)
+    public static IServiceCollection AddRefitClients( this IServiceCollection services )
     {
         IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
 
         services
-            .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
+            .AddRefitClient<ISpotifyAccountsApi>( JsonUtility.SnakeCaseRefitSettings )
             .ConfigureHttpClient(
-                (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
+                ( svc, c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
             )
-            .AddHttpLoggingMiddleware(debugOptions)
-            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+            .AddHttpLoggingMiddleware( debugOptions )
+            .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
 
         services
-            .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
+            .AddRefitClient<ISpotifyApi>( JsonUtility.SnakeCaseRefitSettings )
             .ConfigureHttpClient(
-                (svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
+                ( svc, c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
             )
-            .AddHttpLoggingMiddleware(debugOptions)
-            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+            .AddHttpLoggingMiddleware( debugOptions )
+            .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
 
         return services;
     }
 
-    public static WebApplicationBuilder AddAndValidateConfiguration(this WebApplicationBuilder builder)
+    public static WebApplicationBuilder AddAndValidateConfiguration( this WebApplicationBuilder builder )
     {
         builder.Services
             .AddOptions<SpotifyOptions>()
-            .Bind(builder.Configuration.GetSection(SpotifyOptions.Spotify))
+            .Bind( builder.Configuration.GetSection( SpotifyOptions.Spotify ) )
             .ValidateDataAnnotations()
             .Validate(
-                o => o.CallbackUrl == new Uri("https://localhost:5001/login")
-                     || o.CallbackUrl == new Uri("https://localhost:5001/app/home/login"),
+                o => o.CallbackUrl == new Uri( "https://localhost:5001/login" )
+                    || o.CallbackUrl == new Uri( "https://localhost:5001/app/home/login" ),
                 "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>"
             )
             .ValidateOnStart();
 
         builder.Services
             .AddOptions<DebuggingOptions>()
-            .Bind(builder.Configuration.GetSection(DebuggingOptions.Debugging))
+            .Bind( builder.Configuration.GetSection( DebuggingOptions.Debugging ) )
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
         builder.Services
             .AddOptions<DatabaseOptions>()
-            .Bind(builder.Configuration.GetSection(DatabaseOptions.Database))
+            .Bind( builder.Configuration.GetSection( DatabaseOptions.Database ) )
             .ValidateDataAnnotations()
             .ValidateOnStart();
 
@@ -130,7 +130,7 @@ public static class StartupExtensions
             : httpClientBuilder;
     }
 
-    public static void AddDebuggingOptions(this IServiceCollection services)
+    public static void AddDebuggingOptions( this IServiceCollection services )
     {
         if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
         {
@@ -138,16 +138,16 @@ public static class StartupExtensions
         }
     }
 
-    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    public static IServiceCollection AddRepositories( this IServiceCollection services )
     {
         return services
             .AddScoped<IPlaylistReadRepository, PlaylistReadRepository>()
             .AddScoped<IPlaylistWriteRepository, PlaylistWriteRepository>();
     }
 
-    public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
+    public static IServiceCollection AddHttpClientWithPollyPolicy( this IServiceCollection services )
     {
-        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>().AddPolicyHandler(PollyUtility.RetryAfterPolicy);
+        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>().AddPolicyHandler( PollyUtility.RetryAfterPolicy );
 
         return services;
     }

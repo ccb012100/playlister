@@ -10,7 +10,7 @@ public class Fm007ChangePlaylistTrackPK : Migration
 {
     public override void Up()
     {
-        Execute.Script("Data/scripts/007_alter_playlist_track_pk.sql");
+        Execute.Script( "Data/scripts/007_alter_playlist_track_pk.sql" );
     }
 
     public override void Down() { }

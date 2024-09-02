@@ -30,7 +30,7 @@ public interface ISpotifyApiService
     /// <param name="next"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(string accessToken, Uri next, CancellationToken ct);
+    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync( string accessToken, Uri next, CancellationToken ct );
 
     /// <summary>
     ///     Get a list of the playlists owned or followed by the current Spotify user.
@@ -70,5 +70,5 @@ public interface ISpotifyApiService
     /// <param name="playlistId"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<SimplifiedPlaylistObject> GetPlaylistAsync(string accessToken, string playlistId, CancellationToken ct);
+    Task<SimplifiedPlaylistObject> GetPlaylistAsync( string accessToken, string playlistId, CancellationToken ct );
 }

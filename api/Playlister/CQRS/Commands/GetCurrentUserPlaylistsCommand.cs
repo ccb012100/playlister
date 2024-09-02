@@ -1,3 +1,3 @@
 namespace Playlister.CQRS.Commands;
 
-public record GetCurrentUserPlaylistsCommand(string AccessToken) : Command;
+public record GetCurrentUserPlaylistsCommand( string AccessToken ) : Command;

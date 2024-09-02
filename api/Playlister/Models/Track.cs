@@ -1,24 +1,22 @@
 using System.Text.Json.Serialization;
 
-#pragma warning disable 8618
-
 namespace Playlister.Models;
 
 public record Track
 {
-    public Album Album { get; init; }
+    public required Album Album { get; init; }
 
-    public IEnumerable<Artist> Artists { get; init; }
+    public required IEnumerable<Artist> Artists { get; init; }
 
-    [JsonPropertyName("disc_number")] public int DiscNumber { get; init; }
+    [JsonPropertyName( "disc_number" )] public int DiscNumber { get; init; }
 
-    [JsonPropertyName("duration_ms")] public int DurationMs { get; init; }
+    [JsonPropertyName( "duration_ms" )] public int DurationMs { get; init; }
 
-    public string Id { get; init; }
+    public required string Id { get; init; }
 
-    public string Name { get; init; }
+    public required string Name { get; init; }
 
-    [JsonPropertyName("track_number")] public int TrackNumber { get; init; }
+    [JsonPropertyName( "track_number" )] public int TrackNumber { get; init; }
 
     public string AlbumId => Album.Id;
 
@@ -28,7 +26,7 @@ public record Track
     /// <returns></returns>
     public IEnumerable<Artist> GetAllContainedArtists()
     {
-        return Artists.Concat(Album.Artists);
+        return Artists.Concat( Album.Artists );
     }
 
     /// <summary>

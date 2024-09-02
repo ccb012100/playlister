@@ -1,7 +1,5 @@
 using System.Text.Json.Serialization;
 
-#pragma warning disable 8618
-
 namespace Playlister.Models;
 
 /// <summary>
@@ -9,11 +7,11 @@ namespace Playlister.Models;
 /// </summary>
 public record PlaylistItem
 {
-    [JsonPropertyName("added_at")] public DateTime AddedAt { get; init; }
+    [JsonPropertyName( "added_at" )] public DateTime AddedAt { get; init; }
 
-    public Track Track { get; init; }
+    public required Track Track { get; init; }
 
-    public PlaylistTrack ToPlaylistTrack(Playlist playlist)
+    public PlaylistTrack ToPlaylistTrack( Playlist playlist )
     {
         return new PlaylistTrack
         {

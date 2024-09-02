@@ -15,7 +15,7 @@ internal static class FluentMigratorExtensions
     )
     {
         return tableWithColumnSyntax
-            .WithColumn("id")
+            .WithColumn( "id" )
             .AsString()
             .NotNullable()
             .PrimaryKey();
@@ -31,11 +31,11 @@ internal static class FluentMigratorExtensions
     )
     {
         return tableWithColumnSyntax
-            .WithColumn("created_at")
+            .WithColumn( "created_at" )
             .AsDateTime()
             .NotNullable()
-            .WithDefault(SystemMethods.CurrentUTCDateTime)
-            .WithColumn("modified_at")
+            .WithDefault( SystemMethods.CurrentUTCDateTime )
+            .WithColumn( "modified_at" )
             .AsDateTime()
             .Nullable();
     }

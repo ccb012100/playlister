@@ -9,15 +9,15 @@ namespace Playlister.Controllers;
 
 [ValidateTokenCookie]
 [ApiController]
-[Route("api/user")]
-public class UserController : BaseController
+[Route( "api/user" )]
+public class UserController : BaseApiController
 {
     private readonly GetCurrentUserHandler _getCurrentUserHandler;
 
     public UserController(
         IAccessTokenUtility tokenUtility,
         GetCurrentUserHandler getCurrentUserHandler
-    ) : base(tokenUtility)
+    ) : base( tokenUtility )
     {
         _getCurrentUserHandler = getCurrentUserHandler;
     }
@@ -26,9 +26,9 @@ public class UserController : BaseController
     ///     Get the User who was assigned the Access Token in the Request <see cref="Playlister.Services.TokenService.UserTokenCookieName" /> cookie.
     /// </summary>
     /// <returns></returns>
-    [HttpGet("me")]
+    [HttpGet( "me" )]
     public async Task<PrivateUserObject> GetFromCookie()
     {
-        return await _getCurrentUserHandler.Handle(new GetCurrentUserCommand(CookieToken));
+        return await _getCurrentUserHandler.Handle( new GetCurrentUserCommand( CookieToken ) );
     }
 }

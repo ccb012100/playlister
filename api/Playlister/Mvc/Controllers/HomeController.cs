@@ -13,7 +13,7 @@ public class HomeController : Controller
     private readonly IHostApplicationLifetime _appLifetime;
     private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
 
-    public HomeController(IHostApplicationLifetime appLifetime, SpotifyAuthUrlHandler spotifyAuthUrlHandler)
+    public HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthUrlHandler spotifyAuthUrlHandler )
     {
         _appLifetime = appLifetime;
         _spotifyAuthUrlHandler = spotifyAuthUrlHandler;
@@ -22,21 +22,21 @@ public class HomeController : Controller
     /// Navigate to Spotify login
     public async Task<IActionResult> Index()
     {
-        // TODO: check for auth cookie and if it's already there, just redirect to Sync
-        return Redirect((await _spotifyAuthUrlHandler.Handle(new GetAuthUrlCommand())).ToString());
+        // TODO: check for auth cookie and if it's already there, just redirect to Main()
+        return Redirect( (await _spotifyAuthUrlHandler.Handle( new GetAuthUrlCommand() )).ToString() );
     }
 
-    public Task<IActionResult> Main()
+    public IActionResult Main()
     {
-        return Task.FromResult<IActionResult>(View(new HomeViewModel()));
+        return View( new HomeViewModel() );
     }
 
-    [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-    public IActionResult Error(int? statusCode)
+    [ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]
+    public IActionResult Error( int? statusCode )
     {
         return statusCode switch
         {
-            404 => View("NotFound", new NotFoundViewModel { Path = Request.Path }),
+            404 => View( "PageNotFound", new PageNotFoundViewModel() ),
             _ => View(
                 new ErrorViewModel
                 {
@@ -47,9 +47,14 @@ public class HomeController : Controller
         };
     }
 
-    public IActionResult NotFound(string route)
+    /// <summary>
+    ///     404 Page
+    /// </summary>
+    /// <returns></returns>
+    [ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]
+    public IActionResult PageNotFound()
     {
-        return View(new NotFoundViewModel { Path = route });
+        return View( new PageNotFoundViewModel() );
     }
 
     /// <summary>
@@ -57,13 +62,13 @@ public class HomeController : Controller
     /// </summary>
     /// <returns></returns>
     [ValidateTokenCookie]
-    [HttpPost("stop-application")]
+    [HttpPost( "stop-application" )]
     public ActionResult StopApplication()
     {
         Task.Factory.StartNew(
             () =>
             {
-                Thread.Sleep(3_000);
+                Thread.Sleep( 3_000 );
                 _appLifetime.StopApplication();
             }
         );

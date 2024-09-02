@@ -8,8 +8,8 @@ using Playlister.Utilities;
 namespace Playlister.Controllers;
 
 [ApiController]
-[Route("api/auth")]
-public class SpotifyAuthorizationController : BaseController
+[Route( "api/auth" )]
+public class SpotifyAuthorizationController : BaseApiController
 {
     private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
     private readonly SpotifyTokenRefreshHandler _spotifyTokenRefreshHandler;
@@ -21,7 +21,7 @@ public class SpotifyAuthorizationController : BaseController
         SpotifyAccessTokenHandler tokenHandler,
         SpotifyTokenRefreshHandler spotifyTokenRefreshHandler
     ) : base
-        (tokenUtility)
+        ( tokenUtility )
     {
         _spotifyAuthUrlHandler = spotifyAuthUrlHandler;
         _tokenHandler = tokenHandler;
@@ -35,9 +35,9 @@ public class SpotifyAuthorizationController : BaseController
     [HttpGet]
     public async Task<IActionResult> Get()
     {
-        Uri authUrl = await _spotifyAuthUrlHandler.Handle(new GetAuthUrlCommand());
+        Uri authUrl = await _spotifyAuthUrlHandler.Handle( new GetAuthUrlCommand() );
 
-        return Ok(authUrl);
+        return Ok( authUrl );
     }
 
     /// <summary>
@@ -45,20 +45,20 @@ public class SpotifyAuthorizationController : BaseController
     /// </summary>
     /// <param name="tokenCommand"></param>
     /// <returns></returns>
-    [HttpPost("token")]
-    public async Task<IActionResult> GetAccessToken([FromBody] GetAccessTokenCommand tokenCommand)
+    [HttpPost( "token" )]
+    public async Task<IActionResult> GetAccessToken( [FromBody] GetAccessTokenCommand tokenCommand, CancellationToken ct = default )
     {
-        UserAccessToken token = await _tokenHandler.Handle(tokenCommand);
+        AuthenticationToken token = await _tokenHandler.Handle( tokenCommand, ct );
 
-        return Ok(token);
+        return Ok( token );
     }
 
     [ValidateTokenCookie]
-    [HttpPost("token/refresh")]
-    public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenCommand refreshTokenCommand)
+    [HttpPost( "token/refresh" )]
+    public async Task<IActionResult> RefreshToken( [FromBody] RefreshTokenCommand refreshTokenCommand, CancellationToken ct )
     {
-        UserAccessToken userAccessToken = await _spotifyTokenRefreshHandler.Handle(refreshTokenCommand);
+        AuthenticationToken authenticationToken = await _spotifyTokenRefreshHandler.Handle( refreshTokenCommand, ct );
 
-        return Ok(userAccessToken);
+        return Ok( authenticationToken );
     }
 }

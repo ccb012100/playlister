@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 public record PlaylistTrackObject
@@ -22,5 +20,5 @@ public record PlaylistTrackObject
     /// <summary>
     ///     Information about the track or episode.
     /// </summary>
-    public TrackObject Track { get; init; }
+    public required TrackObject Track { get; init; }
 }

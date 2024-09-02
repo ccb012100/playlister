@@ -1,5 +1,3 @@
-#pragma warning disable 8618
-
 namespace Playlister.Models.SpotifyApi;
 
 public record PublicUserObject
@@ -12,35 +10,35 @@ public record PublicUserObject
     /// <summary>
     ///     Known public external URLs for this user.
     /// </summary>
-    public ExternalUrlObject ExternalUrls { get; init; }
+    public required ExternalUrlObject ExternalUrls { get; init; }
 
     /// <summary>
     ///     Information about the followers of this user.
     /// </summary>
-    public FollowersObject Followers { get; init; }
+    public required FollowersObject Followers { get; init; }
 
     /// <summary>
     ///     A link to the Web API endpoint for this user.
     /// </summary>
-    public Uri Href { get; init; }
+    public required Uri Href { get; init; }
 
     /// <summary>
     ///     The Spotify user ID for this user.
     /// </summary>
-    public string Id { get; init; }
+    public required string Id { get; init; }
 
     /// <summary>
     ///     The user’s profile image.
     /// </summary>
-    public IEnumerable<ImageObject> Images { get; init; }
+    public required IEnumerable<ImageObject> Images { get; init; }
 
     /// <summary>
     ///     The object type: <c>user</c>.
     /// </summary>
-    public string Type { get; init; }
+    public required string Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for this user.
     /// </summary>
-    public Uri Uri { get; set; }
+    public required Uri Uri { get; set; }
 }
