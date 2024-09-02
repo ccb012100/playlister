@@ -29,15 +29,11 @@ public static class StartupExtensions
     private static IServiceCollection AddHandlers( this IServiceCollection services )
     {
         return services
-            .AddTransient<ForceSyncPlaylistHandler>()
-            .AddTransient<GetCurrentUserHandler>()
-            .AddTransient<GetCurrentUserPlaylistsHandler>()
+            .AddTransient<CurrentUserHandler>()
+            .AddTransient<PlaylistSyncHandler>()
             .AddTransient<SpotifyAccessTokenHandler>()
             .AddTransient<SpotifyAuthUrlHandler>()
-            .AddTransient<SpotifyTokenRefreshHandler>()
-            .AddTransient<SyncCurrentUserPlaylistsHandler>()
-            .AddTransient<SyncPlaylistHandler>()
-            .AddTransient<SyncPlaylistsHandler>();
+            .AddTransient<SpotifyTokenRefreshHandler>();
     }
 
     public static IServiceCollection AddMiddleware( this IServiceCollection services )

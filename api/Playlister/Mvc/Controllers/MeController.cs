@@ -1,11 +1,11 @@
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
-using Playlister.CQRS.Commands;
 using Playlister.CQRS.Handlers;
+using Playlister.CQRS.Queries;
+using Playlister.Mvc.ViewModels;
 using Playlister.Utilities;
-using Playlister.ViewModels;
 
-namespace Playlister.Controllers;
+namespace Playlister.Mvc.Controllers;
 
 [ValidateTokenCookie]
 public class MeController : Controller
@@ -13,9 +13,9 @@ public class MeController : Controller
     public const string Name = "Me";
 
     private readonly IAccessTokenUtility _tokenUtility;
-    private readonly GetCurrentUserHandler _userHandler;
+    private readonly CurrentUserHandler _userHandler;
 
-    public MeController( GetCurrentUserHandler userHandler, IAccessTokenUtility tokenUtility )
+    public MeController( CurrentUserHandler userHandler, IAccessTokenUtility tokenUtility )
     {
         _userHandler = userHandler;
         _tokenUtility = tokenUtility;
@@ -23,6 +23,6 @@ public class MeController : Controller
 
     public async Task<IActionResult> Index()
     {
-        return View( new MeViewModel( await _userHandler.Handle( new GetCurrentUserCommand( _tokenUtility.GetTokenFromUserCookie() ) ) ) );
+        return View( new MeViewModel( await _userHandler.Get( new GetCurrentUserQuery( _tokenUtility.GetTokenFromUserCookie() ) ) ) );
     }
 }

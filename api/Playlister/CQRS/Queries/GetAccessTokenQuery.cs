@@ -1,12 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using Refit;
 
-namespace Playlister.CQRS.Commands;
+namespace Playlister.CQRS.Queries;
 
 /// <summary>
 ///     Request to get an Access Token from Spotify
 /// </summary>
-public record GetAccessTokenCommand : Command
+public record GetAccessTokenQuery
 {
     /// <summary>
     ///     The authorization code returned from the initial request to the Spotify Account /authorize endpoint.

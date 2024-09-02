@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
-using Playlister.ViewModels;
+using Playlister.Mvc.ViewModels;
 
-namespace Playlister.Controllers;
+namespace Playlister.Mvc.Controllers;
 
 [ValidateTokenCookie]
 public class SyncController : Controller

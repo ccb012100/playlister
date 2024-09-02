@@ -1,6 +1,6 @@
-using Playlister.Controllers;
+using Playlister.Mvc.Controllers;
 
-namespace Playlister.ViewModels;
+namespace Playlister.Mvc.ViewModels;
 
 public class HomeViewModel
 {

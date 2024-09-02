@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Playlister.ViewModels;
+namespace Playlister.Mvc.ViewModels;
 
 [ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]
 [IgnoreAntiforgeryToken]

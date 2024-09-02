@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
-namespace Playlister.ViewModels;
+namespace Playlister.Mvc.ViewModels;
 
 [ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]
 public class PageNotFoundViewModel : PageModel
@@ -11,7 +11,7 @@ public class PageNotFoundViewModel : PageModel
 
     public void OnGet( int statusCode )
     {
-        var statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
+        IStatusCodeReExecuteFeature? statusCodeReExecuteFeature = HttpContext.Features.Get<IStatusCodeReExecuteFeature>();
 
         if (statusCodeReExecuteFeature is null)
         {

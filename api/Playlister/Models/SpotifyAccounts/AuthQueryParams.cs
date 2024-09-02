@@ -1,4 +1,4 @@
-namespace Playlister.CQRS.Commands;
+namespace Playlister.Models.SpotifyAccounts;
 
 public record AuthQueryParams
 {
