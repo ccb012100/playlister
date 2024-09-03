@@ -50,9 +50,14 @@ public class AuthService : IAuthService
         ArgumentException.ThrowIfNullOrWhiteSpace( auth.Code );
         ArgumentException.ThrowIfNullOrWhiteSpace( auth.State );
 
+        if (s_state == Guid.Empty.ToString())
+        {
+            throw new InvalidOperationException( "No Auth URL has been generated yet!" );
+        }
+
         if (auth.State != s_state)
         {
-            throw new InvalidCredentialException( $"Invalid 'state' value: \"{s_state}\"! Expected \"{s_state}\"" );
+            throw new InvalidCredentialException( $"Invalid 'state' value: \"{auth.State}\"! Expected \"{s_state}\"" );
         }
 
         SpotifyAccessToken token = await _spotifyAccountsApi.RequestAccessTokenAsync(
