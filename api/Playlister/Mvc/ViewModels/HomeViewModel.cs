@@ -6,7 +6,7 @@ public class HomeViewModel
 {
     private const string Index = "Index";
 
-    public Link[] Links { get; } = { new("Sync playlists", Index, SyncController.Name), new("Me", Index, MeController.Name) };
+    public Link[] Links { get; } = { new("Sync playlists", "greenyellow", Index, SyncController.Name), new("Me", "peru", Index, MeController.Name) };
 
-    public record Link( string DisplayText, string Action, string Controller );
+    public record Link( string DisplayText, string BackgroundColor, string Action, string Controller );
 }

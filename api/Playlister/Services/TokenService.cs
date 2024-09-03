@@ -53,11 +53,6 @@ public static class TokenService
             : throw new InvalidOperationException( $"Invalid user token: {viewToken}" );
     }
 
-    public static bool IsValidToken( Guid viewToken )
-    {
-        return viewToken == s_authToken.ViewToken;
-    }
-
     public static bool TryValidateCookie( string? cookie, out string? error )
     {
         if (IsNullOrWhiteSpace( cookie ) || !Guid.TryParse( cookie, out Guid token ))
@@ -77,6 +72,11 @@ public static class TokenService
         error = null;
 
         return true;
+    }
+
+    private static bool IsValidToken( Guid viewToken )
+    {
+        return s_authToken.ViewToken != Guid.Empty && viewToken == s_authToken.ViewToken;
     }
 
     private class AuthToken

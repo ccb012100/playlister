@@ -5,8 +5,12 @@
 }
 
 <div>
-    @foreach ((string displayText, string action, string controller) in Model.Links)
+    @foreach ((string displayText, string color, string action, string controller) in Model.Links)
     {
-        <div>@Html.ActionLink(displayText, action, controller)</div>
+        <input type="button"
+               class="btn"
+               style="background-color: @color"
+               value="@displayText"
+               onclick="location.href='@Url.Action(action, controller)'"/>
     }
 </div>

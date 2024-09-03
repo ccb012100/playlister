@@ -16,4 +16,21 @@ html {
 body {
     /* top | left and right | bottom */
     margin: 25px auto 60px;
+    background: aliceblue;
+}
+
+main {
+    margin: 25px;
+    align-content: center;
+    text-align: center;
+}
+
+pre {
+    text-align: left;
+}
+
+input {
+    border-radius: 1em;
+    margin: 1em;
+    padding: 1em;
 }

@@ -1,9 +1,1 @@
-main {
-    margin: 25px;
-    align-content: center;
-    text-align: center;
-}
-
-pre {
-    text-align: left;
-}
+/* IMPORTANT: all styling is in Playlister/www/root/site.css until this feature is implemented: https://github.com/dotnet/razor/issues/7606 */
