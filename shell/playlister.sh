@@ -4,7 +4,7 @@ set -Eeou pipefail
 sm_repo=$(dirname -- "$(readlink -f -- "$0")")
 
 db="$HOME/playlister.db"
-playlister="$HOME/bin/playlister/Playlister/"
+playlister_api="$HOME/bin/playlister_api"
 playlist_util="$HOME/bin/playlist-util"
 sql_scripts_dir="$sm_repo"/sql
 
@@ -125,7 +125,9 @@ sync)
     case $2 in
     # sync sqlite db
     db)
-        dotnet run --project "$playlister" --configuration Release
+        # we have to use a script because running `dotnet run` causes an Exception
+        # in RazorSourceGenerator when the path to --project is a symlink
+        "$playlister_api"/run.sh
         ;;
     # sync tsv files
     tsv)
