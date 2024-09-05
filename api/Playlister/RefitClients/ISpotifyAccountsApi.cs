@@ -17,6 +17,10 @@ public interface ISpotifyAccountsApi
     /// <summary>
     ///     Request Access Token for the authenticated User who was granted the provided code from Spotify.
     /// </summary>
+    /// <param name="authHeaderParam">
+    ///     Base 64 encoded string that contains the client ID and client secret key in the format <c>client_id:client_secret</c>
+    ///     The field must have the format: <c>Authorization: Basic base64_encoded_string</c>
+    /// </param>
     /// <param name="bodyRequestParams"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
@@ -31,7 +35,10 @@ public interface ISpotifyAccountsApi
     /// <summary>
     ///     Get a Refresh Token for User from Spotify.
     /// </summary>
-    /// <param name="authHeaderParam"></param>
+    /// <param name="authHeaderParam">
+    ///     Base 64 encoded string that contains the client ID and client secret key in the format <c>client_id:client_secret</c>
+    ///     The field must have the format: <c>Authorization: Basic base64_encoded_string</c>
+    /// </param>
     /// <param name="bodyParams"></param>
     /// <param name="ct"></param>
     /// <returns></returns>

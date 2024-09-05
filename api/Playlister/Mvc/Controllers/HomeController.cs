@@ -65,7 +65,7 @@ public class HomeController : Controller
             default:
                 IExceptionHandlerPathFeature? exceptionHandlerPathFeature = HttpContext.Features.Get<IExceptionHandlerPathFeature>();
 
-                string? exceptionMessage = exceptionHandlerPathFeature?.Error.Message ?? "<none>";
+                string exceptionMessage = exceptionHandlerPathFeature?.Error.Message ?? "<none>";
 
                 return View(
                     new ErrorViewModel
