@@ -21,6 +21,7 @@ public class MeController : Controller
         _tokenUtility = tokenUtility;
     }
 
+    [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public async Task<IActionResult> Index()
     {
         return View( new MeViewModel( await _userHandler.Get( new GetCurrentUserQuery( _tokenUtility.GetTokenFromUserCookie() ) ) ) );

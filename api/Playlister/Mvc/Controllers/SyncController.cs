@@ -9,6 +9,7 @@ public class SyncController : Controller
 {
     public const string Name = "Sync";
 
+    [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public Task<IActionResult> Index()
     {
         return Task.FromResult<IActionResult>( View( new SyncViewModel() ) );

@@ -1,4 +1,3 @@
-@using Playlister.Utilities
 @model Playlister.Mvc.ViewModels.SyncViewModel
 
 @{
@@ -6,33 +5,49 @@
 }
 <div>
     <h1>Sync All Playlists</h1>
-    <div>Model: <pre>@Model.PrettyPrint()</pre></div>
-    <div id="results">
+    <div id="sync-results">
         <p>Syncing&hellip;</p>
     </div>
 </div>
 <script type="text/javascript">
     window.onload = async function () {
-        const resultsId= "results";
+        const resultsDivId= "sync-results";
         const url = `${window.location.origin}/api/playlists/sync`
 
-        document.getElementById(resultsId).innerHTML = '<p style="color:darkorange">Syncing</p>';
+        document.getElementById(resultsDivId).innerHTML = '<p style="color:darkorange">Syncing</p>';
 
         try {
             const response = await fetch(url, { method: "POST", credentials: 'include' });
-            let {totalSynced, elapsed, updated, deleted} = await response.json()
-            document.getElementById(resultsId).innerHTML = `<p><b style="color:darkgreen">Sync succeeded:</p><p>Total: ${
-            totalSynced
-            } Playlists</p><p>Updated: ${
-            updated
-            } Playlist(s)</p><p>Elapsed: ${
-            elapsed
-            }</p><p>Deleted: ${
-            deleted} Track(s)</p></b>`;
-            console.log();
+            document.getElementById(resultsDivId).innerHTML = resultsTable(await response.json());
         } catch (e) {
             console.error(e);
-            document.getElementById(resultsId).innerHTML = `<p><b style="color:darkred">Sync failed:</p><pre>${e.message}</pre></b>`;
+            document.getElementById(resultsDivId).innerHTML = `<p><b style="color:darkred">Sync failed:</p><pre>${e.message}</pre></b>`;
+        }
+
+        function resultsTable({totalSynced, elapsed, updated, deleted}){
+            return `<table>
+                <tbody>
+                <tr>
+                    <th class="text-left">Total number of Playlists</th>
+                    <td class="text-right">${totalSynced}</td>
+                </tr>
+                <tr>
+                    <th class="text-left"># of Playlists updated</th>
+                    <td class="text-right">${updated}</td>
+                </tr>
+                <tr>
+                    <th class="text-left"># of orphaned Tracks deleted</th>
+                    <td class="text-right">${deleted}</td>
+                </tr>
+                <tr>
+                    <th class="text-left">Time taken</th>
+                    <td class="text-right">${elapsed}</td>
+                </tr>
+                </tbody>
+                <caption>
+                    Results of Playlist Syncing
+                </caption>
+            </table>`
         }
     };
 </script>

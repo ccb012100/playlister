@@ -31,9 +31,7 @@ public static class StartupExtensions
         return services
             .AddTransient<CurrentUserHandler>()
             .AddTransient<PlaylistSyncHandler>()
-            .AddTransient<SpotifyAccessTokenHandler>()
-            .AddTransient<SpotifyAuthUrlHandler>()
-            .AddTransient<SpotifyTokenRefreshHandler>();
+            .AddTransient<SpotifyAuthorizationHandler>();
     }
 
     public static IServiceCollection AddMiddleware( this IServiceCollection services )

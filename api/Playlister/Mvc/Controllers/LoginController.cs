@@ -31,6 +31,8 @@ public class LoginController : Controller
     /// <param name="ct"></param>
     /// <returns></returns>
     /// <exception cref="InvalidOperationException"><paramref name="error" /> is not <c>null</c></exception>
+    [ProducesResponseType<LocalRedirectResult>( StatusCodes.Status307TemporaryRedirect )]
+    [ProducesResponseType<RedirectToActionResult>( StatusCodes.Status302Found )]
     public async Task<IActionResult> Index(
         [FromQuery] string code,
         [FromQuery] string state,

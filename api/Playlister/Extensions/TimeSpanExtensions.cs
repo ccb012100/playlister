@@ -7,7 +7,7 @@ public static class TimeSpanExtensions
     /// </summary>
     /// <param name="elapsed"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
-    /// <returns>A number with units (e.g. <c>"1.23s"</c>,<c>123.2ms</c>, etc.</returns>
+    /// <returns>A number with units (e.g. <c>"1.23s"</c>,<c>123.2ms</c>, etc.)</returns>
     public static string ToDisplayString( this TimeSpan elapsed )
     {
         // <https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-timespan-format-strings>
@@ -26,8 +26,10 @@ public static class TimeSpanExtensions
             > 120 => $"{elapsed.Minutes}min{elapsed.Seconds}.{elapsed.Milliseconds}s",
             // 2 minutes > elapsed >= 1 minute
             >= 60 => $"{elapsed.TotalSeconds:N2}s",
-            //  1 minute > elapsed >= 1 second
-            >= 1 => $"{elapsed.TotalSeconds:N4}s",
+            //  1 minute > elapsed >= 10 seconds
+            >= 10 => $"{elapsed.TotalSeconds:N2}s",
+            //  10 seconds > elapsed >= 1 second
+            >= 1 => $"{elapsed.TotalSeconds:N3}s",
             // elapsed < 1 second
             _ => elapsed.TotalMicroseconds switch
             {
