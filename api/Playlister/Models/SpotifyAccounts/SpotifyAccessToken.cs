@@ -47,13 +47,12 @@ public record SpotifyAccessToken
     [JsonPropertyName( "refresh_token" )]
     public required string RefreshToken { get; init; }
 
-    /// <remarks>make non-nullable</remarks>
     public AuthenticationToken ToUserAccessToken()
     {
         return new AuthenticationToken
         {
             AccessToken = AccessToken,
-            Expiration = DateTime.Now.AddSeconds( ExpiresIn ),
+            ExpirationUtc = DateTime.UtcNow.AddSeconds( ExpiresIn ),
             RefreshToken = RefreshToken
         };
     }

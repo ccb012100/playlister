@@ -39,6 +39,6 @@ public class AccessTokenUtility : IAccessTokenUtility
             throw new InvalidOperationException( $"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}" );
         }
 
-        return TokenService.GetToken( viewToken ).AccessToken;
+        return TokenService.GetAuthenticationToken( viewToken ).AccessToken;
     }
 }

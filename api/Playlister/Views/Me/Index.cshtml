@@ -1,10 +1,61 @@
-@using Playlister.Utilities
+@using Playlister.Models.SpotifyApi
 @model Playlister.Mvc.ViewModels.MeViewModel
 
 @{
     ViewData["Title"] = "Me";
 }
 
-<div>
-    Me: <pre>@Model.PrettyPrint()</pre>
+<div id="me">
+    <table>
+        <caption>Me</caption>
+        <tbody>
+        <tr>
+            <th>ID</th>
+            <td>@Model.User.Id</td>
+        </tr>
+        <tr>
+            <th>DisplayName</th>
+            <td>@Model.User.DisplayName</td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <td>
+                @if (!string.IsNullOrWhiteSpace(Model.User.Email))
+                {
+                    @Model.User.Email
+                }
+                else
+                {
+                    @:<i>empty</i>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>Profile image</th>
+            <td>
+                @if (Model.User.Images.Any())
+                {
+                    ImageObject image = Model.User.Images.MaxBy(i => i.Height)!;
+                    <text><img alt="user profile image" height="@image.Height" width="@image.Width" src="@image.Url"/></text>
+                }
+            </td>
+        </tr>
+        <tr>
+            <th>Subscription level</th>
+            <td>@Model.User.Product</td>
+        </tr>
+        <tr>
+            <th>Web API endpoint</th>
+            <td>
+                <a href="@Model.User.Href">@Model.User.Href</a>
+            </td>
+        </tr>
+        <tr>
+            <th>Spotify URI</th>
+            <td>
+                <pre>@Model.User.Uri</pre>
+            </td>
+        </tr>
+        </tbody>
+    </table>
 </div>

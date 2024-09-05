@@ -25,12 +25,42 @@ main {
     text-align: center;
 }
 
-pre {
-    text-align: left;
-}
-
 input {
     border-radius: 1em;
     margin: 1em;
     padding: 1em;
+}
+
+table {
+    padding: 1em;
+}
+
+tr {
+    outline: thin solid;
+    border-radius: 5px;
+}
+
+th {
+    padding: 1em 5em 1em 1em;
+}
+
+td {
+    padding: 1em;
+}
+
+#sync-results, #me {
+    display: flex;
+    justify-content: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+#me > table {
+    text-align: left;
 }

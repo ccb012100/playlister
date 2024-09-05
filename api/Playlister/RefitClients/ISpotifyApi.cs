@@ -51,14 +51,14 @@ public interface ISpotifyApi
     ///     <c>fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))</c>
     /// </summary>
     /// <param name="token"></param>
-    /// <param name="playlistId">Playlist's Spotify Id</param>
+    /// <param name="playlistId">Playlist's Spotify ID</param>
     /// <param name="offset">The index of the first item to return. Default: <c>0</c> (the first object).</param>
     /// <param name="limit">The maximum number of items to return. Default: <c>100</c>. Minimum: <c>100</c>. Maximum: <c>100</c>.</param>
     /// <param name="ct"></param>
     /// <returns></returns>
     [Get(
-        "/playlists/{playlistId}/tracks?market=from_token&" +
-        "fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))"
+        "/playlists/{playlistId}/tracks?market=from_token&fields=limit,next,previous,offset,limit,total,href"
+        + ",items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))"
     )]
     Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
         [Authorize] string token,

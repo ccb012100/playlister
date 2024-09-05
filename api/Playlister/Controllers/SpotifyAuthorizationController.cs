@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Handlers;
 using Playlister.CQRS.Queries;
-using Playlister.Models;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers;
@@ -11,21 +10,15 @@ namespace Playlister.Controllers;
 [Route( "api/auth" )]
 public class SpotifyAuthorizationController : BaseApiController
 {
-    private readonly SpotifyAuthUrlHandler _spotifyAuthUrlHandler;
-    private readonly SpotifyTokenRefreshHandler _spotifyTokenRefreshHandler;
-    private readonly SpotifyAccessTokenHandler _tokenHandler;
+    private readonly SpotifyAuthorizationHandler _spotifyAuthorizationHandler;
 
     public SpotifyAuthorizationController(
         IAccessTokenUtility tokenUtility,
-        SpotifyAuthUrlHandler spotifyAuthUrlHandler,
-        SpotifyAccessTokenHandler tokenHandler,
-        SpotifyTokenRefreshHandler spotifyTokenRefreshHandler
+        SpotifyAuthorizationHandler spotifyAuthorizationHandler
     ) : base
         ( tokenUtility )
     {
-        _spotifyAuthUrlHandler = spotifyAuthUrlHandler;
-        _tokenHandler = tokenHandler;
-        _spotifyTokenRefreshHandler = spotifyTokenRefreshHandler;
+        _spotifyAuthorizationHandler = spotifyAuthorizationHandler;
     }
 
     /// <summary>
@@ -33,11 +26,10 @@ public class SpotifyAuthorizationController : BaseApiController
     /// </summary>
     /// <returns></returns>
     [HttpGet]
+    [ProducesResponseType<Uri>( 200 )]
     public async Task<IActionResult> Get()
     {
-        Uri authUrl = await _spotifyAuthUrlHandler.Handle( new GetAuthUrlQuery() );
-
-        return Ok( authUrl );
+        return Ok( await _spotifyAuthorizationHandler.GetAuthorizationUrl() );
     }
 
     /// <summary>
@@ -47,19 +39,17 @@ public class SpotifyAuthorizationController : BaseApiController
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost( "token" )]
+    [ProducesResponseType<Guid>( 200 )]
     public async Task<IActionResult> GetAccessToken( [FromBody] GetAccessTokenQuery tokenQuery, CancellationToken ct = default )
     {
-        AuthenticationToken token = await _tokenHandler.Handle( tokenQuery, ct );
-
-        return Ok( token );
+        return Ok( await _spotifyAuthorizationHandler.GetSpotifyAccessToken( tokenQuery, ct ) );
     }
 
     [ValidateTokenCookie]
     [HttpPost( "token/refresh" )]
+    [ProducesResponseType<Guid>( 200 )]
     public async Task<IActionResult> RefreshToken( [FromBody] RefreshTokenQuery refreshTokenQuery, CancellationToken ct )
     {
-        AuthenticationToken authenticationToken = await _spotifyTokenRefreshHandler.Handle( refreshTokenQuery, ct );
-
-        return Ok( authenticationToken );
+        return Ok( await _spotifyAuthorizationHandler.RefreshToken( refreshTokenQuery, ct ) );
     }
 }

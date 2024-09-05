@@ -1,6 +1,3 @@
-using System.ComponentModel.DataAnnotations;
-using Refit;
-
 namespace Playlister.CQRS.Queries;
 
 /// <summary>
@@ -13,21 +10,6 @@ public record RefreshTokenQuery
         RefreshToken = refreshToken;
     }
 
-    [Required]
-    // The refresh token returned from the authorization code exchange.
+    /// The refresh token returned from the authorization code exchange.
     public string RefreshToken { get; }
-
-    public record BodyParams
-    {
-        public BodyParams( string refreshToken )
-        {
-            RefreshToken = refreshToken;
-        }
-
-        [Required] [AliasAs( "grant_type" )] public string GrantType { get; init; } = "refresh_token";
-
-        [Required]
-        [AliasAs( "refresh_token" )]
-        public string RefreshToken { get; init; }
-    }
 }
