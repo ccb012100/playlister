@@ -21,7 +21,7 @@ import operator
 import sqlite3
 import sys
 
-db_file = "playlister.db"
+db_file = "playlister.sqlite3"
 
 ADDED = "added"
 ALBUM = "album"

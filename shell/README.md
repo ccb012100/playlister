@@ -1,6 +1,6 @@
 # playlist-search
 
-Used to search the playlist data from Spotify that I've synced to a local sqlite database, `~/playlister.db`, created with a [.NET API](/api).
+Used to search the playlist data from Spotify that I've synced to a local sqlite database, `~/playlister.sqlite3`, created with a [.NET API](/api).
 
 ## TODO
 

@@ -13,5 +13,5 @@ services:
       - "5001:443"
     volumes:
       - ~/.aspnet/https:/https:ro # certificates
-      - $HOME/playlister.db:/home/ccb012100/playlister.db:rw
+      - $HOME/playlister.sqlite3:/home/ccb012100/playlister.sqlite3:rw
       - $HOME/.microsoft/usersecrets/$USER_SECRETS_ID:/root/.microsoft/usersecrets/$USER_SECRETS_ID:ro

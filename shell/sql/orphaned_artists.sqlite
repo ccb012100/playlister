@@ -1,5 +1,5 @@
 -- Find orphaned Artists
--- sqlite3 ~/playlister.db ".read orphaned_artists.sqlite"
+-- sqlite3 ~/playlister.sqlite3 ".read orphaned_artists.sqlite"
 .headers on
 .mode tabs
 

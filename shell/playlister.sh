@@ -3,7 +3,7 @@ set -Eeou pipefail
 
 sm_repo=$(dirname -- "$(readlink -f -- "$0")")
 
-db="$HOME/playlister.db"
+db="$HOME/playlister.sqlite3"
 playlister_api="$HOME/bin/playlister_api"
 playlist_util="$HOME/bin/playlist-util"
 sql_scripts_dir="$sm_repo"/sql

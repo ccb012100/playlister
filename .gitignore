@@ -8,4 +8,4 @@ bin/
 obj/
 out/
 
-playlister.db
+playlister.sqlite3

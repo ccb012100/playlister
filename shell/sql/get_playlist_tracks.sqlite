@@ -1,5 +1,5 @@
 -- get tracks for playlists containing the specified term
--- sqlite3 --readonly "$HOME/playlister.db" ".param set :term $term" ".read get_playlist_tracks.sqlite"
+-- sqlite3 --readonly "$HOME/playlister.sqlite3" ".param set :term $term" ".read get_playlist_tracks.sqlite"
 .headers on
 .mode column
 

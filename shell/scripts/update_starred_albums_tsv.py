@@ -8,7 +8,7 @@ import os
 import sqlite3
 import sys
 
-sql_db = str(Path.home() / "playlister.db")
+sql_db = str(Path.home() / "playlister.sqlite3")
 
 # assumes it's hosted in the same repo as this script
 spreadsheet = "{}/{}".format(

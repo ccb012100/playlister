@@ -1,6 +1,6 @@
 -- Find Playlists whose `count` field does match the PlaylistTrack found in the
 -- DB; a mismatch means we need to re-sync the Playlist from Spotify
--- sqlite3 ~/playlister.db ".read track_count_mismatch.sqlite"
+-- sqlite3 ~/playlister.sqlite3 ".read track_count_mismatch.sqlite"
 .headers on
 .mode tabs
 
