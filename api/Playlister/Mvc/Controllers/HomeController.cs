@@ -90,7 +90,7 @@ public class HomeController : Controller
         Task.Factory.StartNew(
             () =>
             {
-                Thread.Sleep( 3_000 );
+                Thread.Sleep( 1_000 ); // gives the application time to return a response
                 _appLifetime.StopApplication();
             }
         );

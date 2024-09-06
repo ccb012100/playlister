@@ -1,10 +1,11 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Playlister.Models.SpotifyApi.Enums;
 
+[JsonConverter( typeof(JsonStringEnumConverter) )]
 public enum AlbumType
 {
-    [EnumMember( Value = "album" )] Album,
-    [EnumMember( Value = "single" )] Single,
-    [EnumMember( Value = "compilation" )] Compilation
+    Album,
+    Single,
+    Compilation
 }

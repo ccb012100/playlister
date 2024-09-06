@@ -18,7 +18,7 @@ public record Track
 
     [JsonPropertyName( "track_number" )] public int TrackNumber { get; init; }
 
-    public string AlbumId => Album.Id;
+    [JsonPropertyName( "album_id" )] public string AlbumId => Album.Id;
 
     /// <summary>
     ///     Flatten the track's artists and the track's album's artists into a single collection.
@@ -30,17 +30,23 @@ public record Track
     }
 
     /// <summary>
-    ///     Get Track/Artist TrackId pair for each artist on the track.
+    ///     Get Track/Artist ID pair for each artist on the track.
     /// </summary>
     /// <returns>Collection of track id, artist id tuples</returns>
-    public IEnumerable<object> GetArtistIdPairings()
+    public IEnumerable<ArtistTrackIdPair> GetArtistTrackIdPairings()
     {
         return Artists.Select(
-            a => new
+            a => new ArtistTrackIdPair
             {
                 TrackId = Id,
                 ArtistId = a.Id
             }
         );
+    }
+
+    public record ArtistTrackIdPair
+    {
+        public required string TrackId { get; init; }
+        public required string ArtistId { get; init; }
     }
 }

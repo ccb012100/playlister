@@ -1,7 +1,6 @@
 using System.Collections.Immutable;
 using System.Globalization;
 using System.Text.Json.Serialization;
-using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models;
 
@@ -22,9 +21,9 @@ public record Album
     public required string ReleaseDate { get; init; }
 
     [JsonPropertyName( "release_date_precision" )]
-    public ReleaseDatePrecision ReleaseDatePrecision { get; init; }
+    public required string ReleaseDatePrecision { get; init; }
 
-    [JsonPropertyName( "total_tracks" )] public int TotalTracks { get; init; }
+    [JsonPropertyName( "total_tracks" )] public required int TotalTracks { get; init; }
 
     [JsonPropertyName( "date_of_release" )]
     public DateTime DateOfRelease

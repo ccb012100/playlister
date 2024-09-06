@@ -39,7 +39,13 @@ public class Startup
             .AddJsonOptions(
                 options =>
                 {
-                    options.JsonSerializerOptions.Converters.Add( new JsonStringEnumConverter() );
+                    /*
+                     * IMPORTANT: Enums must also be marked with attribute `[JsonConverter( typeof(JsonStringEnumConverter) )]`
+                     */
+                    options.JsonSerializerOptions.Converters.Add(
+                        new JsonStringEnumConverter( JsonNamingPolicy.SnakeCaseLower, false )
+                    );
+
                     options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 }
             );

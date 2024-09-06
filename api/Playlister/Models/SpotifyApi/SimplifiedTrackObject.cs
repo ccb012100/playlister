@@ -1,3 +1,5 @@
+using Playlister.Models.SpotifyApi.Enums;
+
 namespace Playlister.Models.SpotifyApi;
 
 public record SimplifiedTrackObject : ISpotifyApiObject
@@ -35,7 +37,7 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     /// <summary>
     ///     Whether the track is from a local file.
     /// </summary>
-    public required string IsLocal { get; init; }
+    public required bool IsLocal { get; init; }
 
     /// <summary>
     ///     Part of the response when Track Relinking is applied.
@@ -82,7 +84,7 @@ public record SimplifiedTrackObject : ISpotifyApiObject
     /// <summary>
     ///     The object type: <c>track</c>.
     /// </summary>
-    public required string Type { get; init; }
+    public required ObjectType Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for the track.

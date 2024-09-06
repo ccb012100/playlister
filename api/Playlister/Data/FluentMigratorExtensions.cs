@@ -10,7 +10,7 @@ internal static class FluentMigratorExtensions
     /// </summary>
     /// <param name="tableWithColumnSyntax">The table to add the TrackId column to</param>
     /// <returns></returns>
-    public static ICreateTableColumnOptionOrWithColumnSyntax WithSpotifyIdColumn(
+    public static ICreateTableColumnOptionOrWithColumnSyntax WithSpotifyPrimaryIdColumn(
         this ICreateTableWithColumnSyntax tableWithColumnSyntax
     )
     {

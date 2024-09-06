@@ -11,14 +11,16 @@
 </div>
 <script type="text/javascript">
     window.onload = async function () {
-        const resultsDivId= "sync-results";
-        const url = `${window.location.origin}/api/playlists/sync`
+        const resultsDivId= 'sync-results';
+        const base_url = `${window.location.origin}`
 
         document.getElementById(resultsDivId).innerHTML = '<p style="color:darkorange">Syncing</p>';
 
         try {
-            const response = await fetch(url, { method: "POST", credentials: 'include' });
+            const response = await fetch(`${base_url}/api/playlists/sync`, { method: 'POST', credentials: 'include' });
             document.getElementById(resultsDivId).innerHTML = resultsTable(await response.json());
+
+            await fetch(`${base_url}/stop-application`, {method: 'POST', credentials:'include'});
         } catch (e) {
             console.error(e);
             document.getElementById(resultsDivId).innerHTML = `<p><b style="color:darkred">Sync failed:</p><pre>${e.message}</pre></b>`;
