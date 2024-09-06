@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
@@ -37,10 +38,10 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
     public required PublicUserObject Owner { get; init; }
 
     /// <summary>
-    ///     The playlist’s public/private status:
-    ///     <c>true</c> the playlist is public,
-    ///     <c>false</c> the playlist is private,
-    ///     <c>null</c> the playlist status is not relevant.
+    ///     The playlist’s public/private status:<br /><br />
+    ///     <c>true</c> = the playlist is public,<br />
+    ///     <c>false</c> = the playlist is private,<br />
+    ///     <c>null</c> = the playlist status is not relevant.
     /// </summary>
     public bool? Public { get; init; }
 
@@ -70,7 +71,7 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
     /// <summary>
     ///     The object type: <c>playlist</c>
     /// </summary>
-    public required string Type { get; init; }
+    public required ObjectType Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for the playlist.

@@ -1,10 +1,11 @@
-using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace Playlister.Models.SpotifyApi.Enums;
 
+[JsonConverter( typeof(JsonStringEnumConverter) )]
 public enum ReleaseDatePrecision
 {
-    [EnumMember( Value = "year" )] Year,
-    [EnumMember( Value = "month" )] Month,
-    [EnumMember( Value = "day" )] Day
+    Year,
+    Month,
+    Day
 }

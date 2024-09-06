@@ -1,3 +1,5 @@
+using Playlister.Models.SpotifyApi.Enums;
+
 namespace Playlister.Models.SpotifyApi;
 
 /// <summary>
@@ -12,7 +14,7 @@ public record SimplifiedUserObject
     /// <summary>
     ///     Always "user"
     /// </summary>
-    public required string Type { get; init; }
+    public required ObjectType Type { get; init; }
 
     public required string Uri { get; init; }
 }

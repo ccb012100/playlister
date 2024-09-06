@@ -1,3 +1,5 @@
+using Playlister.Models.SpotifyApi.Enums;
+
 namespace Playlister.Models.SpotifyApi;
 
 public record PrivateUserObject : ISpotifyApiObject
@@ -56,7 +58,7 @@ public record PrivateUserObject : ISpotifyApiObject
     /// <summary>
     ///     The object type: <c>user</c>.
     /// </summary>
-    public required string Type { get; init; }
+    public required ObjectType Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for this user.

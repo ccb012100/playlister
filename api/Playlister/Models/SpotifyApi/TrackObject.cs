@@ -5,7 +5,7 @@ public record TrackObject : SimplifiedTrackObject
     /// <summary>
     ///     The album on which the track appears. The album object includes a link in <c>href</c> to full information about the album.
     /// </summary>
-    public required SimplifiedAlbumObject Album { get; init; }
+    public required PlaylistItemTrackAlbumObject Album { get; init; }
 
     /// <summary>
     ///     The artists who performed the track. Each artist object includes a link in <c>href</c> to more detailed information about the artist.

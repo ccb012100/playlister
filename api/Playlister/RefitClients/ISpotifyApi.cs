@@ -32,7 +32,7 @@ public interface ISpotifyApi
     /// <summary>
     ///     Get a list of the playlists owned or followed by the current Spotify user.
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">The user access token</param>
     /// <param name="offset">The index of the first item to return.</param>
     /// <param name="limit">The maximum number of items to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.</param>
     /// <param name="ct"></param>
@@ -46,11 +46,27 @@ public interface ISpotifyApi
     );
 
     /// <summary>
+    ///     Get a list of the albums saved in the current Spotify user's 'Your Music' library.
+    /// </summary>
+    /// <param name="token">The user access token</param>
+    /// <param name="offset">The index of the first item to return.</param>
+    /// <param name="limit">The maximum number of items to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c>.</param>
+    /// <param name="ct"></param>
+    /// <returns></returns>
+    [Get( "/me/albums" )]
+    Task<PagingObject<SavedAlbumObject>> GetCurrentUserSavedAlbums(
+        [Authorize] string token,
+        int? offset,
+        int? limit,
+        CancellationToken ct
+    );
+
+    /// <summary>
     ///     Get full details of the items of a playlist owned by a Spotify user.
     ///     Applying the fields query
     ///     <c>fields=limit,next,previous,offset,limit,total,href,items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))</c>
     /// </summary>
-    /// <param name="token"></param>
+    /// <param name="token">The user access token</param>
     /// <param name="playlistId">Playlist's Spotify ID</param>
     /// <param name="offset">The index of the first item to return. Default: <c>0</c> (the first object).</param>
     /// <param name="limit">The maximum number of items to return. Default: <c>100</c>. Minimum: <c>100</c>. Maximum: <c>100</c>.</param>
@@ -58,7 +74,7 @@ public interface ISpotifyApi
     /// <returns></returns>
     [Get(
         "/playlists/{playlistId}/tracks?market=from_token&fields=limit,next,previous,offset,limit,total,href"
-        + ",items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,total_tracks,album_type,artists(id,name))))"
+        + ",items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,release_date_precision,total_tracks,external_ids,album_type,type,artists(id,name))))"
     )]
     Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
         [Authorize] string token,

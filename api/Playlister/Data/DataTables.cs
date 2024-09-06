@@ -2,7 +2,8 @@ namespace Playlister.Data;
 
 public static class DataTables
 {
-    public const string AccessToken = "AccessToken";
+    [Obsolete( "Not used anymore" )] public const string AccessToken = "AccessToken";
+
     public const string Album = "Album";
     public const string Artist = "Artist";
     public const string Playlist = "Playlist";
@@ -22,4 +23,14 @@ public static class DataTables
     ///     Track/Artist many-to-many relationship
     /// </summary>
     public const string TrackArtist = "TrackArtist";
+
+    /// <summary>
+    ///     External IDs for a Saved Album
+    /// </summary>
+    public const string ExternalId = "ExternalId";
+
+    /// <summary>
+    ///     Albums saved in a Spotify user's 'Your Music' library
+    /// </summary>
+    public const string SavedAlbum = "SavedAlbum";
 }

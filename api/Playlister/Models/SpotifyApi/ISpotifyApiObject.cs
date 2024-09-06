@@ -1,3 +1,5 @@
+using Playlister.Models.SpotifyApi.Enums;
+
 namespace Playlister.Models.SpotifyApi;
 
 public interface ISpotifyApiObject
@@ -15,7 +17,7 @@ public interface ISpotifyApiObject
     /// <summary>
     ///     The object type
     /// </summary>
-    public string Type { get; init; }
+    public ObjectType Type { get; init; }
 
     /// <summary>
     ///     The Spotify URI for the Object.

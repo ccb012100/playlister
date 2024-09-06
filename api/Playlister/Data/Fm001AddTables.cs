@@ -18,7 +18,7 @@ public class Fm001AddPlaylistTable : AutoReversingMigration
     private void CreateTables()
     {
         Create.Table( DataTables.Playlist )
-            .WithSpotifyIdColumn()
+            .WithSpotifyPrimaryIdColumn()
             .WithTimeStamps()
             .WithColumn( "snapshot_id" )
             .AsString()
@@ -38,14 +38,14 @@ public class Fm001AddPlaylistTable : AutoReversingMigration
             .Nullable();
 
         Create.Table( DataTables.Artist )
-            .WithSpotifyIdColumn()
+            .WithSpotifyPrimaryIdColumn()
             .WithTimeStamps()
             .WithColumn( "name" )
             .AsString()
             .NotNullable();
 
         Create.Table( DataTables.Album )
-            .WithSpotifyIdColumn()
+            .WithSpotifyPrimaryIdColumn()
             .WithTimeStamps()
             .WithColumn( "name" )
             .AsString()
@@ -61,7 +61,7 @@ public class Fm001AddPlaylistTable : AutoReversingMigration
             .Nullable();
 
         Create.Table( DataTables.Track )
-            .WithSpotifyIdColumn()
+            .WithSpotifyPrimaryIdColumn()
             .WithTimeStamps()
             .WithColumn( "name" )
             .AsString()

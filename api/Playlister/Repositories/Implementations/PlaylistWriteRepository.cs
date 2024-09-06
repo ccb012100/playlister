@@ -138,6 +138,9 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
 
             await UpsertTracks( plist, tracks, conn, transaction ); // Track has FK to Album
 
+            /*
+             * Due to Foreign Keys, order of operations is important
+             */
             tasks.Add( UpsertPlaylistTracks( plist, items, conn, transaction ) ); // has FK to Playlist, Track
             tasks.Add( UpsertAlbumArtists( albums, conn, transaction ) ); // has FK to Album, Artist
             tasks.Add( UpsertTrackArtist( tracks, conn, transaction ) ); // has FK to Artist, Track
@@ -148,10 +151,10 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
         async Task UpsertPlaylist(
             Playlist plist,
             IDbConnection conn,
-            IDbTransaction dbTransaction
+            IDbTransaction dbTxn
         )
         {
-            await conn.UpsertAsync( SqlQueries.Upsert.Playlist, plist, dbTransaction );
+            await conn.UpsertAsync( SqlQueries.Upsert.Playlist, plist, dbTxn );
 
             _logger.LogDebug(
                 "{PlaylistTag} Upserted Playlist {Playlist} {PlaylistId}",
@@ -207,7 +210,7 @@ public class PlaylistWriteRepository : IPlaylistWriteRepository
             IDbTransaction dtTxn
         )
         {
-            ImmutableArray<object> trackArtists = tracks.SelectMany( x => x.GetArtistIdPairings() ).ToImmutableArray();
+            ImmutableArray<Track.ArtistTrackIdPair> trackArtists = tracks.SelectMany( x => x.GetArtistTrackIdPairings() ).ToImmutableArray();
 
             await conn.UpsertAsync( SqlQueries.Upsert.TrackArtist, trackArtists, dtTxn );
 
