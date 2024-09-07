@@ -21,7 +21,9 @@ cargo build || exit 1
 # time target/debug/playlist-util sync --source ~/playlister.sqlite3 --destination ~/bin/albums/starred_albums.tsv
 
 if [[ $# -gt 0 ]]; then
-    time target/debug/playlist-util last --source ~/playlister.sqlite3 "$*"
+    # shellcheck disable=SC2048
+    # shellcheck disable=SC2086
+    time target/debug/playlist-util last --source ~/playlister.sqlite3 $*
 else
     time target/debug/playlist-util last --source ~/playlister.sqlite3
 fi
