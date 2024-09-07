@@ -1,7 +1,9 @@
 use super::SearchQuery;
-use super::{data::Album, SearchResults};
+use super::SearchResults;
+use crate::data::{Album, AlbumTsv};
+
 use anyhow::{Context, Result};
-use log::debug;
+use log::{debug, trace};
 use std::{
     fs::{File, OpenOptions},
     io::{self, BufRead},
@@ -10,7 +12,7 @@ use std::{
 
 /// Search a `.tsv` file
 pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
-    debug!("🪵 search called with: {:#?}", query);
+    trace!("🪵 search called with: {:#?}", query);
 
     let file: File = OpenOptions::new()
         .read(true)
@@ -32,8 +34,9 @@ pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
 
         // if the text contains the search term, parse it and add it to the matches
         if row.to_uppercase().contains(query_upper) {
-            let album: Album = Album::from_str(&row)
-                .with_context(|| format!("failed to parse value to Album: {}", &row))?;
+            let album: Album = AlbumTsv::from_str(&row)
+                .with_context(|| format!("failed to parse value to Album: {}", &row))?
+                .to_album();
 
             results.push(album);
         }

@@ -1,6 +1,6 @@
 use crate::sync::anyhow;
 use anyhow::{self, Context, Result};
-use log::debug;
+use log::{debug, trace};
 use std::{
     fs::OpenOptions,
     io::{BufRead, BufReader, Write},
@@ -8,9 +8,7 @@ use std::{
     str::FromStr,
 };
 
-use crate::sync::data::AlbumTsv;
-
-use super::data::Album;
+use crate::data::{Album, AlbumTsv};
 
 pub fn get_last_album_added(file: &Path) -> Result<AlbumTsv> {
     let open_file = OpenOptions::new().read(true).open(file).with_context(|| {
@@ -53,9 +51,10 @@ pub fn add_albums_to_file(albums: Vec<Album>, file: &Path) -> Result<()> {
 }
 
 fn add_tsv_albums_to_file(albums: Vec<AlbumTsv>, file: &Path) -> Result<()> {
-    debug!(
+    trace!(
         "🪵 add_albums_to_file called with: albums={:#?} file={:#?}",
-        albums, file
+        albums,
+        file
     );
 
     if albums.is_empty() {

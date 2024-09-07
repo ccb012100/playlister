@@ -7,9 +7,12 @@ CLI utility for Syncing and Searching my Spotify album playlists created from [P
 ## Usage
 
 ```console
+Used to search and sync playlists generated from <https://github.com/ccb012100/playlist-search>
+
 Usage: playlist-util [OPTIONS] <COMMAND>
 
 Commands:
+  last    Get n most recent Albums added to the specified `sqlite` database
   search  Search playlists
   sync    Sync playlists
   help    Print this message or the help of the given subcommand(s)
@@ -20,6 +23,24 @@ Options:
   -V, --version     Print version
 ```
 
+### `last`
+
+```console
+Get n most recent Albums added to the specified `sqlite` database
+
+Usage: playlist-util last [OPTIONS] --source <SOURCE> [N]
+
+Arguments:
+  [N]  The number of Albums to return [default: 10]
+
+Options:
+  -a, --all              If `false`, limit the results to Starred Albums
+  -v, --verbose...       Set verbosity
+  -s, --source <SOURCE>  The full path of the `sqlite` file to pull from
+      --no-format        Don't format output
+  -h, --help             Print help
+```
+
 ### `search`
 
 ```console
@@ -28,18 +49,46 @@ Search playlists
 Usage: playlist-util search [OPTIONS] <FILE_TYPE> <FILE_NAME> [TERM]...
 
 Arguments:
-  <FILE_TYPE>  File type to perform action against [possible values: sqlite, tsv]
-  <FILE_NAME>  File to use
-  [TERM]...    Search term
+  <FILE_TYPE>
+          File type to perform action against
+
+          Possible values:
+          - sqlite: SQLite database file (file name = `[*.sql|*.sqlite|*.sqlite3|*.db]`)
+          - tsv:    TSV file (file name = `*.tsv`)
+
+  <FILE_NAME>
+          File to use
+
+  [TERM]...
+          Search term
 
 Options:
-  -s, --sort <FIELD>           Field to sort on [default: artists] [possible values: artists, album, year, added, playlist]
-  -v, --verbose...             Set verbosity
-  -f, --filter <FILTER>        Field(s) to filter the search on [default: artists album] [possible values: artists, album, playlist]
-      --include-playlist-name  Include Playlist names in search results
-      --no-format              Don't format output
-      --include-header         Include header row in output
-  -h, --help                   Print help (see more with '--help')
+  -s, --sort <FIELD>
+          Field to sort on
+
+          [default: artists]
+          [possible values: artists, album, year, added, playlist]
+
+  -v, --verbose...
+          Set verbosity
+
+  -f, --filter <FILTER>
+          Field(s) to filter the search on
+
+          [default: artists album]
+          [possible values: artists, album, playlist]
+
+      --include-playlist-name
+          Include Playlist names in search results
+
+      --no-format
+          Don't format output
+
+      --include-header
+          Include header row in output
+
+  -h, --help
+          Print help (see a summary with '-h')
 ```
 
 ### `sync`
@@ -59,4 +108,4 @@ Options:
 ## TODO
 
 - [ ] Return an `Error` if the search term is empty
-- [ ] Use [unicase](https://github.com/seanmonstar/unicase/pull/52) once [this issue](https://github.com/seanmonstar/unicase/pull/52) to add `UniCase::contains()` is completed.
+- [ ] Use [unicase](https://github.com/seanmonstar/unicase) if/when [this issue](https://github.com/seanmonstar/unicase/pull/52) to add `UniCase::contains()` is completed.

@@ -2,14 +2,19 @@
 name = "playlist-util"
 version = "0.1.0"
 edition = "2021"
-description = "Used to search and sync playlists generated from <https://github.com/ccb012100/playlist-search> and <https://github.com/ccb012100/playlister>"
+description = "Used to search and sync playlists generated from <https://github.com/ccb012100/playlist-search>"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 anyhow = "1.0.75"
 chrono = "0.4.38"
-clap = { version = "4.4.7", features = ["derive", "wrap_help"] }
+clap = { version = "4.4.7", features = [
+    "derive",
+    "wrap_help",
+    "help",
+    "color",
+] }
 comfy-table = "7.1.0"
 env_logger = "0.10.0"
 log = "0.4.20"

@@ -4,8 +4,10 @@ use cli::Cli;
 use log::debug;
 
 mod cli;
+mod data;
 mod output;
 mod search;
+mod sqlite;
 mod sync;
 
 fn main() -> Result<(), Error> {
