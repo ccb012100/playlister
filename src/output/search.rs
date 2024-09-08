@@ -152,7 +152,7 @@ impl SearchOutput {
 
             let display_fields: Vec<&str> = if playlist_name {
                 vec![
-                    &album.artist.0,
+                    &album.artists.0,
                     &album.name.0,
                     &tracks,
                     &release_year,
@@ -161,7 +161,7 @@ impl SearchOutput {
                 ]
             } else {
                 vec![
-                    &album.artist.0,
+                    &album.artists.0,
                     &album.name.0,
                     &tracks,
                     &release_year,

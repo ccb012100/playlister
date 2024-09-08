@@ -14,7 +14,7 @@ use regex::Regex;
 pub struct AlbumName(pub String);
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
-pub struct AlbumArtist(pub String);
+pub struct AlbumArtists(pub String);
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct DateAdded(pub String);
@@ -34,7 +34,7 @@ pub struct AlbumTsv(pub String);
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct Album {
     /// The recording artist(s)
-    pub artist: AlbumArtist, /* tsv_row_fields[0] */
+    pub artists: AlbumArtists, /* tsv_row_fields[0] */
     /// The name of the album
     pub name: AlbumName, /* tsv_row_fields[1] */
     /// The number of tracks on the album
@@ -83,7 +83,7 @@ impl fmt::Display for AlbumName {
     }
 }
 
-impl fmt::Display for AlbumArtist {
+impl fmt::Display for AlbumArtists {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(f, "{}", self.0)
     }
@@ -114,7 +114,7 @@ impl fmt::Display for Album {
     added:      {}
     playlist:   {}
 }}"#,
-            self.name, self.artist, self.tracks, self.release_year, self.date_added, self.playlist
+            self.name, self.artists, self.tracks, self.release_year, self.date_added, self.playlist
         )
     }
 }
@@ -162,7 +162,7 @@ impl FromStr for AlbumName {
     }
 }
 
-impl FromStr for AlbumArtist {
+impl FromStr for AlbumArtists {
     type Err = Error;
 
     fn from_str(s: &str) -> result::Result<Self, Self::Err> {
@@ -176,7 +176,7 @@ impl FromStr for AlbumArtist {
             return Err(invalid_data_error("AlbumArtist cannot be white space only"));
         }
 
-        Ok(AlbumArtist(trimmed))
+        Ok(AlbumArtists(trimmed))
     }
 }
 
@@ -256,7 +256,7 @@ impl FromStr for DateAdded {
 impl Album {
     pub fn new(
         name: AlbumName,
-        artist: AlbumArtist,
+        artists: AlbumArtists,
         tracks: TrackCount,
         release_year: ReleaseYear,
         date_added: DateAdded,
@@ -264,7 +264,7 @@ impl Album {
     ) -> Self {
         Self {
             name,
-            artist,
+            artists,
             tracks,
             release_year,
             date_added,
@@ -275,7 +275,7 @@ impl Album {
     pub fn to_tsv_entry(&self) -> AlbumTsv {
         AlbumTsv(format!(
             "{}\t{}\t{}\t{}\t{}\t{}",
-            self.artist, self.name, self.tracks, self.release_year, self.date_added, self.playlist
+            self.artists, self.name, self.tracks, self.release_year, self.date_added, self.playlist
         ))
     }
 
@@ -286,8 +286,8 @@ impl Album {
         if self.name.0.trim().is_empty() {
             errors.push(format!("\tInvalid name: {}", self.name));
         }
-        if self.artist.0.trim().is_empty() {
-            errors.push(format!("\tInvalid artist: {}", self.artist));
+        if self.artists.0.trim().is_empty() {
+            errors.push(format!("\tInvalid artist: {}", self.artists));
         }
         if self.playlist.0.trim().is_empty() {
             errors.push(format!("\tInvalid name: {}", self.playlist));
@@ -314,14 +314,14 @@ impl Album {
         match sortfield {
             SortField::Artists => albums.sort_by(|a, b| {
                 (
-                    &a.artist,
+                    &a.artists,
                     &a.name,
                     &a.release_year,
                     &a.date_added,
                     &a.playlist,
                 )
                     .cmp(&(
-                        &b.artist,
+                        &b.artists,
                         &b.name,
                         &b.release_year,
                         &b.date_added,
@@ -331,14 +331,14 @@ impl Album {
             SortField::Album => albums.sort_by(|a, b| {
                 (
                     &a.name,
-                    &a.artist,
+                    &a.artists,
                     &a.release_year,
                     &a.date_added,
                     &a.playlist,
                 )
                     .cmp(&(
                         &b.name,
-                        &b.artist,
+                        &b.artists,
                         &b.release_year,
                         &b.date_added,
                         &b.playlist,
@@ -347,14 +347,14 @@ impl Album {
             SortField::Year => albums.sort_by(|a, b| {
                 (
                     &a.release_year,
-                    &a.artist,
+                    &a.artists,
                     &a.name,
                     &a.date_added,
                     &a.playlist,
                 )
                     .cmp(&(
                         &b.release_year,
-                        &b.artist,
+                        &b.artists,
                         &b.name,
                         &b.date_added,
                         &b.playlist,
@@ -363,14 +363,14 @@ impl Album {
             SortField::Added => albums.sort_by(|a, b| {
                 (
                     &a.date_added,
-                    &a.artist,
+                    &a.artists,
                     &a.name,
                     &a.release_year,
                     &a.playlist,
                 )
                     .cmp(&(
                         &b.date_added,
-                        &b.artist,
+                        &b.artists,
                         &b.name,
                         &b.release_year,
                         &b.playlist,
@@ -379,14 +379,14 @@ impl Album {
             SortField::Playlist => albums.sort_by(|a, b| {
                 (
                     &a.playlist,
-                    &a.artist,
+                    &a.artists,
                     &a.name,
                     &a.release_year,
                     &a.date_added,
                 )
                     .cmp(&(
                         &b.playlist,
-                        &b.artist,
+                        &b.artists,
                         &b.name,
                         &b.release_year,
                         &b.date_added,
@@ -405,7 +405,7 @@ impl Album {
 
         albums.retain(
             |Album {
-                 artist,
+                 artists: artist,
                  name,
                  playlist,
                  ..
@@ -428,7 +428,7 @@ impl AlbumTsv {
 
         Album {
             name: AlbumName::from_str(parts[1]).unwrap(),
-            artist: AlbumArtist::from_str(parts[0]).unwrap(),
+            artists: AlbumArtists::from_str(parts[0]).unwrap(),
             tracks: TrackCount::from_str(parts[2]).unwrap(),
             release_year: ReleaseYear::from_str(parts[3]).unwrap(),
             date_added: DateAdded::from_str(parts[4]).unwrap(),
@@ -511,7 +511,7 @@ mod tests {
     fn album_new() {
         let album = Album::new(
             AlbumName("foo".to_string()),
-            AlbumArtist("bar".to_string()),
+            AlbumArtists("bar".to_string()),
             TrackCount(20),
             ReleaseYear(2018),
             DateAdded("baz".to_string()),
@@ -519,7 +519,7 @@ mod tests {
         );
 
         assert_eq!(album.name.0, "foo");
-        assert_eq!(album.artist.0, "bar");
+        assert_eq!(album.artists.0, "bar");
         assert_eq!(album.date_added.0, "baz");
         assert_eq!(album.playlist.0, "bat");
         assert_eq!(album.release_year.0, 2018);
@@ -530,7 +530,7 @@ mod tests {
     fn valid_album() {
         let album = Album::new(
             AlbumName("foo".to_string()),
-            AlbumArtist("bar".to_string()),
+            AlbumArtists("bar".to_string()),
             TrackCount(20),
             ReleaseYear(2018),
             DateAdded("2024-08-06 17:55:45".to_string()),
@@ -554,7 +554,7 @@ mod tests {
 
         let album = Album::new(
             AlbumName("".to_string()),
-            AlbumArtist("bar".to_string()),
+            AlbumArtists("bar".to_string()),
             TrackCount(20),
             ReleaseYear(2018),
             DateAdded("baz".to_string()),
@@ -567,7 +567,7 @@ mod tests {
 
         let album = Album::new(
             AlbumName("foo bar quux".to_string()),
-            AlbumArtist("bar".to_string()),
+            AlbumArtists("bar".to_string()),
             TrackCount(20),
             ReleaseYear(2030),
             DateAdded("2024-08-06 17:55:45".to_string()),
@@ -583,7 +583,7 @@ mod tests {
 
         let actual = Album::new(
             AlbumName("foo".to_string()),
-            AlbumArtist("bar".to_string()),
+            AlbumArtists("bar".to_string()),
             TrackCount(20),
             ReleaseYear(2018),
             DateAdded("baz".to_string()),

@@ -1,7 +1,7 @@
 use crate::{
     data::{FilterField, SortField},
     output::search::SearchOutput,
-    search::data::{LastQuery, SearchQuery, SearchFileType},
+    search::data::{LastAlbumsRequest, SearchFileType, SearchRequest},
     sqlite::AlbumSelection,
 };
 use crate::{
@@ -59,7 +59,7 @@ impl Cli {
                 let file_type = SearchFileType::Sqlite;
                 let file_path: PathBuf = FileType::Sqlite.get_path(file)?;
 
-                let query = LastQuery {
+                let request = LastAlbumsRequest {
                     source: &file_path,
                     source_file_type: file_type,
                     num: *n as usize,
@@ -69,12 +69,12 @@ impl Cli {
                     },
                 };
 
-                let results = search::last(&query)?;
+                let results = search::last(&request)?;
 
                 if *no_format {
-                    SearchOutput::print_last_n_albums(&results, query.num)
+                    SearchOutput::print_last_n_albums(&results, request.num)
                 } else {
-                    SearchOutput::print_last_n_albums_table(&results, query.num)
+                    SearchOutput::print_last_n_albums_table(&results, request.num)
                 }
 
                 Ok(())
@@ -88,31 +88,36 @@ impl Cli {
                 sort,
                 filter,
                 term,
+                all: all_albums,
             } => {
                 info!("ℹ️ Searching... 🔎");
 
                 let path: PathBuf = file_type.get_path(file_name)?;
 
-                let query: SearchQuery = SearchQuery {
-                    search_term: &term.join(" "),
-                    search_type: match &file_type {
-                        FileType::Sqlite => SearchFileType::Sqlite,
-                        FileType::Tsv => SearchFileType::Tsv,
+                let request: SearchRequest = SearchRequest {
+                    selection: match all_albums {
+                        true => AlbumSelection::All,
+                        false => AlbumSelection::Starred,
                     },
-                    file: &path,
-                    include_header: *include_header,
-                    include_playlist_name: *include_playlist_name,
-                    sort: SortField::from(*sort),
+                    source: &path,
                     filters: filter
                         .iter()
                         .map(|f| FilterField::from(*f))
                         .collect::<std::collections::HashSet<_>>() // collect into HashSet to dedupe the values
                         .into_iter()
                         .collect(),
+                    include_header: *include_header,
+                    include_playlist_name: *include_playlist_name,
+                    search_term: &term.join(" "),
+                    search_type: match &file_type {
+                        FileType::Sqlite => SearchFileType::Sqlite,
+                        FileType::Tsv => SearchFileType::Tsv,
+                    },
+                    sort: SortField::from(*sort),
                 };
 
-                let results: search::data::SearchResults<'_> = search::search(&query)
-                    .with_context(|| format!("❌ Search failed: {:#?} ❌", query))?;
+                let results: search::data::SearchResults<'_> = search::search(&request)
+                    .with_context(|| format!("❌ Search failed: {:#?} ❌", request))?;
 
                 if *no_format {
                     SearchOutput::print_search_results(&results)

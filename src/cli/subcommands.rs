@@ -8,6 +8,9 @@ use std::path::PathBuf;
 pub enum Subcommands {
     /// Get n most recent Albums added to the specified `sqlite` database
     Last {
+        /// The full path of the `sqlite` file to pull from
+        source: String,
+
         /// The number of Albums to return
         #[arg(default_value_t = 10)]
         n: u8,
@@ -16,15 +19,11 @@ pub enum Subcommands {
         #[arg(short, long, default_value_t = false)]
         all: bool,
 
-        /// The full path of the `sqlite` file to pull from
-        #[arg(short, long)]
-        source: String,
-
         /// Don't format output
         #[arg(long, default_value_t = false)]
         no_format: bool,
     },
-    /// Search playlists
+    /// Search playlists. Results are limited to the first 100 matches.
     Search {
         /// File type to perform action against
         #[clap(value_enum)]
@@ -57,6 +56,11 @@ pub enum Subcommands {
         /// Include header row in output
         #[arg(long, default_value_t = false)]
         include_header: bool,
+
+        /// If `false`, limit to just Starred albums.<br/><br/>
+        /// *This is only used for `sqlite` searches and is ignored for `TSV`.*
+        #[arg(long, default_value_t = false)]
+        all: bool,
     },
     /// Sync playlists
     Sync {
