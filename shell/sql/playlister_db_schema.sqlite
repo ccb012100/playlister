@@ -118,3 +118,23 @@ begin
     where track_id = new.track_id
       and playlist_id = new.playlist_id;
 end;
+CREATE TABLE IF NOT EXISTS "SavedAlbum"(
+  "id" TEXT NOT NULL,
+  "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "modified_at" DATETIME,
+  "label" TEXT NOT NULL,
+  CONSTRAINT "PK_SavedAlbum" PRIMARY KEY("id"),
+  CONSTRAINT "fk_savedalbum_album" FOREIGN KEY("label") REFERENCES "Album"("id")
+);
+CREATE TABLE IF NOT EXISTS "ExternalId"(
+  "album_id" TEXT NOT NULL,
+  "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "modified_at" DATETIME,
+  "ean" TEXT,
+  "isrc" TEXT,
+  "upc" TEXT,
+  CONSTRAINT "PK_ExternalId" PRIMARY KEY("album_id"),
+  CONSTRAINT "fk_externalid_album" FOREIGN KEY("upc") REFERENCES "SavedAlbum"("id")
+);
+CREATE INDEX "IX_SavedAlbum_id" ON "SavedAlbum"("id" ASC);
+CREATE INDEX "IX_ExternalId_album_id" ON "ExternalId"("album_id" ASC);
