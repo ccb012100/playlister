@@ -1,16 +1,17 @@
+use crate::data::Album;
 use anyhow::{anyhow, Context, Ok, Result};
-use data::Album;
-use log::debug;
-use std::path::Path;
+use log::{debug, trace};
+use std::path::PathBuf;
 
 pub mod data;
 mod sqlite;
 mod tsv;
 
-pub fn sync(source: &Path, destination: &Path) -> Result<()> {
-    debug!(
+pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
+    trace!(
         "🪵 sync called with: source={:#?} destination={:#?}",
-        source, destination
+        source,
+        destination
     );
 
     let last_added_to_tsv = tsv::get_last_album_added(destination).with_context(|| {

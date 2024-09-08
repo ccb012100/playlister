@@ -9,13 +9,14 @@ fi
 
 cargo build || exit 1
 
-# echo sorted_albums "$term"
-# time target/debug/playlist-util search tsv ~/bin/albums/sorted_albums.tsv "$term" || exit
+time target/debug/playlist-util search tsv ~/bin/albums/sorted_albums.tsv "$term" || exit
 
-echo search all_albums for "'$term'"
-time target/debug/playlist-util search tsv ~/bin/albums/starred_albums.tsv --include-playlist-name "$term"
+time target/debug/playlist-util search tsv ~/bin/albums/starred_albums.tsv --include-playlist-name "$term" || exit
 
-echo search all_albums for "'$term'", filter by artist
-time target/debug/playlist-util search tsv ~/bin/albums/starred_albums.tsv --include-playlist-name "$term" --filter artists
+time target/debug/playlist-util search tsv ~/bin/albums/starred_albums.tsv --include-playlist-name "$term" --filter artists || exit
 
-# time target/debug/playlist-util sync --source ~/playlister.db --destination ~/bin/albums/starred_albums.tsv
+time target/debug/playlist-util sync --source ~/playlister.sqlite3 --destination ~/bin/albums/starred_albums.tsv || exit
+
+time target/debug/playlist-util last ~/playlister.sqlite3 7 || exit
+
+time target/debug/playlist-util search sqlite ~/playlister.sqlite3 --include-playlist-name "$term" || exit

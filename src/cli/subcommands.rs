@@ -1,13 +1,29 @@
-use crate::search;
 use anyhow::{anyhow, Result};
 use clap::{arg, Subcommand, ValueEnum};
-use log::debug;
+use log::trace;
 use regex::Regex;
 use std::path::PathBuf;
 
 #[derive(Subcommand, Debug, Clone)]
 pub enum Subcommands {
-    /// Search playlists
+    /// Get n most recent Albums added to the specified `sqlite` database
+    Last {
+        /// The full path of the `sqlite` file to pull from
+        source: String,
+
+        /// The number of Albums to return
+        #[arg(default_value_t = 10)]
+        n: u8,
+
+        /// If `false`, limit the results to Starred Albums
+        #[arg(short, long, default_value_t = false)]
+        all: bool,
+
+        /// Don't format output
+        #[arg(long, default_value_t = false)]
+        no_format: bool,
+    },
+    /// Search playlists. Results are limited to the first 100 matches.
     Search {
         /// File type to perform action against
         #[clap(value_enum)]
@@ -40,6 +56,11 @@ pub enum Subcommands {
         /// Include header row in output
         #[arg(long, default_value_t = false)]
         include_header: bool,
+
+        /// If `false`, limit to just Starred albums.<br/><br/>
+        /// *This is only used for `sqlite` searches and is ignored for `TSV`.*
+        #[arg(long, default_value_t = false)]
+        all: bool,
     },
     /// Sync playlists
     Sync {
@@ -76,24 +97,24 @@ pub(crate) enum FilterField {
     Playlist,
 }
 
-impl From<SortField> for search::data::SortField {
+impl From<SortField> for crate::data::SortField {
     fn from(value: SortField) -> Self {
         match value {
-            SortField::Added => search::data::SortField::Added,
-            SortField::Album => search::data::SortField::Album,
-            SortField::Artists => search::data::SortField::Artists,
-            SortField::Playlist => search::data::SortField::Playlist,
-            SortField::Year => search::data::SortField::Year,
+            SortField::Added => crate::data::SortField::Added,
+            SortField::Album => crate::data::SortField::Album,
+            SortField::Artists => crate::data::SortField::Artists,
+            SortField::Playlist => crate::data::SortField::Playlist,
+            SortField::Year => crate::data::SortField::Year,
         }
     }
 }
 
-impl From<FilterField> for search::data::FilterField {
+impl From<FilterField> for crate::data::FilterField {
     fn from(value: FilterField) -> Self {
         match value {
-            FilterField::Artists => search::data::FilterField::Artists,
-            FilterField::Album => search::data::FilterField::Album,
-            FilterField::Playlist => search::data::FilterField::Playlist,
+            FilterField::Artists => crate::data::FilterField::Artists,
+            FilterField::Album => crate::data::FilterField::Album,
+            FilterField::Playlist => crate::data::FilterField::Playlist,
         }
     }
 }
@@ -101,9 +122,10 @@ impl From<FilterField> for search::data::FilterField {
 impl FileType {
     /// Parse `file_name` and return it as `PathBuf`
     pub fn get_path(&self, file_name: &str) -> Result<PathBuf> {
-        debug!(
+        trace!(
             "get_path called with: {} for FileType {:#?}",
-            file_name, self
+            file_name,
+            self
         );
 
         let pattern = match self {
@@ -112,24 +134,18 @@ impl FileType {
         };
 
         // check file name validity
-        match Regex::new(pattern)?.is_match(file_name) {
-            true => {
-                let path = PathBuf::from(file_name);
+        if Regex::new(pattern)?.is_match(file_name) {
+            let path = PathBuf::from(file_name);
 
-                match path.try_exists()? {
-                    true => Ok(path),
-                    false => {
-                        let err_msg = format!("❌ File \"{}\" does not exist ❌", file_name);
-                        debug!("🪵 {}", err_msg);
-                        Err(anyhow!(err_msg))
-                    }
-                }
-            }
-            false => {
-                let err_msg = format!("❌ File name format \"{}\" is invalid ❌", { file_name });
-                debug!("🪵 {}", err_msg);
+            if path.try_exists()? {
+                Ok(path)
+            } else {
+                let err_msg = format!("❌ File \"{}\" does not exist ❌", file_name);
                 Err(anyhow!(err_msg))
             }
+        } else {
+            let err_msg = format!("❌ File name format \"{}\" is invalid ❌", { file_name });
+            Err(anyhow!(err_msg))
         }
     }
 }

@@ -3,21 +3,35 @@ mod sqlite;
 mod tsv;
 
 use anyhow::{Context, Result};
-use log::{debug, info};
+use data::LastAlbumsRequest;
+use log::{debug, trace};
 
-use self::data::{SearchQuery, SearchResults, SearchType};
+use self::data::{SearchFileType, SearchRequest, SearchResults};
 
-pub fn search<'a>(query: &'a SearchQuery<'a>) -> Result<SearchResults<'a>> {
-    debug!("🪵 search called with: {:#?}", query);
+pub fn search<'a>(request: &'a SearchRequest<'a>) -> Result<SearchResults<'a>> {
+    trace!("🪵 search called with: {:#?}", request);
 
-    match query.search_type {
-        SearchType::Sqlite => {
-            info!("Searching SQLite DB...");
-            sqlite::search(query).with_context(|| format!("Search failed: {:#?}", query))
+    match request.search_type {
+        SearchFileType::Sqlite => {
+            debug!("Searching SQLite DB...");
+            sqlite::search(request).with_context(|| format!("Search failed: {:#?}", request))
         }
-        SearchType::Tsv => {
-            info!("Searching TSV...");
-            tsv::search(query).with_context(|| format!("Search failed: {:#?}", query))
+        SearchFileType::Tsv => {
+            debug!("Searching TSV...");
+            tsv::search(request).with_context(|| format!("Search failed: {:#?}", request))
         }
+    }
+}
+
+pub fn last<'a>(request: &'a LastAlbumsRequest<'a>) -> Result<Vec<crate::data::Album>> {
+    trace!("🪵 search called with: {:#?}", request);
+
+    match request.source_file_type {
+        SearchFileType::Sqlite => {
+            debug!("Getting last n albums from SQLite DB...");
+            sqlite::last(request)
+                .with_context(|| format!("LastAlbumRequest failed: {:#?}", request))
+        }
+        SearchFileType::Tsv => unimplemented!("The SQLite data is the source of truth"),
     }
 }
