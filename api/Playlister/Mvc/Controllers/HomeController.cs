@@ -8,17 +8,10 @@ using Playlister.Services;
 
 namespace Playlister.Mvc.Controllers;
 
-public class HomeController : Controller
+public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler, IConfiguration config ) : Controller
 {
     public const string Name = "Home";
-    private readonly IHostApplicationLifetime _appLifetime;
-    private readonly SpotifyAuthorizationHandler _spotifyAuthorizationHandler;
-
-    public HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler )
-    {
-        _appLifetime = appLifetime;
-        _spotifyAuthorizationHandler = spotifyAuthorizationHandler;
-    }
+    private readonly bool _handsFree = bool.TryParse( config["HandsFree"], out bool handsFree ) && handsFree;
 
     /// <summary>
     ///     Navigate to Spotify login
@@ -33,13 +26,18 @@ public class HomeController : Controller
                 out string? _
             )
                 ? "/Home/Main/"
-                : (await _spotifyAuthorizationHandler.GetAuthorizationUrl()).ToString()
+                : (await spotifyAuthorizationHandler.GetAuthorizationUrl()).ToString()
         );
     }
 
     [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public IActionResult Main()
     {
+        if (_handsFree)
+        {
+            return RedirectToAction( "Index", SyncController.Name );
+        }
+
         return View( new HomeViewModel() );
     }
 
@@ -91,7 +89,7 @@ public class HomeController : Controller
             () =>
             {
                 Thread.Sleep( 1_000 ); // gives the application time to return a response
-                _appLifetime.StopApplication();
+                appLifetime.StopApplication();
             }
         );
 
