@@ -1,7 +1,7 @@
 use crate::{
     data::{FilterField, SortField},
     output::search::SearchOutput,
-    search::data::{LastAlbumsRequest, SearchFileType, SearchRequest},
+    search::data::{LastAlbumsRequest, SearchFileType, SearchRequest, SearchResults},
     sqlite::AlbumSelection,
 };
 use crate::{
@@ -116,7 +116,7 @@ impl Cli {
                     sort: SortField::from(*sort),
                 };
 
-                let results: search::data::SearchResults<'_> = search::search(&request)
+                let results: SearchResults<'_> = search::search(&request)
                     .with_context(|| format!("❌ Search failed: {:#?} ❌", request))?;
 
                 if *no_format {

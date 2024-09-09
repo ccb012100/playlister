@@ -91,7 +91,7 @@ fn build_search_query(request: &SearchRequest) -> String {
     }
 
     format!(
-        "select * from AlbumsView where ({}) {} group by {} limit :limit OFFSET :offset",
+        "select * from AlbumsView where ({}) {} order by {} limit :limit OFFSET :offset",
         match where_clauses.len() {
             1 => where_clauses[0].to_string(),
             _ => where_clauses.join(" or ").to_string(),

@@ -1,5 +1,4 @@
-use super::SearchRequest;
-use super::SearchResults;
+use super::{SearchRequest, SearchResults};
 use crate::data::{Album, AlbumTsv};
 
 use anyhow::{Context, Result};
@@ -13,7 +12,6 @@ use std::{
 /// Search a `.tsv` file
 pub fn search<'a>(request: &'a SearchRequest<'a>) -> Result<SearchResults<'a>> {
     trace!("🪵 search called with: {:#?}", request);
-
     let file: File = OpenOptions::new()
         .read(true)
         .open(request.source)
@@ -41,11 +39,9 @@ pub fn search<'a>(request: &'a SearchRequest<'a>) -> Result<SearchResults<'a>> {
             results.push(album);
         }
     }
-
     debug!("🪵 Found {} matches.", results.len());
 
     Album::filter_by_field(&mut results, request.search_term, &request.filters);
-
     debug!("🪵 Found {} matches after filtering.", results.len());
 
     Album::sort_by_field(&mut results, &request.sort);
