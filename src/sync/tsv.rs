@@ -10,7 +10,8 @@ use std::{
 
 use crate::data::{Album, AlbumTsv};
 
-pub fn get_last_album_added(file: &Path) -> Result<AlbumTsv> {
+/// Get the last album added to the TSV file represented by `file`
+pub fn  get_last_album_added(file: &Path) -> Result<AlbumTsv> {
     let open_file = OpenOptions::new().read(true).open(file).with_context(|| {
         format!(
             "❌ Failed to open file from PathBuf for reading: {:#?} ❌",
