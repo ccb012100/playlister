@@ -53,7 +53,7 @@ public class PlaylistService : IPlaylistService
             lists.AddRange( page.Items.Select( i => i.ToPlaylist() ) );
         }
 
-        return lists.ToImmutableArray();
+        return [.. lists];
     }
 
     public async Task<int> SyncPlaylistsAsync(
@@ -374,11 +374,11 @@ public class PlaylistService : IPlaylistService
     /// <returns></returns>
     private async Task PopulateCaches()
     {
-        List<Task> tasks = new()
-        {
+        List<Task> tasks =
+        [
             PopulatePlaylistCache(),
             PopulateMissingTracksCache()
-        };
+        ];
 
         await Task.WhenAll( tasks );
 

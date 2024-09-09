@@ -9,19 +9,13 @@ using Playlister.Utilities;
 
 namespace Playlister.Repositories.Implementations;
 
-public class PlaylistWriteRepository : IPlaylistWriteRepository
+public class PlaylistWriteRepository(
+    IConnectionFactory connectionFactory,
+    ILogger<PlaylistWriteRepository> logger
+    ) : IPlaylistWriteRepository
 {
-    private readonly IConnectionFactory _connectionFactory;
-    private readonly ILogger<PlaylistWriteRepository> _logger;
-
-    public PlaylistWriteRepository(
-        IConnectionFactory connectionFactory,
-        ILogger<PlaylistWriteRepository> logger
-    )
-    {
-        _connectionFactory = connectionFactory;
-        _logger = logger;
-    }
+    private readonly IConnectionFactory _connectionFactory = connectionFactory;
+    private readonly ILogger<PlaylistWriteRepository> _logger = logger;
 
     public async Task<int> DeleteOrphanedPlaylistTracksAsync( CancellationToken ct )
     {

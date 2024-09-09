@@ -4,14 +4,9 @@ using Playlister.Models;
 
 namespace Playlister.Repositories.Implementations;
 
-public class PlaylistReadRepository : IPlaylistReadRepository
+public class PlaylistReadRepository( IConnectionFactory connectionFactory ) : IPlaylistReadRepository
 {
-    private readonly IConnectionFactory _connectionFactory;
-
-    public PlaylistReadRepository( IConnectionFactory connectionFactory )
-    {
-        _connectionFactory = connectionFactory;
-    }
+    private readonly IConnectionFactory _connectionFactory = connectionFactory;
 
     public async Task<IEnumerable<Playlist>> GetAllAsync()
     {

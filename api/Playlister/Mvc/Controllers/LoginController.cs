@@ -8,18 +8,8 @@ using Playlister.Services;
 
 namespace Playlister.Mvc.Controllers;
 
-public class LoginController : Controller
+public class LoginController( ILogger<LoginController> logger, IAuthService authService, IHttpContextAccessor httpContextAccessor ) : Controller
 {
-    private readonly IAuthService _authService;
-    private readonly IHttpContextAccessor _httpContextAccessor;
-    private readonly ILogger<LoginController> _logger;
-
-    public LoginController( ILogger<LoginController> logger, IAuthService authService, IHttpContextAccessor httpContextAccessor )
-    {
-        _logger = logger;
-        _authService = authService;
-        _httpContextAccessor = httpContextAccessor;
-    }
 
     /// <summary>
     ///     URL that Spotify redirects to after authenticating with Spotify's accounts URL.
@@ -44,12 +34,12 @@ public class LoginController : Controller
         // Spotify sets the "error" query param if authentication failed
         if (error is not null)
         {
-            _logger.LogError( "Spotify auth returned an error: {AuthError}", error.ReplaceLineEndings( string.Empty ) );
+            logger.LogError( "Spotify auth returned an error: {AuthError}", error.ReplaceLineEndings( string.Empty ) );
 
             throw new InvalidOperationException( $"Error authenticating with Spotify: {error}" );
         }
 
-        Guid viewToken = await _authService.GetAccessToken(
+        Guid viewToken = await authService.GetAccessToken(
             new AuthorizationResult
             {
                 Code = code,
@@ -58,7 +48,7 @@ public class LoginController : Controller
             ct
         );
 
-        ClaimsIdentity claimsIdentity = new(Array.Empty<Claim>(), CookieAuthenticationDefaults.AuthenticationScheme);
+        ClaimsIdentity claimsIdentity = new( Array.Empty<Claim>(), CookieAuthenticationDefaults.AuthenticationScheme );
 
         AuthenticationProperties authProperties = new()
         {
@@ -72,10 +62,10 @@ public class LoginController : Controller
 
         Response.Headers.Authorization = new StringValues( $"Bearer {viewToken}" );
 
-        _httpContextAccessor.HttpContext!.Response.Cookies.Append( TokenService.UserTokenCookieName, viewToken.ToString() );
+        httpContextAccessor.HttpContext!.Response.Cookies.Append( TokenService.UserTokenCookieName, viewToken.ToString() );
 
         return returnUrl is not null
             ? LocalRedirectPreserveMethod( returnUrl )
-            : RedirectToAction( nameof(HomeController.Main), HomeController.Name );
+            : RedirectToAction( nameof( HomeController.Main ), HomeController.Name );
     }
 }
