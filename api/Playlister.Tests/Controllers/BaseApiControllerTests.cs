@@ -1,4 +1,3 @@
-using Moq;
 using Playlister.Controllers;
 using Playlister.Utilities;
 

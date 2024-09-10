@@ -1,5 +1,4 @@
 using Playlister.CQRS.Queries;
-using Playlister.Models;
 using Playlister.Models.SpotifyAccounts;
 
 namespace Playlister.Services;

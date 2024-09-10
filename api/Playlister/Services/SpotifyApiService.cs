@@ -1,5 +1,4 @@
 using System.Net.Http.Headers;
-using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Playlister.RefitClients;
 

@@ -3,8 +3,6 @@ using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.CQRS.Handlers;
 using Playlister.CQRS.Queries;
-using Playlister.Extensions;
-using Playlister.Models;
 using Playlister.Mvc.DTOs;
 using Playlister.Utilities;
 

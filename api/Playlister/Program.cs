@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Playlister.Configuration;
-using Playlister.Extensions;
 
 namespace Playlister;
 

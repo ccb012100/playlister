@@ -1,5 +1,3 @@
-using Playlister.Models;
-
 namespace Playlister.Repositories;
 
 public interface IPlaylistReadRepository

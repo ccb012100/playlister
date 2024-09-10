@@ -1,6 +1,4 @@
-using System.Collections.Immutable;
 using Playlister.CQRS.Commands;
-using Playlister.Models;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;

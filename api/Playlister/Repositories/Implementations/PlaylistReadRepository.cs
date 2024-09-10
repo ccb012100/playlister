@@ -1,6 +1,5 @@
 using Dapper;
 using Microsoft.Data.Sqlite;
-using Playlister.Models;
 
 namespace Playlister.Repositories.Implementations;
 

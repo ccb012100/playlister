@@ -1,6 +1,3 @@
-using System.Collections.Immutable;
-using Playlister.Models;
-
 namespace Playlister.Services;
 
 public interface IPlaylistService

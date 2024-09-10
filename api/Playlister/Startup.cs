@@ -3,9 +3,7 @@ using System.Text.Json.Serialization;
 using Dapper;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Http;
-using Playlister.Extensions;
 using Playlister.Middleware;
-using Playlister.Models;
 
 namespace Playlister;
 

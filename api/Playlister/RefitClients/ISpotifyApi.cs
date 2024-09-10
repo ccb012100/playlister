@@ -1,4 +1,3 @@
-using Playlister.Models;
 using Playlister.Models.SpotifyApi;
 using Refit;
 

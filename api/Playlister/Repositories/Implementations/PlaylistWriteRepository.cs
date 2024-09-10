@@ -1,10 +1,7 @@
-using System.Collections.Immutable;
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
 using Microsoft.Data.Sqlite;
-using Playlister.Extensions;
-using Playlister.Models;
 using Playlister.Utilities;
 
 namespace Playlister.Repositories.Implementations;
