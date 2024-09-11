@@ -9,6 +9,8 @@ The [api](/api/) folder contains the **.NET** API/UI for syncing your **Spotify*
 
 The [shell](/shell/) folder contains shell scripts, mainly for working with the `playlister.sqlite3` **SQLite** database.
 
+The [playlist-util](/playlist-util/) folder contains a **Rust** utility for searching `playlister.sqlite3` and syncing it to a corresponding `TSV` file.
+
 ## Database schema
 
 Schema for the **SQLite** database containing synced **Spotify** data.
