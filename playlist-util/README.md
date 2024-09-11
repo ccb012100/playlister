@@ -1,6 +1,6 @@
 # playlist-util
 
-[![Rust](https://github.com/ccb012100/playlist-util/actions/workflows/rust.yml/badge.svg)](https://github.com/ccb012100/playlist-util/actions/workflows/rust.yml)
+[![Rust](https://github.com/ccb012100/playlister/actions/workflows/rust.yml/badge.svg)](https://github.com/ccb012100/playlister/actions/workflows/rust.yml)
 
 CLI utility for Syncing and Searching my Spotify album playlists created from [Playlister](https://github.com/ccb012100/playlister).
 
