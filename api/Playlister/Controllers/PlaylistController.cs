@@ -77,7 +77,7 @@ public class PlaylistController : BaseApiController
             {
                 TotalSynced = total,
                 Deleted = deleted,
-                Elapsed = elapsed.ToDisplayString(),
+                Elapsed = elapsedStr,
                 Updated = updated
             }
         );

@@ -19,7 +19,7 @@ pub fn get_albums_by_added_at_desc(
     selection: &AlbumSelection,
 ) -> Result<Vec<Album>, anyhow::Error> {
     let query = format!(
-        "select * from AlbumsView {} ORDER BY added_at DESC limit :limit OFFSET :offset;",
+        "select * from PlaylistAlbum {} ORDER BY added_at DESC limit :limit OFFSET :offset;",
         match selection {
             AlbumSelection::All => "",
             AlbumSelection::Starred => "where playlist like 'starred%'",
@@ -99,7 +99,7 @@ fn build_search_query(request: &SearchRequest) -> String {
     }
 
     format!(
-        "select * from AlbumsView where ({}) {} order by {} limit :limit OFFSET :offset;",
+        "select * from PlaylistAlbum where ({}) {} order by {} limit :limit OFFSET :offset;",
         match where_clauses.len() {
             1 => where_clauses[0].to_string(),
             _ => where_clauses.join(" or ").to_string(),

@@ -1,11 +1,12 @@
-namespace Playlister.Repositories;
+using Playlister.Data;
 
+namespace Playlister.Repositories;
 public static class SqlQueries
 {
     public static class Read
     {
         /// <summary>
-        ///     Returns a collection of <see cref="Models.Playlist" />
+        ///     Returns a collection of <see cref="Models.Playlist" />s
         /// </summary>
         public const string Playlists = "SELECT * FROM Playlist";
 
@@ -55,10 +56,10 @@ public static class SqlQueries
             WHERE name <> excluded.name;
             """;
 
-        /*
-         * The snapshot is not updated when the details (name, description) change,
-         * so we have to explicitly check for changes via the ON CONFLICT
-         */
+        /// <summary>
+        ///     The snapshot is not updated when the details <c>(name, description)</c> change,
+        ///     so we have to explicitly check for changes via the <c>ON CONFLICT</c>
+        /// </summary>
         public const string Playlist =
             """
             INSERT INTO Playlist(id, snapshot_id, name, collaborative, description, public, count, count_unique)
@@ -118,7 +119,7 @@ public static class SqlQueries
     public static class Delete
     {
         /// <summary>
-        ///     Delete <see cref="Models.PlaylistTrack" />s with outdated <see cref="Models.PlaylistTrack.SnapshotId" />
+        ///     Delete rows from <see cref="DataTables.PlaylistTrack" />s with outdated <see cref="Models.PlaylistTrack.SnapshotId" />
         /// </summary>
         public const string OrphanedTracks =
             """
@@ -136,5 +137,42 @@ public static class SqlQueries
             );
             SELECT changes();
             """;
+
+        public const string TruncatePlaylistAlbum = "DELETE FROM PlaylistAlbum;";
+    }
+
+    public static class Insert
+    {
+        /// <summary>
+        ///     Populate <see cref="DataTables.PlaylistAlbum"/> from scratch.
+        /// </summary>
+        public const string PopulatePlaylistAlbum = """
+        INSERT INTO
+            PlaylistAlbum (
+                artists,
+                album,
+                track_count,
+                release_year,
+                playlist,
+                added_at
+            )
+        SELECT
+            art.name AS artists,
+            a.name AS album,
+            a.total_tracks AS tracks,
+            substr(a.release_date, 1, 4) AS release_year,
+            p.name,
+            pt.added_at AS added_at
+        FROM
+            Album a
+            JOIN albumartist aa ON aa.album_id = a.id
+            JOIN artist art ON art.id = aa.artist_id
+            JOIN track t ON t.album_id = a.id
+            JOIN playlisttrack pt ON pt.track_id = t.id
+            JOIN playlist p ON p.id = pt.playlist_id
+        GROUP BY
+            p.id,
+            a.id;
+        """;
     }
 }

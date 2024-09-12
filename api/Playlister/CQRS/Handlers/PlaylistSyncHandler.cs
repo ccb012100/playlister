@@ -75,6 +75,8 @@ public class PlaylistSyncHandler
         int updated = await _playlistService.SyncPlaylistsAsync( command.AccessToken, playlists, ct );
         int deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
 
+        await _playlistService.RebuildPlaylistAlbumTable( ct );
+
         return (total: playlists.Length, updated, deleted);
     }
 
@@ -88,6 +90,7 @@ public class PlaylistSyncHandler
     /// </remarks>
     public async Task ForceSync( ForceSyncPlaylistCommand command, CancellationToken ct = default )
     {
-        await Task.Run( () => _playlistService.ForceSyncPlaylistAsync( command.AccessToken, command.PlaylistId, ct ), ct );
+        await _playlistService.ForceSyncPlaylistAsync( command.AccessToken, command.PlaylistId, ct );
+        await _playlistService.RebuildPlaylistAlbumTable( ct );
     }
 }
