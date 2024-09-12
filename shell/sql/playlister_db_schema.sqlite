@@ -138,29 +138,41 @@ CREATE TABLE IF NOT EXISTS "ExternalId"(
 );
 CREATE INDEX "IX_SavedAlbum_id" ON "SavedAlbum"("id" ASC);
 CREATE INDEX "IX_ExternalId_album_id" ON "ExternalId"("album_id" ASC);
-CREATE VIEW AlbumsView
-AS
-    SELECT GROUP_CONCAT(artist, '; ') AS artists, album, track_count, release_date, added_at, playlist
-    FROM
-        (
-            SELECT
-                art.name AS artist,
-                a.name AS album,
-                a.id AS album_id,
-                a.total_tracks AS track_count,
-                substr(a.release_date, 1, 4) AS release_date,
-                pt.added_at,
-                p.name AS playlist,
-                p.id AS playlist_id
-            FROM Album a
-                JOIN albumartist aa ON aa.album_id = a.id
-                JOIN artist art ON art.id = aa.artist_id
-                JOIN track t ON t.album_id = a.id
-                JOIN playlisttrack pt ON pt.track_id = t.id
-                JOIN playlist p ON p.id = pt.playlist_id
-            GROUP BY a.id, art.id, p.id
-            ORDER BY p.id, a.id, art.name
-        )
-    GROUP BY album_id, playlist_id
-    ORDER BY added_at DESC
-/* AlbumsView(artists,album,track_count,release_date,added_at,playlist) */;
+CREATE TABLE IF NOT EXISTS "PlaylistAlbum"(
+  "artists" TEXT NOT NULL,
+  "album" TEXT NOT NULL,
+  "track_count" INTEGER NOT NULL,
+  "release_year" TEXT,
+  "playlist" TEXT,
+  "added_at" DATETIME NOT NULL,
+  "created_at" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "modified_at" DATETIME
+);
+CREATE INDEX "IX_PlaylistAlbum_id" ON "PlaylistAlbum"("artists" ASC);
+CREATE INDEX "IX_PlaylistAlbum_release_year" ON "PlaylistAlbum"(
+  "release_year" ASC
+);
+CREATE INDEX "IX_PlaylistAlbum_artists_album" ON "PlaylistAlbum"(
+  "artists",
+  "album"
+);
+CREATE INDEX "IX_PlaylistAlbum_album_artists" ON "PlaylistAlbum"(
+  "album",
+  "artists"
+);
+CREATE INDEX "IX_PlaylistAlbum_playlist_artists_album" ON "PlaylistAlbum"(
+  "playlist",
+  "artists",
+  "album"
+);
+CREATE INDEX "IX_PlaylistAlbum_release_year_artists_album" ON "PlaylistAlbum"(
+  "release_year",
+  "artists",
+  "album"
+);
+CREATE TRIGGER playlistalbum_modified
+    after update
+    on PlaylistAlbum
+begin
+    update PlaylistAlbum set modified_at = current_timestamp where id = new.id;
+end;

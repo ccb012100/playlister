@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.Common;
 using System.Diagnostics;
+using Dapper;
 using Microsoft.Data.Sqlite;
 using Playlister.Utilities;
 
@@ -117,11 +118,11 @@ public class PlaylistWriteRepository(
             ImmutableArray<Track> tracks = items.Select( t => t.Track ).ToImmutableArray();
             ImmutableArray<Album> albums = tracks.Select( t => t.Album ).ToImmutableArray();
 
-            List<Task> tasks = new()
-            {
+            List<Task> tasks =
+            [
                 UpsertArtists( tracks, conn, transaction ),
                 UpsertAlbums( albums, conn, transaction )
-            };
+            ];
 
             await Task.WhenAll( tasks );
 
@@ -259,6 +260,53 @@ public class PlaylistWriteRepository(
                 playlist.LoggingTag,
                 albumArtists.Length
             );
+        }
+    }
+
+    public async Task<(int inserted, int deleted)> TruncateAndPopulatePlaylistAlbum( CancellationToken ct )
+    {
+        Stopwatch sw = new();
+        sw.Start();
+
+        await using SqliteConnection connection = _connectionFactory.Connection;
+        await connection.OpenAsync( ct );
+        DbTransaction txn = await connection.BeginTransactionAsync( ct );
+
+        try
+        {
+            int deleted = await connection.ExecuteScalarQueryAsync(
+                SqlQueries.Delete.TruncatePlaylistAlbum,
+                txn
+            );
+
+            _logger.LogInformation(
+                "Truncated {Table}: deleted {Deleted} albums. Total time: {Elapsed}",
+                Data.DataTables.PlaylistAlbum,
+                deleted,
+                sw.Elapsed.ToDisplayString()
+            );
+
+            int inserted = await connection.ExecuteAsync( SqlQueries.Insert.PopulatePlaylistAlbum );
+
+            _logger.LogInformation(
+                "Populated {Table}: added {Inserted:n0} albums. Total time to truncate and populate: {Elapsed}",
+                Data.DataTables.PlaylistAlbum,
+                inserted.ToString( "N0" ),
+                sw.Elapsed.ToDisplayString()
+            );
+
+            return (inserted, deleted);
+        }
+        catch (SqliteException)
+        {
+            _logger.LogCritical( "SqliteException thrown while trying to populate {Table}", Data.DataTables.PlaylistAlbum );
+
+            throw;
+        }
+        finally
+        {
+            sw.Stop();
+            await txn.CommitAsync( ct );
         }
     }
 }

@@ -68,26 +68,27 @@ public class PlaylistService : IPlaylistService
 
         sw.Stop();
 
-        switch (s_updatedPlaylistsCache.Items.IsEmpty)
+        if (s_updatedPlaylistsCache.Items.IsEmpty)
         {
-            case true:
-                _logger.LogInformation(
-                    "There were no changed playlists found. Time elapsed: {Elapsed}",
-                    sw.Elapsed.ToDisplayString()
-                );
+            _logger.LogInformation(
+                "There were no changed playlists found. Time elapsed: {Elapsed}",
+                sw.Elapsed.ToDisplayString()
+            );
 
-                return 0;
-            case false:
-                int changedPlaylistCount = s_updatedPlaylistsCache.Items.Count;
-
-                _logger.LogInformation(
-                    "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
-                    sw.Elapsed.ToDisplayString(),
-                    changedPlaylistCount
-                );
-
-                return changedPlaylistCount;
+            return 0;
         }
+
+        int changedPlaylistCount = s_updatedPlaylistsCache.Items.Count;
+
+        _logger.LogInformation(
+            "It took {Elapsed} seconds to update the {ChangedPlaylistCount} changed playlists",
+            sw.Elapsed.ToDisplayString(),
+            changedPlaylistCount
+        );
+
+        await _writeRepository.TruncateAndPopulatePlaylistAlbum( ct );
+
+        return changedPlaylistCount;
     }
 
     public async Task SyncPlaylistAsync(
@@ -121,6 +122,13 @@ public class PlaylistService : IPlaylistService
         _logger.LogDebug( "Deleting orphaned PlaylistTracks..." );
 
         return await _writeRepository.DeleteOrphanedPlaylistTracksAsync( ct );
+    }
+
+    public async Task<(int inserted, int deleted)> RebuildPlaylistAlbumTable( CancellationToken ct )
+    {
+        _logger.LogDebug( "Rebuilding PlaylistAlbum..." );
+
+        return await _writeRepository.TruncateAndPopulatePlaylistAlbum( ct );
     }
 
     #endregion
@@ -300,7 +308,7 @@ public class PlaylistService : IPlaylistService
         Playlist pl = s_playlistCache.Items.AddOrUpdate(
             playlist.Id,
             playlist,
-            ( _, b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : playlist
+            ( _, b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : playlist
         );
 
         _logger.LogTrace( "{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}", playlist.LoggingTag, pl.Name, pl.SnapshotId );
@@ -329,7 +337,7 @@ public class PlaylistService : IPlaylistService
         string _ = s_missingTracksCache.Items.AddOrUpdate(
             playlistId,
             count.ToString(),
-            ( _, b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : count.ToString()
+            ( _, b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : count.ToString()
         );
 
         _logger.LogDebug(

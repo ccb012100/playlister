@@ -1,12 +1,10 @@
-pub mod data;
-mod sqlite;
-mod tsv;
+use crate::data::search::{LastAlbumsRequest, SearchFileType, SearchRequest, SearchResults};
 
 use anyhow::{Context, Result};
-use data::LastAlbumsRequest;
 use log::{debug, trace};
 
-use self::data::{SearchFileType, SearchRequest, SearchResults};
+mod sqlite;
+mod tsv;
 
 pub fn search<'a>(request: &'a SearchRequest<'a>) -> Result<SearchResults<'a>> {
     trace!("🪵 search called with: {:#?}", request);

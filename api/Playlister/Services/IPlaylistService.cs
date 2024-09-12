@@ -36,4 +36,15 @@ public interface IPlaylistService
     /// </summary>
     /// <remarks>Total number of tracks deleted</remarks>
     Task<int> DeleteOrphanedPlaylistTracksAsync( CancellationToken ct );
+
+    /// <summary>
+    ///     Truncate <see cref="Data.DataTables.PlaylistAlbum"/> and then populate it from scratch.
+    /// </summary>
+    /// <param name="ct"></param>
+    /// <returns>Number of items deleted and number of items added to the table</returns>
+    /// <remarks>
+    ///     Currently this is performant enough that it's preferable to trying to keep it in sync
+    ///     with the canonical data by reconciling existing entries.
+    /// </remarks>
+    Task<(int inserted, int deleted)> RebuildPlaylistAlbumTable( CancellationToken ct );
 }

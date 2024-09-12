@@ -1,12 +1,12 @@
 use crate::data::Album;
+
 use anyhow::{anyhow, Context, Ok, Result};
 use log::{debug, trace};
 use std::path::PathBuf;
 
-pub mod data;
-mod sqlite;
 mod tsv;
 
+/// Sync `source` and `destination`
 pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
     trace!(
         "🪵 sync called with: source={:#?} destination={:#?}",
@@ -14,9 +14,12 @@ pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
         destination
     );
 
+    const LIMIT: usize = 25;
+    const MAX_STARRED_ALBUMS_TO_FETCH: usize = LIMIT * 2;
+
     let last_added_to_tsv = tsv::get_last_album_added(destination).with_context(|| {
         format!(
-            "❌ Failed to get most recent addition to tsv: {:#?} ❌",
+            "❌ Failed to get most recent addition to tsv: {:#?}",
             destination
         )
     })?;
@@ -26,26 +29,34 @@ pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
         destination, last_added_to_tsv
     );
 
-    let mut starred_albums: Vec<Album> = sqlite::get_the_most_recent_starred_albums(source, 0)
-        .with_context(|| {
-            format!(
-                "❌ Failed to get the most recent starred albums: {:#?} ❌",
-                destination
-            )
-        })?;
-
-    debug!(
-        "🪵 most recent starred albums, offset=0: {:#?}",
-        starred_albums
-    );
-
-    let mut albums_to_add: Vec<Album> = Vec::new();
-    let mut offset = 0;
-    let mut found_match = false;
-    let max_starred_albums_to_fetch = 100;
     let last_album_added = last_added_to_tsv.to_album();
 
-    while !found_match && !starred_albums.is_empty() && offset < max_starred_albums_to_fetch {
+    debug!("\n🪵 Last album as Album: {:#?} 🔍", last_album_added);
+
+    let mut albums_to_add: Vec<Album> = Vec::new();
+    let mut found_match = false;
+    let mut offset = 0;
+
+    while !found_match && offset < MAX_STARRED_ALBUMS_TO_FETCH {
+        let starred_albums: Vec<Album> = crate::sqlite::get_albums_by_added_at_desc(
+                source,
+                LIMIT,
+                offset,
+                &crate::sqlite::AlbumSelection::Starred,
+            )
+            .with_context(|| {
+                 format!(
+                    "❌ Failed to get the most recent starred albums from source={:#?} limit={} offset={}",
+                    source,
+                    LIMIT,
+                    offset
+                )
+            })?;
+
+        if starred_albums.is_empty() {
+            break;
+        }
+
         offset += starred_albums.len();
 
         for album in starred_albums {
@@ -57,28 +68,11 @@ pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
 
             albums_to_add.push(album);
         }
-
-        if found_match {
-            break;
-        }
-
-        starred_albums =
-            sqlite::get_the_most_recent_starred_albums(source, offset).with_context(|| {
-                format!(
-                    "❌ Failed to get the most recent starred albums: {:#?} ❌",
-                    destination
-                )
-            })?;
-
-        debug!(
-            "🪵 most recent starred albums, offset={}: {:#?}",
-            offset, starred_albums
-        );
     }
 
     if !found_match {
         Err(anyhow!(
-            "\n❌ Searched {} records. Unable to find a match in {:#?} for: <{}> ❌",
+            "\n❌ Searched {} records. Unable to find a match in {:#?} for: <{}>",
             offset,
             source,
             last_added_to_tsv,
