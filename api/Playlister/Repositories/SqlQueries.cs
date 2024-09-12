@@ -124,16 +124,11 @@ public static class SqlQueries
         public const string OrphanedTracks =
             """
             DELETE from PlaylistTrack
-            WHERE (track_id, playlist_id, playlist_snapshot_id) IN (
-                SELECT
-                    pt.track_id,
-                    pt.playlist_id,
-                    pt.playlist_snapshot_id
-                FROM
-                    PlaylistTrack pt
-                LEFT JOIN Playlist p ON pt.playlist_snapshot_id = p.snapshot_id
-                WHERE
-                    p.id is null
+            WHERE (track_id, playlist_id, playlist_snapshot_id) IN
+            (
+                SELECT pt.track_id, pt.playlist_id, pt.playlist_snapshot_id
+                FROM PlaylistTrack pt LEFT JOIN Playlist p ON pt.playlist_snapshot_id = p.snapshot_id
+                WHERE p.id is null
             );
             SELECT changes();
             """;
@@ -147,15 +142,7 @@ public static class SqlQueries
         ///     Populate <see cref="DataTables.PlaylistAlbum"/> from scratch.
         /// </summary>
         public const string PopulatePlaylistAlbum = """
-        INSERT INTO
-            PlaylistAlbum (
-                artists,
-                album,
-                track_count,
-                release_year,
-                playlist,
-                added_at
-            )
+        INSERT INTO PlaylistAlbum ( artists, album, track_count, release_year, playlist, added_at )
         SELECT
             art.name AS artists,
             a.name AS album,
@@ -170,9 +157,7 @@ public static class SqlQueries
             JOIN track t ON t.album_id = a.id
             JOIN playlisttrack pt ON pt.track_id = t.id
             JOIN playlist p ON p.id = pt.playlist_id
-        GROUP BY
-            p.id,
-            a.id;
+        GROUP BY p.id, a.id;
         """;
     }
 }
