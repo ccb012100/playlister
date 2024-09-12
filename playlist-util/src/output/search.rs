@@ -1,5 +1,9 @@
-use crate::{data::Album, output::Output, search::data::SearchResults};
+use playlist_util::data::{search::SearchResults, Album};
+
+use crate::output::Output;
+
 use comfy_table::*;
+
 use log::trace;
 use nu_ansi_term::{AnsiString, Color};
 use std::io::{self, stdout, IsTerminal, Write};

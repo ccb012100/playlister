@@ -1,8 +1,5 @@
-use crate::{
-    data::{Album, FilterField, SortField},
-    sqlite::AlbumSelection,
-};
-use std::path::PathBuf;
+use super::{Album, FilterField, SortField};
+use crate::sqlite::AlbumSelection;
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct SearchRequest<'a> {
@@ -13,7 +10,7 @@ pub struct SearchRequest<'a> {
     pub search_term: &'a str,
     pub search_type: SearchFileType,
     pub sort: SortField,
-    pub source: &'a PathBuf,
+    pub source: &'a std::path::PathBuf,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -21,7 +18,7 @@ pub struct LastAlbumsRequest<'a> {
     pub num: usize,
     pub selection: AlbumSelection,
     pub source_file_type: SearchFileType,
-    pub source: &'a PathBuf,
+    pub source: &'a std::path::PathBuf,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]

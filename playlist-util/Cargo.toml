@@ -4,6 +4,14 @@ version = "0.1.0"
 edition = "2021"
 description = "Used to search and sync playlists generated from <https://github.com/ccb012100/playlist-search>"
 
+[lib]
+name = "playlist_util"
+path = "src/lib.rs"
+
+[[bin]]
+name = "playlist-util"
+path = "src/main.rs"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

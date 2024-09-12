@@ -97,24 +97,24 @@ pub(crate) enum FilterField {
     Playlist,
 }
 
-impl From<SortField> for crate::data::SortField {
+impl From<SortField> for playlist_util::data::SortField {
     fn from(value: SortField) -> Self {
         match value {
-            SortField::Added => crate::data::SortField::Added,
-            SortField::Album => crate::data::SortField::Album,
-            SortField::Artists => crate::data::SortField::Artists,
-            SortField::Playlist => crate::data::SortField::Playlist,
-            SortField::Year => crate::data::SortField::Year,
+            SortField::Added => playlist_util::data::SortField::Added,
+            SortField::Album => playlist_util::data::SortField::Album,
+            SortField::Artists => playlist_util::data::SortField::Artists,
+            SortField::Playlist => playlist_util::data::SortField::Playlist,
+            SortField::Year => playlist_util::data::SortField::Year,
         }
     }
 }
 
-impl From<FilterField> for crate::data::FilterField {
+impl From<FilterField> for playlist_util::data::FilterField {
     fn from(value: FilterField) -> Self {
         match value {
-            FilterField::Artists => crate::data::FilterField::Artists,
-            FilterField::Album => crate::data::FilterField::Album,
-            FilterField::Playlist => crate::data::FilterField::Playlist,
+            FilterField::Artists => playlist_util::data::FilterField::Artists,
+            FilterField::Album => playlist_util::data::FilterField::Album,
+            FilterField::Playlist => playlist_util::data::FilterField::Playlist,
         }
     }
 }
@@ -140,11 +140,11 @@ impl FileType {
             if path.try_exists()? {
                 Ok(path)
             } else {
-                let err_msg = format!("❌ File \"{}\" does not exist ❌", file_name);
+                let err_msg = format!("❌ File \"{}\" does not exist", file_name);
                 Err(anyhow!(err_msg))
             }
         } else {
-            let err_msg = format!("❌ File name format \"{}\" is invalid ❌", { file_name });
+            let err_msg = format!("❌ File name format \"{}\" is invalid", { file_name });
             Err(anyhow!(err_msg))
         }
     }

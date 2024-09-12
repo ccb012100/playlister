@@ -1,24 +1,25 @@
-use crate::{
-    data::{FilterField, SortField},
-    output::search::SearchOutput,
-    search::data::{LastAlbumsRequest, SearchFileType, SearchRequest, SearchResults},
+use crate::output::search::SearchOutput;
+use playlist_util::{
+    data::{
+        search::{LastAlbumsRequest, SearchFileType, SearchRequest, SearchResults},
+        FilterField, SortField,
+    },
     sqlite::AlbumSelection,
 };
-use crate::{
+use playlist_util::{
     search,
     sync::{self},
 };
+use subcommands::{FileType, Subcommands};
 
 use anyhow::Context;
 use clap::{
     arg,
     builder::{styling::AnsiColor, Styles},
+    command, Parser,
 };
-use clap::{command, Parser};
 use log::{info, LevelFilter};
 use std::path::PathBuf;
-
-use subcommands::{FileType, Subcommands};
 
 mod subcommands;
 
@@ -117,7 +118,7 @@ impl Cli {
                 };
 
                 let results: SearchResults<'_> = search::search(&request)
-                    .with_context(|| format!("❌ Search failed: {:#?} ❌", request))?;
+                    .with_context(|| format!("❌ Search failed: {:#?}", request))?;
 
                 if *no_format {
                     SearchOutput::print_search_results(&results)
@@ -138,7 +139,7 @@ impl Cli {
 
                 sync::sync(&source_path, &destination_path).with_context(|| {
                     format!(
-                        "❌ Syncing {:#?} to {:#?} failed! ❌",
+                        "❌ Syncing {:#?} to {:#?} failed!",
                         source_path, destination_path
                     )
                 })?;

@@ -8,6 +8,8 @@ use std::{
 use chrono::{Datelike, Utc};
 use regex::Regex;
 
+pub mod search;
+
 /* Structs */
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
@@ -279,36 +281,6 @@ impl Album {
         ))
     }
 
-    #[cfg(debug_assertions)]
-    pub fn validate(&self) -> anyhow::Result<()> {
-        let mut errors = Vec::new();
-
-        if self.name.0.trim().is_empty() {
-            errors.push(format!("\tInvalid name: {}", self.name));
-        }
-        if self.artists.0.trim().is_empty() {
-            errors.push(format!("\tInvalid artist: {}", self.artists));
-        }
-        if self.playlist.0.trim().is_empty() {
-            errors.push(format!("\tInvalid name: {}", self.playlist));
-        }
-        if !is_valid_date_added(&self.date_added.0) {
-            errors.push(format!("\tInvalid date_added: {}", self.date_added));
-        }
-        if !is_valid_release_year(&self.release_year.0) {
-            errors.push(format!("\tInvalid release_year: {}", self.release_year));
-        }
-        if !is_valid_track_count(&self.tracks.0) {
-            errors.push(format!("\tInvalid tracks: {}", self.tracks));
-        }
-
-        if errors.is_empty() {
-            Ok(())
-        } else {
-            Err(anyhow::anyhow!("Failed validation:\n{}", errors.join("\n")))
-        }
-    }
-
     /// sort `albums` by `sortfield`
     pub fn sort_by_field(albums: &mut [Album], sortfield: &SortField) {
         match sortfield {
@@ -418,6 +390,36 @@ impl Album {
                         && playlist.0.to_uppercase().contains(&term_caps))
             },
         );
+    }
+
+    #[cfg(debug_assertions)]
+    pub fn validate(&self) -> anyhow::Result<()> {
+        let mut errors = Vec::new();
+
+        if self.name.0.trim().is_empty() {
+            errors.push(format!("\tInvalid name: {}", self.name));
+        }
+        if self.artists.0.trim().is_empty() {
+            errors.push(format!("\tInvalid artist: {}", self.artists));
+        }
+        if self.playlist.0.trim().is_empty() {
+            errors.push(format!("\tInvalid name: {}", self.playlist));
+        }
+        if !is_valid_date_added(&self.date_added.0) {
+            errors.push(format!("\tInvalid date_added: {}", self.date_added));
+        }
+        if !is_valid_release_year(&self.release_year.0) {
+            errors.push(format!("\tInvalid release_year: {}", self.release_year));
+        }
+        if !is_valid_track_count(&self.tracks.0) {
+            errors.push(format!("\tInvalid tracks: {}", self.tracks));
+        }
+
+        if errors.is_empty() {
+            Ok(())
+        } else {
+            Err(anyhow::anyhow!("Failed validation:\n{}", errors.join("\n")))
+        }
     }
 }
 
