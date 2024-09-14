@@ -8,9 +8,11 @@ using Playlister.Services;
 
 namespace Playlister.Mvc.Controllers;
 
-public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler, ILogger<HomeController> logger ) : Controller
+public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler, ILogger<HomeController> logger, IConfiguration config ) : Controller
 {
     public const string Name = "Home";
+
+    private readonly bool _handsFree = bool.TryParse( config["HandsFree"], out bool handsFree ) && handsFree;
 
     /// <summary>
     ///     Navigate to Spotify login
@@ -36,7 +38,7 @@ public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthor
     [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public IActionResult Main()
     {
-        return View( new HomeViewModel() );
+        return View( new HomeViewModel { HandsFree = _handsFree } );
     }
 
     [ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]

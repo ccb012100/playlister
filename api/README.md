@@ -12,6 +12,10 @@ Uses a single **Sqlite** database.
 
 Uses [ASP.NET Core MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) without any style sheets or JavaScript libraries.
 
+## "Hands-free" mode
+
+When the configuration value `"HandsFree": true` is present, after login/authorization the app will automatically Sync All Playlists and then stop the application.
+
 ## CQRS
 
 The app generally follows the Command Query Responsibility Segregation (CQRS) pattern (though Commands sometimes return values), but it does _not_
