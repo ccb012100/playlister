@@ -14,9 +14,7 @@ use subcommands::{FileType, Subcommands};
 
 use anyhow::Context;
 use clap::{
-    arg,
-    builder::{styling::AnsiColor, Styles},
-    command, Parser,
+    arg, builder::{styling::AnsiColor, Styles}, command, Args, Parser
 };
 use log::{info, LevelFilter};
 use std::path::PathBuf;
@@ -33,17 +31,32 @@ const STYLES: Styles = Styles::styled()
 #[command(styles=STYLES)]
 #[command(about, version, arg_required_else_help = true)]
 pub struct Cli {
-    /// Set verbosity
+    #[clap(flatten)]
+    pub options: CliOptions,
+
+    #[command(subcommand)]
+    pub subcommand: subcommands::Subcommands,
+}
+
+#[derive(Args, Debug, Clone, Copy)]
+pub struct CliOptions {
+    /// Set verbosity; adding multiple times increases the verbosity level (>=4, i.e. `-vvvv`, sets maximum verbosity).
     #[arg(
         long,
         short = 'v',
         action = clap::ArgAction::Count,
-        global = true
     )]
     pub verbose: u8,
 
-    #[command(subcommand)]
-    pub subcommand: subcommands::Subcommands,
+    /// Set logging level - if set, overrides `verbose`
+    #[arg(
+        long,
+        visible_alias("log"),
+        visible_alias("level"),
+        value_name = "LEVEL",
+        global = true
+    )]
+    pub log_level: Option<LevelFilter>,
 }
 
 impl Cli {
@@ -151,16 +164,19 @@ impl Cli {
     }
 
     pub fn initialize_logger(&self) {
-        let log_level = match self.verbose {
-            0 => LevelFilter::Error,
-            1 => LevelFilter::Warn,
-            2 => LevelFilter::Info,
-            3 => LevelFilter::Debug,
-            4..=std::u8::MAX => LevelFilter::Trace,
+        let level = match self.options.log_level {
+            Some(logging_level) => logging_level,
+            None => match self.options.verbose {
+                0 => LevelFilter::Error,
+                1 => LevelFilter::Warn,
+                2 => LevelFilter::Info,
+                3 => LevelFilter::Debug,
+                4..=std::u8::MAX => LevelFilter::Trace,
+            },
         };
 
-        env_logger::Builder::new().filter_level(log_level).init();
+        env_logger::Builder::new().filter_level(level).init();
 
-        info!("ℹ️ logging initialized at level {}", log_level);
+        info!("ℹ️ logging initialized at level {}", level);
     }
 }

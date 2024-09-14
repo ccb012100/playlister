@@ -41,12 +41,12 @@ pub enum Subcommands {
         sort: SortField,
 
         /// Field(s) to filter the search on
-        #[arg(short, long, value_name = "FILTER", value_delimiter = ',', value_enum)]
+        #[arg(short, long, value_name = "FIELD", value_delimiter = ',', value_enum)]
         #[arg(default_values_t = [FilterField::Artists, FilterField::Album])]
         filter: Vec<FilterField>,
 
         /// Include Playlist names in search results
-        #[arg(long, default_value_t = false)]
+        #[arg(long, visible_alias("include-playlist"), default_value_t = false)]
         include_playlist_name: bool,
 
         /// Don't format output
@@ -54,12 +54,11 @@ pub enum Subcommands {
         no_format: bool,
 
         /// Include header row in output
-        #[arg(long, default_value_t = false)]
+        #[arg(long, visible_alias("header"), default_value_t = false)]
         include_header: bool,
 
-        /// If `false`, limit to just Starred albums.<br/><br/>
-        /// *This is only used for `sqlite` searches and is ignored for `TSV`.*
-        #[arg(long, default_value_t = false)]
+        /// If `false`, limit to just Starred albums (This is only used for `sqlite` searches and is ignored for `TSV`).
+        #[arg(long, visible_alias("all-albums"), default_value_t = false)]
         all: bool,
     },
     /// Sync playlists
