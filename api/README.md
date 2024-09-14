@@ -12,10 +12,6 @@ Uses a single **Sqlite** database.
 
 Uses [ASP.NET Core MVC](https://dotnet.microsoft.com/en-us/apps/aspnet/mvc) without any style sheets or JavaScript libraries.
 
-## "Hands-free" mode
-
-When the configuration value `"HandsFree": true` is present, after authorization the app will automatically Sync All Playlists and then stop the application.
-
 ## CQRS
 
 The app generally follows the Command Query Responsibility Segregation (CQRS) pattern (though Commands sometimes return values), but it does _not_
@@ -68,36 +64,36 @@ EOF
 ### .NET
 
 - Tests
-    - [ ] Integration
-    - [ ] Unit
-        - [ ] Property-based
+  - [ ] Integration
+  - [ ] Unit
+    - [ ] Property-based
 - [ ] Add `Polly` Policy to attempt re-auths for 401s
 - [ ] Upgrade to .NET 8
-    - [ ] Swap out `Polly` for `Microsoft.Extensions.Http.Resilience`
+  - [ ] Swap out `Polly` for `Microsoft.Extensions.Http.Resilience`
 - Spotify Access Token
-    - [ ] Validate that the `state` value matches the original value sent to user
-    - [x] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
+  - [ ] Validate that the `state` value matches the original value sent to user
+  - [x] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
 - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
 - [ ] [Get User's saved tracks](https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks)
 - [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
-    - There doesn't seem to be a way to fix this; Spotify's API does not allow sorting/filtering when calling the Spotify
+  - There doesn't seem to be a way to fix this; Spotify's API does not allow sorting/filtering when calling the Spotify
       [Get Playlist Items](https://developer.spotify.com/documentation/web-api/reference/get-playlists-tracks) endpoint.
 - [ ] Add `.devcontainer`
 - [ ] Documentation/visualisations
 - SQLite
-    - [x] Add a stored proc to cull the SQL tables
-        - artists/albums/songs that have been removed from playlists and have no references
-        - need to figure out which table(s) to cull
-    - [x] Schema visualisation
-    - [ ] (maybe) Simplify Playlist tables (add all relevant data in table? - need to look into this)
+  - [x] Add a stored proc to cull the SQL tables
+    - artists/albums/songs that have been removed from playlists and have no references
+    - need to figure out which table(s) to cull
+  - [x] Schema visualisation
+  - [ ] (maybe) Simplify Playlist tables (add all relevant data in table? - need to look into this)
 - CI/CD
-    - [ ] dotnet format
-    - [ ] Test coverage
-    - [x] Add badges to README
-    - [ ] Codecov
-    - [x] Add CI/CD pipeline with GitHub Actions
-    - [x] Build/format/test
-    - [x] Test
+  - [ ] dotnet format
+  - [ ] Test coverage
+  - [x] Add badges to README
+  - [ ] Codecov
+  - [x] Add CI/CD pipeline with GitHub Actions
+  - [x] Build/format/test
+  - [x] Test
 - [x] Remove `Database::ConnectionString` from `appsettings.json` and use Dotnet Secret Manager to set it
 - [x] put in Docker container
 - [x] Automatically open URL, not Swagger Page

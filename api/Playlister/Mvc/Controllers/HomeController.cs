@@ -8,10 +8,9 @@ using Playlister.Services;
 
 namespace Playlister.Mvc.Controllers;
 
-public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler, IConfiguration config ) : Controller
+public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthorizationHandler spotifyAuthorizationHandler, ILogger<HomeController> logger ) : Controller
 {
     public const string Name = "Home";
-    private readonly bool _handsFree = bool.TryParse( config["HandsFree"], out bool handsFree ) && handsFree;
 
     /// <summary>
     ///     Navigate to Spotify login
@@ -20,24 +19,23 @@ public class HomeController( IHostApplicationLifetime appLifetime, SpotifyAuthor
     [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public async Task<IActionResult> Index()
     {
-        return Redirect(
-            TokenService.TryValidateCookie(
+        if (TokenService.TryValidateCookie(
                 HttpContext.Request.Cookies[TokenService.UserTokenCookieName],
-                out string? _
-            )
-                ? "/Home/Main/"
-                : (await spotifyAuthorizationHandler.GetAuthorizationUrl()).ToString()
-        );
+                out string? error
+            ))
+        {
+            return Redirect( "/Home/Main/" );
+        }
+        else
+        {
+            logger.LogDebug( "Cookie validation failed: {Error}", error );
+            return Redirect( (await spotifyAuthorizationHandler.GetAuthorizationUrl()).ToString() );
+        }
     }
 
     [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]
     public IActionResult Main()
     {
-        if (_handsFree)
-        {
-            return RedirectToAction( "Index", SyncController.Name );
-        }
-
         return View( new HomeViewModel() );
     }
 

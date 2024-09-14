@@ -75,11 +75,11 @@ public static class SqlQueries
                 count = excluded.count,
                 count_unique = excluded.count_unique
             WHERE
-                snapshot_id <> excluded.snapshot_id OR
-                name <> excluded.name OR
-                description <> excluded.description OR
-                count <> excluded.count OR
-                count_unique <> excluded.count_unique;
+                snapshot_id <> excluded.snapshot_id
+                OR name <> excluded.name
+                OR description <> excluded.description
+                OR count <> excluded.count
+                OR count_unique <> excluded.count_unique;
             """;
 
         public const string PlaylistTrack =
@@ -102,9 +102,11 @@ public static class SqlQueries
             ON CONFLICT(id)
             DO UPDATE
             SET
+                duration_ms = excluded.duration_ms,
                 name = excluded.name
             WHERE
-                name <> excluded.name;
+                duration_ms <> excluded.duration_ms
+                OR name <> excluded.name;
             """;
 
         public const string TrackArtist =
@@ -144,9 +146,9 @@ public static class SqlQueries
         public const string PopulatePlaylistAlbum =
         """
         INSERT INTO
-            PlaylistAlbum ( artists, album, track_count, release_year, playlist, added_at )
+            PlaylistAlbum ( artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id )
         SELECT
-            GROUP_CONCAT(artist, '; ') AS artists, album, track_count, release_year, playlist, added_at
+            GROUP_CONCAT(artist, '; ') AS artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id
         FROM (
                 SELECT
                     art.name AS artist,

@@ -63,20 +63,7 @@ public static class TokenService
     /// <exception cref="InvalidOperationException"><paramref name="viewToken" /> is an expired</exception>
     public static AuthenticationToken GetAuthenticationToken( Guid viewToken )
     {
-        if (viewToken == Guid.Empty)
-        {
-            throw new ArgumentException( "Guid cannot be Guid.Empty", nameof(viewToken) );
-        }
-
-        if (viewToken != s_authToken.ViewToken)
-        {
-            throw new ArgumentException( $"Invalid user token: {viewToken}" );
-        }
-
-        if (s_authToken.AuthenticationToken.ExpirationUtc <= DateTime.Now)
-        {
-            throw new InvalidOperationException( $"Token expired at {s_authToken.AuthenticationToken.ExpirationUtc}" );
-        }
+        ValidateViewToken( viewToken );
 
         return s_authToken.AuthenticationToken;
     }
@@ -89,6 +76,8 @@ public static class TokenService
     /// <returns><c>true</c> if <paramref name="cookie" /> is valid; else, <c>false</c></returns>
     public static bool TryValidateCookie( string? cookie, out string? error )
     {
+        error = null;
+
         if (IsNullOrWhiteSpace( cookie ) || !Guid.TryParse( cookie, out Guid token ))
         {
             error = $"Token value '{cookie}' found in cookie is not a valid Guid format!";
@@ -108,9 +97,44 @@ public static class TokenService
             error = $"Token expired at {s_authToken.AuthenticationToken.ExpirationUtc}";
         }
 
-        error = null;
-
         return true;
+    }
+
+    /// <summary>
+    /// Get the expiration time for the supplied token.
+    /// </summary>
+    /// <exception cref="ArgumentException"><paramref name="viewToken" /> is <see cref="Guid.Empty" /></exception>
+    /// <exception cref="ArgumentException"><paramref name="viewToken" /> is invalid</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="viewToken" /> is an expired</exception>
+    public static DateTime GetTokenExpirationUtc( Guid viewToken )
+    {
+        ValidateViewToken( viewToken );
+
+        return s_authToken.AuthenticationToken.ExpirationUtc;
+    }
+
+    /// <summary>
+    ///     Throw an <see cref="Exception"/> if <paramref name="viewToken"/> is not a valid token.
+    /// </summary>
+    /// <exception cref="ArgumentException"><paramref name="viewToken" /> is <see cref="Guid.Empty" /></exception>
+    /// <exception cref="ArgumentException"><paramref name="viewToken" /> is invalid</exception>
+    /// <exception cref="InvalidOperationException"><paramref name="viewToken" /> is an expired</exception>
+    private static void ValidateViewToken( Guid viewToken )
+    {
+        if (viewToken == Guid.Empty)
+        {
+            throw new ArgumentException( "Guid cannot be Guid.Empty", nameof( viewToken ) );
+        }
+
+        if (viewToken != s_authToken.ViewToken)
+        {
+            throw new ArgumentException( $"Invalid user token: {viewToken}" );
+        }
+
+        if (s_authToken.AuthenticationToken.ExpirationUtc <= DateTime.Now)
+        {
+            throw new InvalidOperationException( $"Token expired at {s_authToken.AuthenticationToken.ExpirationUtc}" );
+        }
     }
 
     private class AuthToken
