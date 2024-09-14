@@ -81,7 +81,7 @@ public class PlaylistController(
     /// <param name="playlistId">ID of the Playlist to update</param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPost( $"sync/{{{nameof(playlistId)}}}" )]
+    [HttpPost( $"sync/{{{nameof( playlistId )}}}" )]
     public async Task<ActionResult> SyncPlaylist( string playlistId, CancellationToken ct )
     {
         await _playlistSyncHandler.SyncSingle( new SyncPlaylistCommand( CookieToken, playlistId ), ct );
@@ -95,7 +95,7 @@ public class PlaylistController(
     /// <param name="playlistId">ID of the Playlist to update</param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    [HttpPost( $"sync/{{{nameof(playlistId)}}}/force" )]
+    [HttpPost( $"sync/{{{nameof( playlistId )}}}/force" )]
     public async Task<ActionResult> ForceSyncPlaylist( string playlistId, CancellationToken ct )
     {
         await _playlistSyncHandler.ForceSync( new ForceSyncPlaylistCommand( CookieToken, playlistId ), ct );

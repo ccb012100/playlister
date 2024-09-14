@@ -72,10 +72,10 @@ public class BaseApiControllerTests
     public void CookieToken_ShouldReturnToken()
     {
         // ARRANGE
-        Mock<IAccessTokenUtility> tokenUtility = new(MockBehavior.Strict);
+        Mock<IAccessTokenUtility> tokenUtility = new( MockBehavior.Strict );
         tokenUtility.Setup( t => t.GetTokenFromUserCookie() ).Returns( "foo_bar_baz" );
 
-        TestApiController sut = new(tokenUtility.Object);
+        TestApiController sut = new( tokenUtility.Object );
 
         // ACT
         string result = sut.Token;

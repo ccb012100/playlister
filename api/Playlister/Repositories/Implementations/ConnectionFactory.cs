@@ -18,5 +18,5 @@ public class ConnectionFactory : IConnectionFactory
         }.ToString();
     }
 
-    public SqliteConnection Connection => new(_connectionString);
+    public SqliteConnection Connection => new( _connectionString );
 }

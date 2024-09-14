@@ -79,7 +79,7 @@ public class Startup
     /// </summary>
     public static WebApplication ConfigureWebApplication( WebApplication app )
     {
-        string @namespace = typeof(Startup).Namespace!;
+        string @namespace = typeof( Startup ).Namespace!;
         // Log Application lifetime events
         ILogger<Startup> logger = app.Services.GetRequiredService<ILoggerFactory>().CreateLogger<Startup>();
         app.Lifetime.ApplicationStarted.Register( () => OnEvent( logger, "Started", @namespace ) );
