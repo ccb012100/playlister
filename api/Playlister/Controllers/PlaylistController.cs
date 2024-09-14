@@ -5,6 +5,7 @@ using Playlister.CQRS.Handlers;
 using Playlister.CQRS.Queries;
 using Playlister.Mvc.DTOs;
 using Playlister.Utilities;
+using static Playlister.CQRS.Handlers.PlaylistSyncHandler;
 
 namespace Playlister.Controllers;
 
@@ -48,9 +49,9 @@ public class PlaylistController(
     /// </summary>
     /// <returns></returns>
     [HttpPost( "sync" )]
-    public async Task<ActionResult<SyncResultDto>> SyncAllPlaylists( CancellationToken ct )
+    public async Task<ActionResult<SyncResultsDto>> SyncAllPlaylists( CancellationToken ct )
     {
-        ((int total, int updated, int deleted), TimeSpan elapsed) = await RunInTimer(
+        (SyncResults syncResults, TimeSpan elapsed) = await RunInTimer(
             async () =>
                 await _playlistSyncHandler.SyncAllForCurrentUser( new SyncCurrentUserPlaylistsCommand( CookieToken ), ct )
         );
@@ -59,20 +60,19 @@ public class PlaylistController(
 
         _logger.LogInformation(
             "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
-            updated,
-            total,
+            syncResults.PlaylistsUpdated,
+            syncResults.PlaylistCount,
             elapsedStr
         );
 
-        return Ok(
-            new SyncResultDto
-            {
-                TotalSynced = total,
-                Deleted = deleted,
-                Elapsed = elapsedStr,
-                Updated = updated
-            }
-        );
+        return Ok( new SyncResultsDto
+        {
+            OrphanedTracksDeleted = syncResults.OrphanedTracksDeleted,
+            PlaylistAlbumCount = syncResults.PlaylistAlbumCount,
+            PlaylistCount = syncResults.PlaylistCount,
+            PlaylistsUpdated = syncResults.PlaylistsUpdated,
+            TimeElapsed = elapsed.ToDisplayString(),
+        } );
     }
 
     /// <summary>

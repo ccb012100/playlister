@@ -263,7 +263,7 @@ public class PlaylistWriteRepository(
         }
     }
 
-    public async Task<(int inserted, int deleted)> TruncateAndPopulatePlaylistAlbum( CancellationToken ct )
+    public async Task<int> TruncateAndPopulatePlaylistAlbum( CancellationToken ct )
     {
         Stopwatch sw = new();
         sw.Start();
@@ -295,7 +295,7 @@ public class PlaylistWriteRepository(
                 sw.Elapsed.ToDisplayString()
             );
 
-            return (inserted, deleted);
+            return inserted;
         }
         catch (SqliteException)
         {

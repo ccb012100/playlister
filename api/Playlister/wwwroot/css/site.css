@@ -32,12 +32,12 @@ input {
 }
 
 table {
-    padding: 1em;
+    border: none;
+    border-collapse: collapse;
 }
 
-tr {
-    outline: thin solid;
-    border-radius: 5px;
+caption {
+    margin: 1em;
 }
 
 th {
@@ -48,7 +48,8 @@ td {
     padding: 1em;
 }
 
-#sync-results, #me {
+#sync-results,
+#me {
     display: flex;
     justify-content: center;
 }

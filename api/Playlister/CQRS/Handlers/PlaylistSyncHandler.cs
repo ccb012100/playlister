@@ -1,4 +1,5 @@
 using Playlister.CQRS.Commands;
+using Playlister.Mvc.DTOs;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
@@ -60,7 +61,7 @@ public class PlaylistSyncHandler( IPlaylistService playlistService )
     /// <remarks>
     ///     Syncing is a no-op for any Playlists that are already up-to-date.
     /// </remarks>
-    public async Task<(int total, int updated, int deleted)> SyncAllForCurrentUser(
+    public async Task<SyncResults> SyncAllForCurrentUser(
         SyncCurrentUserPlaylistsCommand command,
         CancellationToken ct = default
     )
@@ -68,11 +69,28 @@ public class PlaylistSyncHandler( IPlaylistService playlistService )
         ImmutableArray<Playlist> playlists = await _playlistService.GetUserPlaylistsAsync( command.AccessToken, ct );
 
         int updated = await _playlistService.SyncPlaylistsAsync( command.AccessToken, playlists, ct );
-        int deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
 
-        await _playlistService.RebuildPlaylistAlbumTable( ct );
+        int deleted, albumTotal;
 
-        return (total: playlists.Length, updated, deleted);
+        // skip these if nothing was updated
+        if (updated > 0)
+        {
+            deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
+            albumTotal = await _playlistService.RebuildPlaylistAlbumTable( ct );
+        }
+        else
+        {
+            deleted = 0;
+            albumTotal = 0;
+        }
+
+        return new SyncResults
+        {
+            OrphanedTracksDeleted = deleted,
+            PlaylistAlbumCount = albumTotal,
+            PlaylistCount = playlists.Length,
+            PlaylistsUpdated = updated,
+        };
     }
 
     /// <summary>
@@ -87,5 +105,13 @@ public class PlaylistSyncHandler( IPlaylistService playlistService )
     {
         await _playlistService.ForceSyncPlaylistAsync( command.AccessToken, command.PlaylistId, ct );
         await _playlistService.RebuildPlaylistAlbumTable( ct );
+    }
+
+    public record SyncResults
+    {
+        public required int OrphanedTracksDeleted { get; init; }
+        public required int PlaylistAlbumCount { get; init; }
+        public required int PlaylistCount { get; init; }
+        public required int PlaylistsUpdated { get; init; }
     }
 }

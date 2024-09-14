@@ -26,29 +26,33 @@
             document.getElementById(resultsDivId).innerHTML = `<p><b style="color:darkred">Sync failed:</p><pre>${ e.message }</pre></b>`;
         }
 
-        function resultsTable({ totalSynced, elapsed, updated, deleted }) {
+        function resultsTable({ playlistCount, playlistAlbumCount, orphanedTracksDeleted, playlistsUpdated, timeElapsed }) {
             return `<table>
-                <tbody>
-                <tr>
-                    <th class="text-left">Total number of Playlists</th>
-                    <td class="text-right">${ totalSynced }</td>
-                </tr>
-                <tr>
-                    <th class="text-left"># of Playlists updated</th>
-                    <td class="text-right">${ updated }</td>
-                </tr>
-                <tr>
-                    <th class="text-left"># of orphaned Tracks deleted</th>
-                    <td class="text-right">${ deleted }</td>
-                </tr>
-                <tr>
-                    <th class="text-left">Time taken</th>
-                    <td class="text-right">${ elapsed }</td>
-                </tr>
-                </tbody>
                 <caption>
                     Results of Playlist Syncing
                 </caption>
+                <tbody>
+                    <tr style="background-color: sandybrown">
+                        <th class="text-left">Total # of Playlists</th>
+                        <td class="text-right">${ playlistCount }</td>
+                    </tr>
+                    <tr style="background-color: thistle">
+                        <th class="text-left">Total # of Playlist Albums</th>
+                        <td class="text-right">${ playlistAlbumCount }</td>
+                    </tr>
+                    <tr style="background-color: darkkhaki">
+                        <th class="text-left"># of Playlists updated</th>
+                        <td class="text-right">${ playlistsUpdated }</td>
+                    </tr>
+                    <tr style="background-color: coral">
+                        <th class="text-left"># of orphaned Tracks deleted</th>
+                        <td class="text-right">${ orphanedTracksDeleted }</td>
+                    </tr>
+                    <tr style="background-color: yellow">
+                        <th class="text-left">Time taken</th>
+                        <td class="text-right">${ timeElapsed }</td>
+                    </tr>
+                </tbody>
             </table>`
         }
     };

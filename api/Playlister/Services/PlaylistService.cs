@@ -124,7 +124,7 @@ public class PlaylistService : IPlaylistService
         return await _writeRepository.DeleteOrphanedPlaylistTracksAsync( ct );
     }
 
-    public async Task<(int inserted, int deleted)> RebuildPlaylistAlbumTable( CancellationToken ct )
+    public async Task<int> RebuildPlaylistAlbumTable( CancellationToken ct )
     {
         _logger.LogDebug( "Rebuilding PlaylistAlbum..." );
 

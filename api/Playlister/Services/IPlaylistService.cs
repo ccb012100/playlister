@@ -41,10 +41,10 @@ public interface IPlaylistService
     ///     Truncate <see cref="Data.DataTables.PlaylistAlbum"/> and then populate it from scratch.
     /// </summary>
     /// <param name="ct"></param>
-    /// <returns>Number of items deleted and number of items added to the table</returns>
+    /// <returns>The number of items added to the table, i.e. the total number of PlaylistAlbums</returns>
     /// <remarks>
     ///     Currently this is performant enough that it's preferable to trying to keep it in sync
     ///     with the canonical data by reconciling existing entries.
     /// </remarks>
-    Task<(int inserted, int deleted)> RebuildPlaylistAlbumTable( CancellationToken ct );
+    Task<int> RebuildPlaylistAlbumTable( CancellationToken ct );
 }
