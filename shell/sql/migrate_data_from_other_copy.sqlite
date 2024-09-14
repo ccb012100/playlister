@@ -1,0 +1,15 @@
+-- easily copy from one version of the database to another
+-- sqlite3 "$HOME/playlister.sqlite3" ".read migrate_data_from_other_copy.sqlite"
+BEGIN TRANSACTION;
+
+ATTACH DATABASE '/Users/ccb012100/playlister-old.sqlite3' as 'old';
+
+INSERT OR IGNORE INTO Album SELECT * FROM old.Album;
+INSERT OR IGNORE INTO Artist SELECT * FROM old.Artist;
+INSERT OR IGNORE INTO Playlist SELECT * FROM old.Playlist;
+INSERT OR IGNORE INTO AlbumArtist SELECT * FROM old.AlbumArtist;
+INSERT OR IGNORE INTO Track SELECT * FROM old.Track;
+INSERT OR IGNORE INTO TrackArtist SELECT * FROM old.TrackArtist;
+INSERT OR IGNORE INTO PlaylistTrack SELECT * FROM old.PlaylistTrack;
+
+COMMIT;
