@@ -84,10 +84,8 @@ public class BaseApiControllerTests
         result.Should().Be( "foo_bar_baz" );
     }
 
-    private class TestApiController : BaseApiController
+    private class TestApiController( IAccessTokenUtility tokenUtility ) : BaseApiController( tokenUtility )
     {
-        public TestApiController( IAccessTokenUtility tokenUtility ) : base( tokenUtility ) { }
-
         public string Token => CookieToken;
 
         public static async Task<(T data, TimeSpan elapsed)> RunFunctionInTimer<T>( Func<Task<T>> func )

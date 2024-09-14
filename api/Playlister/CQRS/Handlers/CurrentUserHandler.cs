@@ -5,16 +5,10 @@ using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class CurrentUserHandler
+public class CurrentUserHandler( ISpotifyApi api, IPlaylistService playlistService )
 {
-    private readonly ISpotifyApi _api;
-    private readonly IPlaylistService _playlistService;
-
-    public CurrentUserHandler( ISpotifyApi api, IPlaylistService playlistService )
-    {
-        _api = api;
-        _playlistService = playlistService;
-    }
+    private readonly ISpotifyApi _api = api;
+    private readonly IPlaylistService _playlistService = playlistService;
 
     public async Task<PrivateUserObject> Get( GetCurrentUserQuery query, CancellationToken ct = default )
     {

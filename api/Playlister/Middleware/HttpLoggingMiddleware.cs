@@ -10,16 +10,11 @@ namespace Playlister.Middleware;
 ///     <see cref="Extensions.StartupExtensions.AddHttpLoggingMiddleware" /> to only be added on Startup when
 ///     <see cref="Configuration.DebuggingOptions.UseHttpLoggingMiddleware" /> is set to `true`.
 /// </summary>
-public class HttpLoggingMiddleware : DelegatingHandler
+public class HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger ) : DelegatingHandler
 {
-    private readonly ILogger<HttpLoggingMiddleware> _logger;
+    private readonly ILogger<HttpLoggingMiddleware> _logger = logger;
 
     private readonly string[] _types = { "html", "text", "xml", "json", "txt", "x-www-form-urlencoded" };
-
-    public HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger )
-    {
-        _logger = logger;
-    }
 
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,

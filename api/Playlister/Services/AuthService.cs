@@ -9,22 +9,15 @@ using Playlister.RefitClients;
 
 namespace Playlister.Services;
 
-public class AuthService : IAuthService
+public class AuthService( ISpotifyAccountsApi api, IOptions<SpotifyOptions> options, ILogger<AuthService> logger ) : IAuthService
 {
     private const string AuthScope = "user-read-private";
     private static string s_state = Guid.Empty.ToString();
-    private readonly ILogger<AuthService> _logger;
+    private readonly ILogger<AuthService> _logger = logger;
 
-    private readonly SpotifyOptions _options;
+    private readonly SpotifyOptions _options = options.Value;
 
-    private readonly ISpotifyAccountsApi _spotifyAccountsApi;
-
-    public AuthService( ISpotifyAccountsApi api, IOptions<SpotifyOptions> options, ILogger<AuthService> logger )
-    {
-        _options = options.Value;
-        _spotifyAccountsApi = api;
-        _logger = logger;
-    }
+    private readonly ISpotifyAccountsApi _spotifyAccountsApi = api;
 
     /// <summary>
     ///     See <a href="https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow">Spotify Developer Documentation</a>

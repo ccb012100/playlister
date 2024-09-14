@@ -8,18 +8,12 @@ namespace Playlister.Controllers;
 
 [ApiController]
 [Route( "api/auth" )]
-public class SpotifyAuthorizationController : BaseApiController
+public class SpotifyAuthorizationController(
+    IAccessTokenUtility tokenUtility,
+    SpotifyAuthorizationHandler spotifyAuthorizationHandler
+    ) : BaseApiController( tokenUtility )
 {
-    private readonly SpotifyAuthorizationHandler _spotifyAuthorizationHandler;
-
-    public SpotifyAuthorizationController(
-        IAccessTokenUtility tokenUtility,
-        SpotifyAuthorizationHandler spotifyAuthorizationHandler
-    ) : base
-        ( tokenUtility )
-    {
-        _spotifyAuthorizationHandler = spotifyAuthorizationHandler;
-    }
+    private readonly SpotifyAuthorizationHandler _spotifyAuthorizationHandler = spotifyAuthorizationHandler;
 
     /// <summary>
     ///     Get the Spotify Accounts URL to direct user

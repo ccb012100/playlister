@@ -3,14 +3,9 @@ using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class PlaylistSyncHandler
+public class PlaylistSyncHandler( IPlaylistService playlistService )
 {
-    private readonly IPlaylistService _playlistService;
-
-    public PlaylistSyncHandler( IPlaylistService playlistService )
-    {
-        _playlistService = playlistService;
-    }
+    private readonly IPlaylistService _playlistService = playlistService;
 
     /// <summary>
     ///     Sync multiple Playlists to the database.

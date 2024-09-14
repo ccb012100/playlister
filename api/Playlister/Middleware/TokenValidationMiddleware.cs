@@ -11,49 +11,50 @@ namespace Playlister.Middleware;
 ///     the
 ///     authentication flow
 /// </summary>
-public class TokenValidationMiddleware
-{
-    private readonly ILogger<TokenValidationMiddleware> _logger;
-    private readonly RequestDelegate _next;
-
-    public TokenValidationMiddleware(
-        RequestDelegate next,
-        ILogger<TokenValidationMiddleware> logger
+public class TokenValidationMiddleware(
+    RequestDelegate next,
+    ILogger<TokenValidationMiddleware> logger
     )
-    {
-        _next = next;
-        _logger = logger;
-    }
+{
+    private readonly ILogger<TokenValidationMiddleware> _logger = logger;
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke( HttpContext context )
     {
-        _logger.LogTrace( $"Entered {nameof(TokenValidationMiddleware)}" );
+        _logger.LogTrace( $"Entered {nameof( TokenValidationMiddleware )}" );
         Endpoint? endpoint = context.Features.Get<IEndpointFeature>()!.Endpoint;
         ValidateTokenCookieAttribute? attribute = endpoint?.Metadata.GetMetadata<ValidateTokenCookieAttribute>();
 
+        IRequestCookieCollection cookies = context.Request.Cookies;
+
+        foreach ((string key, string value) in cookies)
+        {
+            _logger.LogDebug( "Request Cookie => {CookieName} {CookieValue}", key, value );
+        }
+
         switch (attribute, endpoint)
         {
-            case (null, null):
+            case (null, null ):
                 {
                     _logger.LogDebug(
                         "There is no {Attribute} for {Path}; skipping validation",
-                        nameof(ValidateTokenCookieAttribute),
+                        nameof( ValidateTokenCookieAttribute ),
                         context.Request.GetDisplayUrl()
                     );
 
                     break;
                 }
-            case (null, not null):
+            case (null, not null ):
                 {
                     _logger.LogDebug(
                         "There is no {Attribute} on the endpoint {Endpoint}; skipping validation",
-                        nameof(ValidateTokenCookieAttribute),
+                        nameof( ValidateTokenCookieAttribute ),
                         endpoint.DisplayName
                     );
 
                     break;
                 }
-            case (not null, _):
+            case (not null, _ ):
                 {
                     string? cookie = context.Request.Cookies[TokenService.UserTokenCookieName];
 
@@ -61,7 +62,7 @@ public class TokenValidationMiddleware
                     {
                         _logger.LogDebug(
                             "Token in \"{Cookie}\" cookie failed validation: {Error}",
-                            nameof(TokenService.UserTokenCookieName),
+                            nameof( TokenService.UserTokenCookieName ),
                             errorMessage
                         );
 

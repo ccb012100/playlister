@@ -2,14 +2,9 @@ using Playlister.Services;
 
 namespace Playlister.Utilities;
 
-public class AccessTokenUtility : IAccessTokenUtility
+public class AccessTokenUtility( IHttpContextAccessor httpContextAccessor ) : IAccessTokenUtility
 {
-    private readonly IHttpContextAccessor _httpContextAccessor;
-
-    public AccessTokenUtility( IHttpContextAccessor httpContextAccessor )
-    {
-        _httpContextAccessor = httpContextAccessor;
-    }
+    private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     /// <summary>
     ///     To avoid unhandled <see cref="InvalidOperationException" />s, this should only be used by methods marked with the

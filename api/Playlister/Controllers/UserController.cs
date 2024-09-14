@@ -10,17 +10,12 @@ namespace Playlister.Controllers;
 [ValidateTokenCookie]
 [ApiController]
 [Route( "api/user" )]
-public class UserController : BaseApiController
+public class UserController(
+    IAccessTokenUtility tokenUtility,
+    CurrentUserHandler currentUserHandler
+    ) : BaseApiController( tokenUtility )
 {
-    private readonly CurrentUserHandler _currentUserHandler;
-
-    public UserController(
-        IAccessTokenUtility tokenUtility,
-        CurrentUserHandler currentUserHandler
-    ) : base( tokenUtility )
-    {
-        _currentUserHandler = currentUserHandler;
-    }
+    private readonly CurrentUserHandler _currentUserHandler = currentUserHandler;
 
     /// <summary>
     ///     Get the User who was assigned the Access Token in the Request <see cref="Playlister.Services.TokenService.UserTokenCookieName" /> cookie.

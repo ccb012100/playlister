@@ -2,16 +2,10 @@ using Refit;
 
 namespace Playlister.Middleware;
 
-public class GlobalErrorHandlerMiddleware
+public class GlobalErrorHandlerMiddleware( RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger )
 {
-    private readonly ILogger<GlobalErrorHandlerMiddleware> _logger;
-    private readonly RequestDelegate _next;
-
-    public GlobalErrorHandlerMiddleware( RequestDelegate next, ILogger<GlobalErrorHandlerMiddleware> logger )
-    {
-        _next = next;
-        _logger = logger;
-    }
+    private readonly ILogger<GlobalErrorHandlerMiddleware> _logger = logger;
+    private readonly RequestDelegate _next = next;
 
     public async Task Invoke( HttpContext context )
     {

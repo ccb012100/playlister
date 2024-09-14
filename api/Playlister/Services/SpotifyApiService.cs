@@ -4,17 +4,11 @@ using Playlister.RefitClients;
 
 namespace Playlister.Services;
 
-public class SpotifyApiService : ISpotifyApiService
+public class SpotifyApiService( HttpClient client, ISpotifyApi spotifyApi ) : ISpotifyApiService
 {
-    private readonly ISpotifyApi _spotifyApi;
+    private readonly ISpotifyApi _spotifyApi = spotifyApi;
 
-    public SpotifyApiService( HttpClient client, ISpotifyApi spotifyApi )
-    {
-        _spotifyApi = spotifyApi;
-        Client = client;
-    }
-
-    private HttpClient Client { get; }
+    private HttpClient Client { get; } = client;
 
     public async Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
         string accessToken,

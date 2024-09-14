@@ -11,24 +11,16 @@ namespace Playlister.Controllers;
 [ValidateTokenCookie]
 [ApiController]
 [Route( "api/playlists" )]
-public class PlaylistController : BaseApiController
+public class PlaylistController(
+    IAccessTokenUtility tokenUtility,
+    ILogger<PlaylistController> logger,
+    CurrentUserHandler currentUserHandler,
+    PlaylistSyncHandler playlistSyncHandler
+    ) : BaseApiController( tokenUtility )
 {
-    private readonly CurrentUserHandler _currentUserHandler;
-    private readonly ILogger<PlaylistController> _logger;
-    private readonly PlaylistSyncHandler _playlistSyncHandler;
-
-    public PlaylistController(
-        IAccessTokenUtility tokenUtility,
-        ILogger<PlaylistController> logger,
-        CurrentUserHandler currentUserHandler,
-        PlaylistSyncHandler playlistSyncHandler
-    )
-        : base( tokenUtility )
-    {
-        _logger = logger;
-        _currentUserHandler = currentUserHandler;
-        _playlistSyncHandler = playlistSyncHandler;
-    }
+    private readonly CurrentUserHandler _currentUserHandler = currentUserHandler;
+    private readonly ILogger<PlaylistController> _logger = logger;
+    private readonly PlaylistSyncHandler _playlistSyncHandler = playlistSyncHandler;
 
     /// <summary>
     ///     Get the current user's Playlists.

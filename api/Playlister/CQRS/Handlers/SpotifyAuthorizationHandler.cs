@@ -4,14 +4,9 @@ using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class SpotifyAuthorizationHandler
+public class SpotifyAuthorizationHandler( IAuthService authService )
 {
-    private readonly IAuthService _authService;
-
-    public SpotifyAuthorizationHandler( IAuthService authService )
-    {
-        _authService = authService;
-    }
+    private readonly IAuthService _authService = authService;
 
     public Task<Uri> GetAuthorizationUrl()
     {
