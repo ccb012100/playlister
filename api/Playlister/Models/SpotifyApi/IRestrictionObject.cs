@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public interface IRestrictionObject
-{
+public interface IRestrictionObject {
     /// <summary>
     ///     The reason for the restriction. Supported values:
     ///     <c>market</c> - The content item is not available in the given market.

@@ -5,8 +5,7 @@ namespace Playlister.Models;
 /// <summary>
 ///     Represents a <b>Spotify</b> Access Token
 /// </summary>
-public record AuthenticationToken
-{
+public record AuthenticationToken {
     /// <summary>
     ///     Credentials and permissions that can be used to access a given resource (e.g. artists, albums or tracks) or a user's data.
     /// </summary>
@@ -29,8 +28,7 @@ public record AuthenticationToken
     /// </summary>
     public required DateTime ExpirationUtc { get; init; }
 
-    public override string ToString()
-    {
-        return $"UserAccessToken {this.PrettyPrint()}";
+    public override string ToString( ) {
+        return $"UserAccessToken {this.PrettyPrint( )}";
     }
 }

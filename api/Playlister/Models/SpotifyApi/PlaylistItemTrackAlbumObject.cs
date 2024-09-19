@@ -6,8 +6,7 @@ namespace Playlister.Models.SpotifyApi;
 ///     Returned in a <b>Playlist Item</b>'s <c>items.track.album</c> field. Unlike a <see cref="SimplifiedAlbumObject" />, there is no <c>label</c>
 ///     field
 /// </summary>
-public record PlaylistItemTrackAlbumObject : ISpotifyApiObject
-{
+public record PlaylistItemTrackAlbumObject : ISpotifyApiObject {
     /// <summary>
     ///     The type of the album: one of <c>album</c>, <c>single</c>, or <c>compilation</c>.
     /// </summary>

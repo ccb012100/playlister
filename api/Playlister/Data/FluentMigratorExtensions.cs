@@ -3,8 +3,7 @@ using FluentMigrator.Builders.Create.Table;
 
 namespace Playlister.Data;
 
-internal static class FluentMigratorExtensions
-{
+internal static class FluentMigratorExtensions {
     /// <summary>
     ///     Add a Spotify <c>id</c> string column to the table and set as Primary Key.
     /// </summary>
@@ -12,13 +11,12 @@ internal static class FluentMigratorExtensions
     /// <returns></returns>
     public static ICreateTableColumnOptionOrWithColumnSyntax WithSpotifyPrimaryIdColumn(
         this ICreateTableWithColumnSyntax tableWithColumnSyntax
-    )
-    {
+    ) {
         return tableWithColumnSyntax
             .WithColumn( "id" )
-            .AsString()
-            .NotNullable()
-            .PrimaryKey();
+            .AsString( )
+            .NotNullable( )
+            .PrimaryKey( );
     }
 
     /// <summary>
@@ -28,15 +26,14 @@ internal static class FluentMigratorExtensions
     /// <returns></returns>
     public static ICreateTableColumnOptionOrWithColumnSyntax WithTimeStamps(
         this ICreateTableWithColumnSyntax tableWithColumnSyntax
-    )
-    {
+    ) {
         return tableWithColumnSyntax
             .WithColumn( "created_at" )
-            .AsDateTime()
-            .NotNullable()
+            .AsDateTime( )
+            .NotNullable( )
             .WithDefault( SystemMethods.CurrentUTCDateTime )
             .WithColumn( "modified_at" )
-            .AsDateTime()
-            .Nullable();
+            .AsDateTime( )
+            .Nullable( );
     }
 }

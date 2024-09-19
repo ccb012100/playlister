@@ -3,8 +3,7 @@ namespace Playlister.Mvc.DTOs;
 /// <summary>
 /// Represents the results of syncing all Playlists
 /// </summary>
-public record SyncResultsDto
-{
+public record SyncResultsDto {
     /// <summary>
     /// The count of orphaned tracks deleted during the sync
     /// </summary>

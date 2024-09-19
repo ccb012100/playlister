@@ -1,10 +1,12 @@
 using Microsoft.AspNetCore.Mvc;
+
 using Playlister.Attributes;
 using Playlister.CQRS.Commands;
 using Playlister.CQRS.Handlers;
 using Playlister.CQRS.Queries;
 using Playlister.Mvc.DTOs;
 using Playlister.Utilities;
+
 using static Playlister.CQRS.Handlers.PlaylistSyncHandler;
 
 namespace Playlister.Controllers;
@@ -13,12 +15,11 @@ namespace Playlister.Controllers;
 [ApiController]
 [Route( "api/playlists" )]
 public class PlaylistController(
-    IAccessTokenUtility tokenUtility,
-    ILogger<PlaylistController> logger,
-    CurrentUserHandler currentUserHandler,
+    IAccessTokenUtility tokenUtility ,
+    ILogger<PlaylistController> logger ,
+    CurrentUserHandler currentUserHandler ,
     PlaylistSyncHandler playlistSyncHandler
-    ) : BaseApiController( tokenUtility )
-{
+    ) : BaseApiController( tokenUtility ) {
     private readonly CurrentUserHandler _currentUserHandler = currentUserHandler;
     private readonly ILogger<PlaylistController> _logger = logger;
     private readonly PlaylistSyncHandler _playlistSyncHandler = playlistSyncHandler;
@@ -28,17 +29,16 @@ public class PlaylistController(
     /// </summary>
     /// <returns>All Playlists owned by the current user</returns>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists( CancellationToken ct )
-    {
+    public async Task<ActionResult<IEnumerable<Playlist>>> GetPlaylists( CancellationToken ct ) {
         (IEnumerable<Playlist> lists, TimeSpan elapsed) = await RunInTimer(
-            async () =>
-                await _currentUserHandler.GetPlaylists( new GetCurrentUserPlaylistsQuery( CookieToken ), ct )
+            async ( ) =>
+                await _currentUserHandler.GetPlaylists( new GetCurrentUserPlaylistsQuery( CookieToken ) , ct )
         );
 
         _logger.LogInformation(
-            "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}",
-            lists.Count(),
-            elapsed.ToDisplayString()
+            "Retrieved current user's {PlaylistCount} playlists. Total time: {Elapsed}" ,
+            lists.Count( ) ,
+            elapsed.ToDisplayString( )
         );
 
         return Ok( lists );
@@ -49,29 +49,27 @@ public class PlaylistController(
     /// </summary>
     /// <returns></returns>
     [HttpPost( "sync" )]
-    public async Task<ActionResult<SyncResultsDto>> SyncAllPlaylists( CancellationToken ct )
-    {
+    public async Task<ActionResult<SyncResultsDto>> SyncAllPlaylists( CancellationToken ct ) {
         (SyncResults syncResults, TimeSpan elapsed) = await RunInTimer(
-            async () =>
-                await _playlistSyncHandler.SyncAllForCurrentUser( new SyncCurrentUserPlaylistsCommand( CookieToken ), ct )
+            async ( ) =>
+                await _playlistSyncHandler.SyncAllForCurrentUser( new SyncCurrentUserPlaylistsCommand( CookieToken ) , ct )
         );
 
-        string elapsedStr = elapsed.ToDisplayString();
+        string elapsedStr = elapsed.ToDisplayString( );
 
         _logger.LogInformation(
-            "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}",
-            syncResults.PlaylistsUpdated,
-            syncResults.PlaylistCount,
+            "Updated {Changed}/{Total} of the current user's playlists. Total time: {Elapsed}" ,
+            syncResults.PlaylistsUpdated ,
+            syncResults.PlaylistCount ,
             elapsedStr
         );
 
-        return Ok( new SyncResultsDto
-        {
-            OrphanedTracksDeleted = syncResults.OrphanedTracksDeleted,
-            PlaylistAlbumCount = syncResults.PlaylistAlbumCount,
-            PlaylistCount = syncResults.PlaylistCount,
-            PlaylistsUpdated = syncResults.PlaylistsUpdated,
-            TimeElapsed = elapsed.ToDisplayString(),
+        return Ok( new SyncResultsDto {
+            OrphanedTracksDeleted = syncResults.OrphanedTracksDeleted ,
+            PlaylistAlbumCount = syncResults.PlaylistAlbumCount ,
+            PlaylistCount = syncResults.PlaylistCount ,
+            PlaylistsUpdated = syncResults.PlaylistsUpdated ,
+            TimeElapsed = elapsed.ToDisplayString( ) ,
         } );
     }
 
@@ -82,11 +80,10 @@ public class PlaylistController(
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost( $"sync/{{{nameof( playlistId )}}}" )]
-    public async Task<ActionResult> SyncPlaylist( string playlistId, CancellationToken ct )
-    {
-        await _playlistSyncHandler.SyncSingle( new SyncPlaylistCommand( CookieToken, playlistId ), ct );
+    public async Task<ActionResult> SyncPlaylist( string playlistId , CancellationToken ct ) {
+        await _playlistSyncHandler.SyncSingle( new SyncPlaylistCommand( CookieToken , playlistId ) , ct );
 
-        return NoContent();
+        return NoContent( );
     }
 
     /// <summary>
@@ -96,10 +93,9 @@ public class PlaylistController(
     /// <param name="ct"></param>
     /// <returns></returns>
     [HttpPost( $"sync/{{{nameof( playlistId )}}}/force" )]
-    public async Task<ActionResult> ForceSyncPlaylist( string playlistId, CancellationToken ct )
-    {
-        await _playlistSyncHandler.ForceSync( new ForceSyncPlaylistCommand( CookieToken, playlistId ), ct );
+    public async Task<ActionResult> ForceSyncPlaylist( string playlistId , CancellationToken ct ) {
+        await _playlistSyncHandler.ForceSync( new ForceSyncPlaylistCommand( CookieToken , playlistId ) , ct );
 
-        return NoContent();
+        return NoContent( );
     }
 }

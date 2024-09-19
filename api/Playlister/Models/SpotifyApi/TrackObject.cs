@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record TrackObject : SimplifiedTrackObject
-{
+public record TrackObject : SimplifiedTrackObject {
     /// <summary>
     ///     The album on which the track appears. The album object includes a link in <c>href</c> to full information about the album.
     /// </summary>

@@ -2,8 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Playlister.Models.SpotifyAccounts;
 
-public record SpotifyAccessToken
-{
+public record SpotifyAccessToken {
     private const string BearerType = "Bearer";
     private readonly string _tokenType = null!;
 
@@ -13,14 +12,11 @@ public record SpotifyAccessToken
     ///     How the access token may be used: always <c>Bearer</c>.
     /// </summary>
     [JsonPropertyName( "token_type" )]
-    public required string TokenType
-    {
+    public required string TokenType {
         get => _tokenType;
 
-        init
-        {
-            if (value != BearerType)
-            {
+        init {
+            if ( value != BearerType ) {
                 throw new ArgumentException( $"Invalid TokenType `{value}`. Value should always be `{BearerType}`" );
             }
 
@@ -47,12 +43,10 @@ public record SpotifyAccessToken
     [JsonPropertyName( "refresh_token" )]
     public required string RefreshToken { get; init; }
 
-    public AuthenticationToken ToUserAccessToken()
-    {
-        return new AuthenticationToken
-        {
-            AccessToken = AccessToken,
-            ExpirationUtc = DateTime.UtcNow.AddSeconds( ExpiresIn ),
+    public AuthenticationToken ToUserAccessToken( ) {
+        return new AuthenticationToken {
+            AccessToken = AccessToken ,
+            ExpirationUtc = DateTime.UtcNow.AddSeconds( ExpiresIn ) ,
             RefreshToken = RefreshToken
         };
     }

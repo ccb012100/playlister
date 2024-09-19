@@ -1,10 +1,10 @@
 using System.Text.Json.Serialization;
+
 using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
-public record SimplifiedPlaylistObject : ISpotifyApiObject
-{
+public record SimplifiedPlaylistObject : ISpotifyApiObject {
     /// <summary>
     ///     <c>true</c> if the owner allows other users to modify the playlist.
     /// </summary>
@@ -78,16 +78,14 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject
     /// </summary>
     public required Uri Uri { get; init; }
 
-    public Playlist ToPlaylist()
-    {
-        return new Playlist
-        {
-            Id = Id,
-            SnapshotId = SnapshotId,
-            Name = Name,
-            Collaborative = Collaborative,
-            Description = Description,
-            Public = Public,
+    public Playlist ToPlaylist( ) {
+        return new Playlist {
+            Id = Id ,
+            SnapshotId = SnapshotId ,
+            Name = Name ,
+            Collaborative = Collaborative ,
+            Description = Description ,
+            Public = Public ,
             Count = Tracks.Total
         };
     }

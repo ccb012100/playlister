@@ -1,10 +1,10 @@
 using Playlister.Models.SpotifyApi;
+
 using Refit;
 
 namespace Playlister.RefitClients;
 
-public interface ISpotifyApi
-{
+public interface ISpotifyApi {
     /// <summary>
     ///     Get detailed profile information about the current user (including the current user’s username).
     /// </summary>
@@ -12,7 +12,7 @@ public interface ISpotifyApi
     /// <param name="ct"></param>
     /// <returns>The User who was assigned the provided Access Token.</returns>
     [Get( "/me" )]
-    Task<PrivateUserObject> GetCurrentUserAsync( [Authorize] string token, CancellationToken ct );
+    Task<PrivateUserObject> GetCurrentUserAsync( [Authorize] string token , CancellationToken ct );
 
     /// <summary>
     ///     Get playlist.
@@ -23,8 +23,8 @@ public interface ISpotifyApi
     /// <returns></returns>
     [Get( "/playlists/{playlistId}" )]
     Task<SimplifiedPlaylistObject> GetPlaylistAsync(
-        [Authorize] string token,
-        string playlistId,
+        [Authorize] string token ,
+        string playlistId ,
         CancellationToken ct
     );
 
@@ -38,9 +38,9 @@ public interface ISpotifyApi
     /// <returns></returns>
     [Get( "/me/playlists?market=from_token" )]
     Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
-        [Authorize] string token,
-        int? offset,
-        int? limit,
+        [Authorize] string token ,
+        int? offset ,
+        int? limit ,
         CancellationToken ct
     );
 
@@ -54,9 +54,9 @@ public interface ISpotifyApi
     /// <returns></returns>
     [Get( "/me/albums" )]
     Task<PagingObject<SavedAlbumObject>> GetCurrentUserSavedAlbums(
-        [Authorize] string token,
-        int? offset,
-        int? limit,
+        [Authorize] string token ,
+        int? offset ,
+        int? limit ,
         CancellationToken ct
     );
 
@@ -76,10 +76,10 @@ public interface ISpotifyApi
         + ",items(added_at,track(id,track_number,disc_number,duration_ms,name,artists(id,name),album(name,id,release_date,release_date_precision,total_tracks,external_ids,album_type,type,artists(id,name))))"
     )]
     Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
-        [Authorize] string token,
-        string playlistId,
-        int? offset,
-        int? limit,
+        [Authorize] string token ,
+        string playlistId ,
+        int? offset ,
+        int? limit ,
         CancellationToken ct
     );
 }

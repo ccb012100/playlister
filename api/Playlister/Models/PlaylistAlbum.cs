@@ -5,8 +5,7 @@ namespace Playlister.Models;
 /// <summary>
 /// Represents a row in the <see cref="Playlister.Data.DataTables.PlaylistAlbum"/> table.
 /// </summary>
-public record PlaylistAlbum
-{
+public record PlaylistAlbum {
     /// <summary>
     /// The name of the album
     /// </summary>

@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record PlaylistTrackObject
-{
+public record PlaylistTrackObject {
     /// <summary>
     ///     The date and time the track or episode was added. Note that some very old playlists may return <c>null</c> in this field.
     /// </summary>

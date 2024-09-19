@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record ExplicitContentSettingsObject
-{
+public record ExplicitContentSettingsObject {
     /// <summary>
     ///     When <c>true</c>, indicates that explicit content should not be played.
     /// </summary>

@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record ImageObject
-{
+public record ImageObject {
     /// <summary>
     ///     The image height in pixels. If unknown: <c>null</c> or not returned.
     /// </summary>

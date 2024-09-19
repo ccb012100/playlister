@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record ExternalIdObject
-{
+public record ExternalIdObject {
     /// <summary>
     ///     International Article Number
     /// </summary>

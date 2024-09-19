@@ -10,64 +10,58 @@ namespace Playlister.Middleware;
 ///     <see cref="Extensions.StartupExtensions.AddHttpLoggingMiddleware" /> to only be added on Startup when
 ///     <see cref="Configuration.DebuggingOptions.UseHttpLoggingMiddleware" /> is set to `true`.
 /// </summary>
-public class HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger ) : DelegatingHandler
-{
+public class HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger ) : DelegatingHandler {
     private readonly ILogger<HttpLoggingMiddleware> _logger = logger;
 
-    private readonly string[] _types = { "html", "text", "xml", "json", "txt", "x-www-form-urlencoded" };
+    private readonly string[ ] _types = ["html" , "text" , "xml" , "json" , "txt" , "x-www-form-urlencoded"];
 
     protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage request,
+        HttpRequestMessage request ,
         CancellationToken ct
-    )
-    {
+    ) {
         string? msg;
 
         HttpResponseMessage? response,
             resp;
 
-        using (HttpRequestMessage req = request)
-        {
-            string id = Guid.NewGuid().ToString();
+        using ( HttpRequestMessage req = request ) {
+            string id = Guid.NewGuid( ).ToString( );
             msg = $"[{id} -  Request]";
 
-            _logger.LogDebug( "{Msg}========Start==========", msg );
+            _logger.LogDebug( "{Msg}========Start==========" , msg );
 
             _logger.LogDebug(
-                "{Msg} {Method} {PathAndQuery} {Scheme}/{Version}",
-                msg,
-                req.Method,
-                req.RequestUri!.PathAndQuery,
-                req.RequestUri.Scheme,
+                "{Msg} {Method} {PathAndQuery} {Scheme}/{Version}" ,
+                msg ,
+                req.Method ,
+                req.RequestUri!.PathAndQuery ,
+                req.RequestUri.Scheme ,
                 req.Version
             );
 
             _logger.LogDebug(
-                "{Msg} Host: {Scheme}://{Host}",
-                msg,
-                req.RequestUri.Scheme,
+                "{Msg} Host: {Scheme}://{Host}" ,
+                msg ,
+                req.RequestUri.Scheme ,
                 req.RequestUri.Host
             );
 
-            foreach ((string key, IEnumerable<string> value) in req.Headers)
-            {
+            foreach ( (string key, IEnumerable<string> value) in req.Headers ) {
                 _logger.LogDebug(
-                    "{Msg} {HeaderKey}: {HeaderValue}",
-                    msg,
-                    key,
-                    string.Join( ", ", value )
+                    "{Msg} {HeaderKey}: {HeaderValue}" ,
+                    msg ,
+                    key ,
+                    string.Join( ", " , value )
                 );
             }
 
-            if (req.Content is not null)
-            {
-                foreach ((string key, IEnumerable<string> value) in req.Content.Headers)
-                {
+            if ( req.Content is not null ) {
+                foreach ( (string key, IEnumerable<string> value) in req.Content.Headers ) {
                     _logger.LogDebug(
-                        "{Msg} {HeaderKey}: {HeaderValue}",
-                        msg,
-                        key,
-                        string.Join( ", ", value )
+                        "{Msg} {HeaderKey}: {HeaderValue}" ,
+                        msg ,
+                        key ,
+                        string.Join( ", " , value )
                     );
                 }
 
@@ -75,56 +69,53 @@ public class HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger ) : De
                     req.Content is StringContent
                     || IsTextBasedContentType( req.Headers )
                     || IsTextBasedContentType( req.Content.Headers )
-                )
-                {
+                ) {
                     string result = await req.Content.ReadAsStringAsync( ct );
 
-                    _logger.LogDebug( "{Msg} Content:", msg );
-                    _logger.LogDebug( "{Msg} {Result}", msg, result );
+                    _logger.LogDebug( "{Msg} Content:" , msg );
+                    _logger.LogDebug( "{Msg} {Result}" , msg , result );
                 }
             }
 
             DateTime start = DateTime.Now;
 
-            response = await base.SendAsync( request, ct ).ConfigureAwait( false );
+            response = await base.SendAsync( request , ct ).ConfigureAwait( false );
 
             DateTime end = DateTime.Now;
 
-            _logger.LogDebug( "{Msg} Duration: {Duration}", msg, end - start );
-            _logger.LogDebug( "{Msg}==========End==========", msg );
+            _logger.LogDebug( "{Msg} Duration: {Duration}" , msg , end - start );
+            _logger.LogDebug( "{Msg}==========End==========" , msg );
 
             msg = $"[{id} - Response]";
-            _logger.LogDebug( "{Msg}=========Start=========", msg );
+            _logger.LogDebug( "{Msg}=========Start=========" , msg );
 
             resp = response;
 
             _logger.LogDebug(
-                "{Msg} {Scheme}/{Version} {StatusCode} {ReasonPhrase}",
-                msg,
-                req.RequestUri.Scheme.ToUpper(),
-                resp.Version,
-                (int)resp.StatusCode,
+                "{Msg} {Scheme}/{Version} {StatusCode} {ReasonPhrase}" ,
+                msg ,
+                req.RequestUri.Scheme.ToUpper( ) ,
+                resp.Version ,
+                ( int ) resp.StatusCode ,
                 resp.ReasonPhrase
             );
         }
 
-        foreach ((string key, IEnumerable<string> value) in resp.Headers)
-        {
+        foreach ( (string key, IEnumerable<string> value) in resp.Headers ) {
             _logger.LogDebug(
-                "{Msg} {HeaderKey}: {HeaderValue}",
-                msg,
-                key,
-                string.Join( ", ", value )
+                "{Msg} {HeaderKey}: {HeaderValue}" ,
+                msg ,
+                key ,
+                string.Join( ", " , value )
             );
         }
 
-        foreach ((string key, IEnumerable<string> value) in resp.Content.Headers)
-        {
+        foreach ( (string key, IEnumerable<string> value) in resp.Content.Headers ) {
             _logger.LogDebug(
-                "{Msg} {HeaderKey}: {HeaderValue}",
-                msg,
-                key,
-                string.Join( ", ", value )
+                "{Msg} {HeaderKey}: {HeaderValue}" ,
+                msg ,
+                key ,
+                string.Join( ", " , value )
             );
         }
 
@@ -132,30 +123,27 @@ public class HttpLoggingMiddleware( ILogger<HttpLoggingMiddleware> logger ) : De
             resp.Content is StringContent
             || IsTextBasedContentType( resp.Headers )
             || IsTextBasedContentType( resp.Content.Headers )
-        )
-        {
+        ) {
             DateTime start = DateTime.Now;
             string result = await resp.Content.ReadAsStringAsync( ct );
             DateTime end = DateTime.Now;
 
-            _logger.LogDebug( "{Msg} Content:", msg );
-            _logger.LogDebug( "{Msg} {Result}...", msg, result );
-            _logger.LogDebug( "{Msg} Duration: {Duration}", msg, end - start );
+            _logger.LogDebug( "{Msg} Content:" , msg );
+            _logger.LogDebug( "{Msg} {Result}..." , msg , result );
+            _logger.LogDebug( "{Msg} Duration: {Duration}" , msg , end - start );
         }
 
-        _logger.LogDebug( "{Msg}==========End==========", msg );
+        _logger.LogDebug( "{Msg}==========End==========" , msg );
 
         return response;
     }
 
-    private bool IsTextBasedContentType( HttpHeaders headers )
-    {
-        if (!headers.TryGetValues( "Content-Type", out IEnumerable<string>? values ))
-        {
+    private bool IsTextBasedContentType( HttpHeaders headers ) {
+        if ( !headers.TryGetValues( "Content-Type" , out IEnumerable<string>? values ) ) {
             return false;
         }
 
-        string header = string.Join( " ", values ).ToLowerInvariant();
+        string header = string.Join( " " , values ).ToLowerInvariant( );
 
         return _types.Any( t => header.Contains( t ) );
     }

@@ -1,23 +1,19 @@
 namespace Playlister.Extensions;
 
-public static class TimeSpanExtensions
-{
+public static class TimeSpanExtensions {
     /// <summary>
     ///     Format <paramref name="elapsed" /> based on the best units to use
     /// </summary>
     /// <param name="elapsed"></param>
     /// <exception cref="ArgumentOutOfRangeException"></exception>
     /// <returns>A number with units (e.g. <c>"1.23s"</c>,<c>123.2ms</c>, etc.)</returns>
-    public static string ToDisplayString( this TimeSpan elapsed )
-    {
+    public static string ToDisplayString( this TimeSpan elapsed ) {
         // <https://learn.microsoft.com/en-us/dotnet/standard/base-types/custom-timespan-format-strings>
-        if (elapsed.TotalNanoseconds == 0)
-        {
+        if ( elapsed.TotalNanoseconds == 0 ) {
             return "under 1ns";
         }
 
-        return elapsed.TotalSeconds switch
-        {
+        return elapsed.TotalSeconds switch {
             // elapsed >= 1 day
             >= 86400 => $"{elapsed.Hours}h{elapsed.Minutes}min{elapsed.Seconds}s",
             // elapsed >= 1 hour
@@ -31,8 +27,7 @@ public static class TimeSpanExtensions
             //  10 seconds > elapsed >= 1 second
             >= 1 => $"{elapsed.TotalSeconds:N3}s",
             // elapsed < 1 second
-            _ => elapsed.TotalMicroseconds switch
-            {
+            _ => elapsed.TotalMicroseconds switch {
                 // elapsed >= 1 millisecond
                 >= 1000 => $"{elapsed.TotalMilliseconds:N2}ms",
                 // elapsed >= 1 microsecond

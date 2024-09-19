@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record PlaylistObject : SimplifiedPlaylistObject
-{
+public record PlaylistObject : SimplifiedPlaylistObject {
     /// <summary>
     ///     Information about the followers of the playlist.
     /// </summary>

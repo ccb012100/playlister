@@ -3,8 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Playlister.Models;
 
-public record Album
-{
+public record Album {
     [JsonPropertyName( "album_type" )] public required string AlbumType { get; init; }
 
     public required IEnumerable<Artist> Artists { get; init; }
@@ -25,20 +24,16 @@ public record Album
     [JsonPropertyName( "total_tracks" )] public required int TotalTracks { get; init; }
 
     [JsonPropertyName( "date_of_release" )]
-    public DateTime DateOfRelease
-    {
-        get
-        {
+    public DateTime DateOfRelease {
+        get {
             // Depending on precision, the ReleaseDate string could be in the format "yyyy", "yyyy-MM" or "yyyy-MM-DD"
             if (
-                DateTime.TryParseExact( ReleaseDate, "yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime yyyy )
-            )
-            {
+                DateTime.TryParseExact( ReleaseDate , "yyyy" , CultureInfo.InvariantCulture , DateTimeStyles.None , out DateTime yyyy )
+            ) {
                 return yyyy;
             }
 
-            if (DateTime.TryParse( ReleaseDate, out DateTime dt ))
-            {
+            if ( DateTime.TryParse( ReleaseDate , out DateTime dt ) ) {
                 return dt;
             }
 
@@ -52,8 +47,7 @@ public record Album
     ///     Gets a pairing of the Album's ID with <see cref="Album.Artists" />'s Id
     /// </summary>
     /// <returns><see cref="AlbumArtistPair" /> for every <see cref="Artist" /> in <see cref="Album.Artists" /></returns>
-    public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings()
-    {
-        return Artists.Select( x => new AlbumArtistPair( Id, x.Id ) ).ToImmutableArray();
+    public ImmutableArray<AlbumArtistPair> GetAlbumArtistPairings( ) {
+        return Artists.Select( x => new AlbumArtistPair( Id , x.Id ) ).ToImmutableArray( );
     }
 }

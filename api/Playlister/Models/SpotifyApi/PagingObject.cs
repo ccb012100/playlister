@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record PagingObject<T>
-{
+public record PagingObject<T> {
     /// <summary>
     ///     A link to the Web API endpoint returning the full result of the request
     /// </summary>

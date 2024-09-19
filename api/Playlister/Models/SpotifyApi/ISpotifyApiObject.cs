@@ -2,8 +2,7 @@ using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
-public interface ISpotifyApiObject
-{
+public interface ISpotifyApiObject {
     /// <summary>
     ///     A link to the Web API endpoint providing full details of the object.
     /// </summary>

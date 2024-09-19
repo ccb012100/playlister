@@ -8,8 +8,7 @@ namespace Playlister.Models.SpotifyApi;
 /// <remarks>
 ///     See <a href="https://developer.spotify.com/documentation/web-api/reference/get-an-artists-albums" />
 /// </remarks>
-public record SimplifiedAlbumObject : PlaylistItemTrackAlbumObject
-{
+public record SimplifiedAlbumObject : PlaylistItemTrackAlbumObject {
     /// <summary>
     ///     This field represents the relationship between the artist and the album.<br /><br />
     ///     Possible values are <c>album</c>, <c>single</c>, <c>compilation</c>, <c>appears_on</c>.

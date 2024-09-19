@@ -2,8 +2,7 @@ using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
-public record SimplifiedTrackObject : ISpotifyApiObject
-{
+public record SimplifiedTrackObject : ISpotifyApiObject {
     /// <summary>
     ///     The artists who performed the track. Each artist object includes a link in <c>href</c> to more detailed information about the artist.
     /// </summary>

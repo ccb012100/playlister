@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Playlister.Mvc.ViewModels;
 
-[ResponseCache( Duration = 0, Location = ResponseCacheLocation.None, NoStore = true )]
+[ResponseCache( Duration = 0 , Location = ResponseCacheLocation.None , NoStore = true )]
 [IgnoreAntiforgeryToken]
-public class ErrorViewModel
-{
+public class ErrorViewModel {
     public required int? ResponseStatusCode { get; init; }
 
     public string? RequestId { get; init; }

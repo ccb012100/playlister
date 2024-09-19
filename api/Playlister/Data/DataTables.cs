@@ -1,9 +1,6 @@
 namespace Playlister.Data;
 
-public static class DataTables
-{
-    [Obsolete( "Not used anymore" )] public const string AccessToken = "AccessToken";
-
+public static class DataTables {
     public const string Album = nameof( Album );
     public const string Artist = nameof( Artist );
     public const string Playlist = nameof( Playlist );

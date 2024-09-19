@@ -3,10 +3,8 @@ namespace Playlister.CQRS.Queries;
 /// <summary>
 ///     Request to refresh Spotify Access Token
 /// </summary>
-public record RefreshTokenQuery
-{
-    public RefreshTokenQuery( string refreshToken )
-    {
+public record RefreshTokenQuery {
+    public RefreshTokenQuery( string refreshToken ) {
         RefreshToken = refreshToken;
     }
 

@@ -1,10 +1,10 @@
 using System.ComponentModel.DataAnnotations;
+
 using Refit;
 
 namespace Playlister.Models.SpotifyAccounts;
 
-public record AccessTokenRequestParams
-{
+public record AccessTokenRequestParams {
     /// <summary>
     ///     As defined in the <b>OAuth 2.0</b> specification, this field must contain the value <c>"authorization_code"</c>
     /// </summary>

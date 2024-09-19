@@ -2,8 +2,7 @@ using Playlister.Models.SpotifyApi;
 
 namespace Playlister.Services;
 
-public interface ISpotifyApiService
-{
+public interface ISpotifyApiService {
     /// <summary>
     ///     Get the tracks for specified
     ///     <param name="playlistId"></param>
@@ -16,10 +15,10 @@ public interface ISpotifyApiService
     /// <param name="ct"></param>
     /// <returns></returns>
     Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
-        string accessToken,
-        string playlistId,
-        int? offset,
-        int? limit,
+        string accessToken ,
+        string playlistId ,
+        int? offset ,
+        int? limit ,
         CancellationToken ct
     );
 
@@ -29,7 +28,7 @@ public interface ISpotifyApiService
     /// <param name="next"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync( string accessToken, Uri next, CancellationToken ct );
+    Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync( string accessToken , Uri next , CancellationToken ct );
 
     /// <summary>
     ///     Get a list of the playlists owned or followed by the current Spotify user.
@@ -43,9 +42,9 @@ public interface ISpotifyApiService
     /// <param name="limit">The maximum number of playlists to return. Default: <c>20</c>. Minimum: <c>1</c>. Maximum: <c>50</c></param>
     /// <returns></returns>
     Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
-        string accessToken,
-        CancellationToken ct,
-        int? offset = null,
+        string accessToken ,
+        CancellationToken ct ,
+        int? offset = null ,
         int? limit = 50
     );
 
@@ -57,8 +56,8 @@ public interface ISpotifyApiService
     /// <param name="ct"></param>
     /// <returns>A <c>PagingObject</c> containing the playlists requested in the <paramref name="next" /> Uri parameter</returns>
     Task<PagingObject<SimplifiedPlaylistObject>> GetCurrentUserPlaylistsAsync(
-        string accessToken,
-        Uri next,
+        string accessToken ,
+        Uri next ,
         CancellationToken ct
     );
 
@@ -69,5 +68,5 @@ public interface ISpotifyApiService
     /// <param name="playlistId"></param>
     /// <param name="ct"></param>
     /// <returns></returns>
-    Task<SimplifiedPlaylistObject> GetPlaylistAsync( string accessToken, string playlistId, CancellationToken ct );
+    Task<SimplifiedPlaylistObject> GetPlaylistAsync( string accessToken , string playlistId , CancellationToken ct );
 }

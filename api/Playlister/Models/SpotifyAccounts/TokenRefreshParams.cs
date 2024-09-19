@@ -1,12 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+
 using Refit;
 
 namespace Playlister.Models.SpotifyAccounts;
 
-public record TokenRefreshParams
-{
-    public TokenRefreshParams( string refreshToken )
-    {
+public record TokenRefreshParams {
+    public TokenRefreshParams( string refreshToken ) {
         RefreshToken = refreshToken;
     }
 

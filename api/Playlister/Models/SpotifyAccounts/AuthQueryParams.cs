@@ -1,7 +1,6 @@
 namespace Playlister.Models.SpotifyAccounts;
 
-public record AuthQueryParams
-{
+public record AuthQueryParams {
     public required string ClientId { get; init; }
     public required Uri RedirectUri { get; init; }
     public required string State { get; init; }

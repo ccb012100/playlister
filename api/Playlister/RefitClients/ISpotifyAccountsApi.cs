@@ -1,4 +1,5 @@
 using Playlister.Models.SpotifyAccounts;
+
 using Refit;
 
 namespace Playlister.RefitClients;
@@ -6,8 +7,7 @@ namespace Playlister.RefitClients;
 /// <summary>
 ///     Interface for interacting with the Spotify Accounts API
 /// </summary>
-public interface ISpotifyAccountsApi
-{
+public interface ISpotifyAccountsApi {
     /*
      *  The requests to the API will also work if the ClientId and ClientSecret are added as POST body data instead of in the Authorization Header,
      *  but I've chosen to pass them in the Header to match the Spotify Developer Documentation
@@ -26,9 +26,9 @@ public interface ISpotifyAccountsApi
     /// <returns></returns>
     [Post( "/api/token" )]
     Task<SpotifyAccessToken> RequestAccessTokenAsync(
-        [Authorize( "Basic" )] string authHeaderParam,
+        [Authorize( "Basic" )] string authHeaderParam ,
         [Body( BodySerializationMethod.UrlEncoded )]
-        AccessTokenRequestParams bodyRequestParams,
+        AccessTokenRequestParams bodyRequestParams ,
         CancellationToken ct
     );
 
@@ -44,9 +44,9 @@ public interface ISpotifyAccountsApi
     /// <returns></returns>
     [Post( "/api/token" )]
     Task<SpotifyAccessToken> RefreshTokenAsync(
-        [Authorize( "Basic" )] string authHeaderParam,
+        [Authorize( "Basic" )] string authHeaderParam ,
         [Body( BodySerializationMethod.UrlEncoded )]
-        TokenRefreshParams bodyParams,
+        TokenRefreshParams bodyParams ,
         CancellationToken ct
     );
 }

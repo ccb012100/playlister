@@ -1,7 +1,6 @@
 namespace Playlister.Services;
 
-public interface IPlaylistService
-{
+public interface IPlaylistService {
     /// <summary>
     ///     Update the playlists provided.<br /><br />
     ///     <b>Note:</b> The items in <paramref name="playlists" /> are directly compared to the versions in the database,
@@ -14,22 +13,22 @@ public interface IPlaylistService
     /// </param>
     /// <param name="ct"></param>
     /// <returns>The number of playlists updated.</returns>
-    Task<int> SyncPlaylistsAsync( string accessToken, IEnumerable<Playlist> playlists, CancellationToken ct );
+    Task<int> SyncPlaylistsAsync( string accessToken , IEnumerable<Playlist> playlists , CancellationToken ct );
 
     /// <summary>
     ///     The full lists of playlists for the current user associated with the supplied Access Token.
     /// </summary>
-    Task<ImmutableArray<Playlist>> GetUserPlaylistsAsync( string accessToken, CancellationToken ct );
+    Task<ImmutableArray<Playlist>> GetUserPlaylistsAsync( string accessToken , CancellationToken ct );
 
     /// <summary>
     ///     Sync the specified playlist.
     /// </summary>
-    Task SyncPlaylistAsync( string accessToken, string playlistId, CancellationToken ct );
+    Task SyncPlaylistAsync( string accessToken , string playlistId , CancellationToken ct );
 
     /// <summary>
     ///     Sync the specified playlist, regardless of whether the snapshot ID has changed since the last update.
     /// </summary>
-    Task ForceSyncPlaylistAsync( string accessToken, string playlistId, CancellationToken ct );
+    Task ForceSyncPlaylistAsync( string accessToken , string playlistId , CancellationToken ct );
 
     /// <summary>
     ///     Delete tracks without any Playlist associations

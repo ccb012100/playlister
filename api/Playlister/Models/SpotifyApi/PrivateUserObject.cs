@@ -2,8 +2,7 @@ using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
-public record PrivateUserObject : ISpotifyApiObject
-{
+public record PrivateUserObject : ISpotifyApiObject {
     /// <summary>
     ///     The country of the user, as set in the user’s account profile.
     ///     An <c>ISO 3166-1 alpha-2</c> country code.

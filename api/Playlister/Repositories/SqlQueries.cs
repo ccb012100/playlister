@@ -1,10 +1,8 @@
 using Playlister.Data;
 
 namespace Playlister.Repositories;
-public static class SqlQueries
-{
-    public static class Read
-    {
+public static class SqlQueries {
+    public static class Read {
         /// <summary>
         ///     Returns a collection of <see cref="Models.Playlist" />s
         /// </summary>
@@ -26,8 +24,7 @@ public static class SqlQueries
             """;
     }
 
-    public static class Upsert
-    {
+    public static class Upsert {
         public const string Album =
             """
             INSERT INTO Album(id, name, total_tracks, album_type, release_date)
@@ -118,8 +115,7 @@ public static class SqlQueries
             """;
     }
 
-    public static class Delete
-    {
+    public static class Delete {
         /// <summary>
         ///     Delete rows from <see cref="DataTables.PlaylistTrack" />s with outdated <see cref="Models.PlaylistTrack.SnapshotId" />
         /// </summary>
@@ -138,8 +134,7 @@ public static class SqlQueries
         public const string TruncatePlaylistAlbum = "DELETE FROM PlaylistAlbum;";
     }
 
-    public static class Insert
-    {
+    public static class Insert {
         /// <summary>
         ///     Populate <see cref="DataTables.PlaylistAlbum"/> from scratch.
         /// </summary>
