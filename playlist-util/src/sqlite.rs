@@ -118,7 +118,7 @@ fn build_search_query(request: &SearchRequest) -> String {
             SortField::Added => "added_at",
             SortField::Album => "album, artists",
             SortField::Artists => "artists, album",
-            SortField::Playlist => "playlists, artists, album",
+            SortField::Playlist => "playlist, artists, album",
             SortField::Year => "release_year, artists, album",
         }
     )

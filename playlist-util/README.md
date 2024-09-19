@@ -109,3 +109,7 @@ Options:
 
 - [ ] Return an `Error` if the search term is empty
 - [ ] Use [unicase](https://github.com/seanmonstar/unicase) if/when [this issue](https://github.com/seanmonstar/unicase/pull/52) to add `UniCase::contains()` is completed.
+- [ ] Implement fuzzy searching
+- [ ] Add a TUI with [Ratatui](https://ratatui.rs/)
+  - [ ] Display search results
+  - [ ] Interactive search
