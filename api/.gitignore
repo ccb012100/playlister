@@ -1,6 +1,7 @@
 .vs
 .idea/
 Folder.DotSettings.user
+**/**.DotSettings.user
 
 .DS_Store
 
