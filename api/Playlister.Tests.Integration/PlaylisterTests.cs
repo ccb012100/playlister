@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 using Dapper;
 
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -16,72 +18,21 @@ public class PlaylisterTests( CustomWebApplicationFactory<Startup> webApplicatio
     private readonly SqliteConnection _db = webApplicationFactory.Services.GetService<IConnectionFactory>( )!.Connection;
 
     [Fact]
-    public async Task CreatesDatabaseOnStartup( ) {
+    public async Task ConnectsToDatabase( ) {
         // arrange
-        string[ ] indexes = [
-            "IX_Album_release_date" ,
-            "IX_ExternalId_album_id" ,
-            "IX_PlaylistAlbum_album_artists" ,
-            "IX_PlaylistAlbum_album_id" ,
-            "IX_PlaylistAlbum_artists_album" ,
-            "IX_PlaylistAlbum_id" ,
-            "IX_PlaylistAlbum_playlist_artists_album" ,
-            "IX_PlaylistAlbum_playlist_id" ,
-            "IX_PlaylistAlbum_release_year_artists_album" ,
-            "IX_PlaylistAlbum_release_year" ,
-            "IX_PlaylistTrack_added_at" ,
-            "IX_PlaylistTrack_album_id" ,
-            "IX_PlaylistTrack_playlist_id" ,
-            "IX_PlaylistTrack_playlist_snapshot_id" ,
-            "IX_SavedAlbum_id" ,
-            "IX_Playlist_snapshot_id" ,
-            "UC_Version"
-        ];
+        const string expectedTableName = "main";
+        const string expectedTableFile = ""; // in-memory database will have empty string for `file` value
 
-        string[ ] tables = [
-            "Album" ,
-            "AlbumArtist" ,
-            "Artist" ,
-            "ExternalId" ,
-            "Playlist" ,
-            "PlaylistAlbum" ,
-            "PlaylistTrack" ,
-            "SavedAlbum" ,
-            "Track" ,
-            "TrackArtist" ,
-            "VersionInfo"
-        ];
-
-        string[ ] triggers = [
-            "album_artist_modified" ,
-            "album_modified" ,
-            "artist_modified" ,
-            "playlist_album_modified" ,
-            "playlist_modified" ,
-            "playlist_track_modified" ,
-            "track_artist_modified" ,
-            "track_modified"
-        ];
+        const string connectionStringPattern
+            = """Data Source=\"file:[-a-z0-9]+\?mode=memory&cache=shared\";Mode=ReadWriteCreate;Cache=Shared;Foreign Keys=True""";
 
         // act
-        SqliteSchema[ ] schema = ( await _db.QueryAsync<SqliteSchema>( "select * from sqlite_schema" ) ).ToArray( );
+        (string name, string file)[ ] results
+            = ( await _db.QueryAsync<(string name, string file)>( "SELECT name, file from pragma_database_list" ) ).ToArray( );
 
         // assert
-        schema.Should( ).NotBeEmpty( );
-
-        indexes.Should( )
-            .AllSatisfy(
-                idx => { schema.Should( ).ContainSingle( row => row.Type == "index" && row.Name == idx ); }
-            );
-
-        tables.Should( )
-            .AllSatisfy(
-                table => { schema.Should( ).ContainSingle( row => row.Type == "table" && row.Name == table ); }
-            );
-
-        triggers.Should( )
-            .AllSatisfy(
-                trigger => { schema.Should( ).ContainSingle( row => row.Type == "trigger" && row.Name == trigger ); }
-            );
+        results.Should( ).HaveCount( 1 );
+        results.First( ).Should( ).Be( (expectedTableName, expectedTableFile) );
+        _db.ConnectionString.Should( ).MatchRegex( connectionStringPattern );
     }
 }
