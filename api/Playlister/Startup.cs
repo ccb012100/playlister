@@ -59,8 +59,7 @@ public class Startup {
 
         builder.Services
             .AddEndpointsApiExplorer( )
-            .AddSwaggerGen( )
-            .ConfigureFluentMigrator( );
+            .AddSwaggerGen( );
 
         if ( builder.Environment.IsDevelopment( ) ) {
             builder.Services.AddDebuggingOptions( );

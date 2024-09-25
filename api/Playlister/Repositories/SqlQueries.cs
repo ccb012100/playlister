@@ -1,6 +1,5 @@
-using Playlister.Data;
-
 namespace Playlister.Repositories;
+
 public static class SqlQueries {
     public static class Read {
         /// <summary>
@@ -136,34 +135,34 @@ public static class SqlQueries {
 
     public static class Insert {
         /// <summary>
-        ///     Populate <see cref="DataTables.PlaylistAlbum"/> from scratch.
+        ///     Populate <see cref="Data.DataTables.PlaylistAlbum"/> from scratch.
         /// </summary>
         public const string PopulatePlaylistAlbum =
-        """
-        INSERT INTO
-            PlaylistAlbum ( artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id )
-        SELECT
-            GROUP_CONCAT(artist, '; ') AS artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id
-        FROM (
-                SELECT
-                    art.name AS artist,
-                    a.name AS album,
-                    a.id AS album_id,
-                    a.total_tracks AS track_count,
-                    SUBSTR(a.release_date, 1, 4) AS release_year,
-                    pt.added_at,
-                    p.name AS playlist,
-                    p.id AS playlist_id
-                FROM
-                    Album a
-                    JOIN albumartist aa ON aa.album_id = a.id
-                    JOIN artist art ON art.id = aa.artist_id
-                    JOIN track t ON t.album_id = a.id
-                    JOIN playlisttrack pt ON pt.track_id = t.id
-                    JOIN playlist p ON p.id = pt.playlist_id
-                GROUP BY a.id, art.id, p.id
-                ORDER BY p.id, art.name, a.name
-        ) GROUP BY album_id, playlist_id
-        """;
+            """
+            INSERT INTO
+                PlaylistAlbum ( artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id )
+            SELECT
+                GROUP_CONCAT(artist, '; ') AS artists, album, track_count, release_year, playlist, added_at, playlist_id, album_id
+            FROM (
+                    SELECT
+                        art.name AS artist,
+                        a.name AS album,
+                        a.id AS album_id,
+                        a.total_tracks AS track_count,
+                        SUBSTR(a.release_date, 1, 4) AS release_year,
+                        pt.added_at,
+                        p.name AS playlist,
+                        p.id AS playlist_id
+                    FROM
+                        Album a
+                        JOIN albumartist aa ON aa.album_id = a.id
+                        JOIN artist art ON art.id = aa.artist_id
+                        JOIN track t ON t.album_id = a.id
+                        JOIN playlisttrack pt ON pt.track_id = t.id
+                        JOIN playlist p ON p.id = pt.playlist_id
+                    GROUP BY a.id, art.id, p.id
+                    ORDER BY p.id, art.name, a.name
+            ) GROUP BY album_id, playlist_id
+            """;
     }
 }

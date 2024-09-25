@@ -1,7 +1,5 @@
 using System.Reflection;
 
-using FluentMigrator.Runner;
-
 using Microsoft.Extensions.Options;
 
 using Playlister.Configuration;
@@ -37,29 +35,6 @@ public static class StartupExtensions {
 
     public static IServiceCollection AddMiddleware( this IServiceCollection services ) {
         return services.AddTransient<HttpLoggingMiddleware>( );
-    }
-
-    public static void ConfigureFluentMigrator( this IServiceCollection services ) {
-        string connectionString = services
-            .BuildServiceProvider( )
-            .GetService<IOptions<DatabaseOptions>>( )!
-            .Value.ConnectionString;
-
-        ServiceProvider serviceProvider = services
-            .AddFluentMigratorCore( )
-            .ConfigureRunner(
-                c =>
-                    c.AddSQLite( )
-                        .WithGlobalConnectionString( connectionString )
-                        .ScanIn( Assembly.GetExecutingAssembly( ) )
-                        .For
-                        .All( )
-            )
-            .AddLogging( c => c.AddFluentMigratorConsole( ) )
-            .BuildServiceProvider( false );
-
-        using IServiceScope scope = serviceProvider.CreateScope( );
-        scope.ServiceProvider.GetRequiredService<IMigrationRunner>( ).MigrateUp( );
     }
 
     public static IServiceCollection AddRefitClients( this IServiceCollection services ) {
