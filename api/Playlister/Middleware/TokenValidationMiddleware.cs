@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Http.Features;
 
 using Playlister.Attributes;
-using Playlister.Services;
+using Playlister.Services.Implementations;
 
 namespace Playlister.Middleware;
 
@@ -15,7 +15,7 @@ namespace Playlister.Middleware;
 public class TokenValidationMiddleware(
     RequestDelegate next ,
     ILogger<TokenValidationMiddleware> logger
-    ) {
+) {
     private readonly ILogger<TokenValidationMiddleware> _logger = logger;
     private readonly RequestDelegate _next = next;
 

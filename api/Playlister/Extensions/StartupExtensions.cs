@@ -1,5 +1,3 @@
-using System.Reflection;
-
 using Microsoft.Extensions.Options;
 
 using Playlister.Configuration;
@@ -9,6 +7,7 @@ using Playlister.RefitClients;
 using Playlister.Repositories;
 using Playlister.Repositories.Implementations;
 using Playlister.Services;
+using Playlister.Services.Implementations;
 using Playlister.Utilities;
 
 using Refit;
@@ -20,6 +19,7 @@ public static class StartupExtensions {
         return services
             .AddSingleton<IHttpContextAccessor , HttpContextAccessor>( )
             .AddSingleton<IConnectionFactory , ConnectionFactory>( )
+            .AddScoped<ISqliteDatabaseService , SqliteDatabaseService>( )
             .AddScoped<IPlaylistService , PlaylistService>( )
             .AddScoped<IAuthService , AuthService>( )
             .AddTransient<IAccessTokenUtility , AccessTokenUtility>( )
@@ -103,6 +103,7 @@ public static class StartupExtensions {
 
     public static IServiceCollection AddRepositories( this IServiceCollection services ) {
         return services
+            .AddScoped<ISqliteDatabaseRepository , SqliteDatabaseRepository>( )
             .AddScoped<IPlaylistReadRepository , PlaylistReadRepository>( )
             .AddScoped<IPlaylistWriteRepository , PlaylistWriteRepository>( );
     }

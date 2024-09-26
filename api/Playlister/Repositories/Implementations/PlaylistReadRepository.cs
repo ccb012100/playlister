@@ -2,6 +2,8 @@ using Dapper;
 
 using Microsoft.Data.Sqlite;
 
+using Playlister.Data;
+
 namespace Playlister.Repositories.Implementations;
 
 public class PlaylistReadRepository( IConnectionFactory connectionFactory ) : IPlaylistReadRepository {

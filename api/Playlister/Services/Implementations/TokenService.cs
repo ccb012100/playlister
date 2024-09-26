@@ -1,6 +1,6 @@
 using static System.String;
 
-namespace Playlister.Services;
+namespace Playlister.Services.Implementations;
 
 public static class TokenService {
     public const string UserTokenCookieName = "user-token";
@@ -89,7 +89,7 @@ public static class TokenService {
     }
 
     /// <summary>
-    /// Get the expiration time for the supplied token.
+    ///     Get the expiration time for the supplied token.
     /// </summary>
     /// <exception cref="ArgumentException"><paramref name="viewToken" /> is <see cref="Guid.Empty" /></exception>
     /// <exception cref="ArgumentException"><paramref name="viewToken" /> is invalid</exception>
@@ -101,7 +101,7 @@ public static class TokenService {
     }
 
     /// <summary>
-    ///     Throw an <see cref="Exception"/> if <paramref name="viewToken"/> is not a valid token.
+    ///     Throw an <see cref="Exception" /> if <paramref name="viewToken" /> is not a valid token.
     /// </summary>
     /// <exception cref="ArgumentException"><paramref name="viewToken" /> is <see cref="Guid.Empty" /></exception>
     /// <exception cref="ArgumentException"><paramref name="viewToken" /> is invalid</exception>

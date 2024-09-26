@@ -1,4 +1,4 @@
-using Playlister.Services;
+using Playlister.Services.Implementations;
 
 namespace Playlister.Utilities;
 

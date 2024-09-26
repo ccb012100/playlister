@@ -3,12 +3,11 @@ using System.Net.Http.Headers;
 using Playlister.Models.SpotifyApi;
 using Playlister.RefitClients;
 
-namespace Playlister.Services;
+namespace Playlister.Services.Implementations;
 
 public class SpotifyApiService( HttpClient client , ISpotifyApi spotifyApi ) : ISpotifyApiService {
-    private readonly ISpotifyApi _spotifyApi = spotifyApi;
-
     private readonly HttpClient _client = client;
+    private readonly ISpotifyApi _spotifyApi = spotifyApi;
 
     public async Task<PagingObject<PlaylistItem>> GetPlaylistTracksAsync(
         string accessToken ,

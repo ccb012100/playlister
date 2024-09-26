@@ -6,11 +6,16 @@ using Microsoft.AspNetCore.Mvc;
 using Playlister.Attributes;
 using Playlister.CQRS.Handlers;
 using Playlister.Mvc.ViewModels;
-using Playlister.Services;
+using Playlister.Services.Implementations;
 
 namespace Playlister.Mvc.Controllers;
 
-public class HomeController( IHostApplicationLifetime appLifetime , SpotifyAuthorizationHandler spotifyAuthorizationHandler , ILogger<HomeController> logger , IConfiguration config ) : Controller {
+public class HomeController(
+    IHostApplicationLifetime appLifetime ,
+    SpotifyAuthorizationHandler spotifyAuthorizationHandler ,
+    ILogger<HomeController> logger ,
+    IConfiguration config
+) : Controller {
     public const string Name = "Home";
 
     private readonly bool _handsFree = bool.TryParse( config["HandsFree"] , out bool handsFree ) && handsFree;
@@ -26,10 +31,11 @@ public class HomeController( IHostApplicationLifetime appLifetime , SpotifyAutho
                 out string? error
             ) ) {
             return Redirect( "/Home/Main/" );
-        } else {
-            logger.LogDebug( "Cookie validation failed: {Error}" , error );
-            return Redirect( ( await spotifyAuthorizationHandler.GetAuthorizationUrl( ) ).ToString( ) );
         }
+
+        logger.LogDebug( "Cookie validation failed: {Error}" , error );
+
+        return Redirect( ( await spotifyAuthorizationHandler.GetAuthorizationUrl( ) ).ToString( ) );
     }
 
     [ProducesResponseType<ViewResult>( StatusCodes.Status200OK )]

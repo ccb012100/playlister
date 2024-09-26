@@ -3,7 +3,7 @@ using System.Diagnostics;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
 
-namespace Playlister.Services;
+namespace Playlister.Services.Implementations;
 
 public class PlaylistService : IPlaylistService {
     private static readonly CacheObject<Playlist> s_playlistCache = new( );
@@ -347,8 +347,7 @@ public class PlaylistService : IPlaylistService {
     /// </summary>
     /// <returns></returns>
     private async Task PopulateCaches( ) {
-        List<Task> tasks =
-        [
+        List<Task> tasks = [
             PopulatePlaylistCache( ) ,
             PopulateMissingTracksCache( )
         ];

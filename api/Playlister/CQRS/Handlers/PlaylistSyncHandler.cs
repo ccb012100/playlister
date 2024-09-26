@@ -1,10 +1,10 @@
 using Playlister.CQRS.Commands;
-using Playlister.Mvc.DTOs;
 using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class PlaylistSyncHandler( IPlaylistService playlistService ) {
+public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteDatabaseService databaseService ) {
+    private readonly ISqliteDatabaseService _databaseService = databaseService;
     private readonly IPlaylistService _playlistService = playlistService;
 
     /// <summary>
@@ -47,6 +47,8 @@ public class PlaylistSyncHandler( IPlaylistService playlistService ) {
             ) ,
             ct
         );
+
+        await _databaseService.VacuumDatabase( ct );
     }
 
     /// <summary>
@@ -72,6 +74,7 @@ public class PlaylistSyncHandler( IPlaylistService playlistService ) {
         if ( updated > 0 ) {
             deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
             albumTotal = await _playlistService.RebuildPlaylistAlbumTable( ct );
+            await _databaseService.VacuumDatabase( ct );
         } else {
             deleted = 0;
             albumTotal = 0;
@@ -81,7 +84,7 @@ public class PlaylistSyncHandler( IPlaylistService playlistService ) {
             OrphanedTracksDeleted = deleted ,
             PlaylistAlbumCount = albumTotal ,
             PlaylistCount = playlists.Length ,
-            PlaylistsUpdated = updated ,
+            PlaylistsUpdated = updated
         };
     }
 
@@ -96,6 +99,7 @@ public class PlaylistSyncHandler( IPlaylistService playlistService ) {
     public async Task ForceSync( ForceSyncPlaylistCommand command , CancellationToken ct = default ) {
         await _playlistService.ForceSyncPlaylistAsync( command.AccessToken , command.PlaylistId , ct );
         await _playlistService.RebuildPlaylistAlbumTable( ct );
+        await _databaseService.VacuumDatabase( ct );
     }
 
     public record SyncResults {

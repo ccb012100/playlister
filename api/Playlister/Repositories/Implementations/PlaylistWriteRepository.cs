@@ -6,6 +6,7 @@ using Dapper;
 
 using Microsoft.Data.Sqlite;
 
+using Playlister.Data;
 using Playlister.Utilities;
 
 namespace Playlister.Repositories.Implementations;
@@ -13,7 +14,7 @@ namespace Playlister.Repositories.Implementations;
 public class PlaylistWriteRepository(
     IConnectionFactory connectionFactory ,
     ILogger<PlaylistWriteRepository> logger
-    ) : IPlaylistWriteRepository {
+) : IPlaylistWriteRepository {
     private readonly IConnectionFactory _connectionFactory = connectionFactory;
     private readonly ILogger<PlaylistWriteRepository> _logger = logger;
 
@@ -106,8 +107,7 @@ public class PlaylistWriteRepository(
             ImmutableArray<Track> tracks = items.Select( t => t.Track ).ToImmutableArray( );
             ImmutableArray<Album> albums = tracks.Select( t => t.Album ).ToImmutableArray( );
 
-            List<Task> tasks =
-            [
+            List<Task> tasks = [
                 UpsertArtists( tracks , conn , transaction ) ,
                 UpsertAlbums( albums , conn , transaction )
             ];
@@ -260,7 +260,7 @@ public class PlaylistWriteRepository(
 
             _logger.LogInformation(
                 "Truncated {Table}: deleted {Deleted} albums. Total time: {Elapsed}" ,
-                Data.DataTables.PlaylistAlbum ,
+                DataTables.PlaylistAlbum ,
                 deleted ,
                 sw.Elapsed.ToDisplayString( )
             );
@@ -269,14 +269,14 @@ public class PlaylistWriteRepository(
 
             _logger.LogInformation(
                 "Populated {Table}: added {Inserted:n0} albums. Total time to truncate and populate: {Elapsed}" ,
-                Data.DataTables.PlaylistAlbum ,
+                DataTables.PlaylistAlbum ,
                 inserted.ToString( "N0" ) ,
                 sw.Elapsed.ToDisplayString( )
             );
 
             return inserted;
         } catch ( SqliteException ) {
-            _logger.LogCritical( "SqliteException thrown while trying to populate {Table}" , Data.DataTables.PlaylistAlbum );
+            _logger.LogCritical( "SqliteException thrown while trying to populate {Table}" , DataTables.PlaylistAlbum );
 
             throw;
         } finally {

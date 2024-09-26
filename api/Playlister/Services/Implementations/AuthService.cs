@@ -10,7 +10,7 @@ using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyAccounts;
 using Playlister.RefitClients;
 
-namespace Playlister.Services;
+namespace Playlister.Services.Implementations;
 
 public class AuthService( ISpotifyAccountsApi api , IOptions<SpotifyOptions> options , ILogger<AuthService> logger ) : IAuthService {
     private const string AuthScope = "user-read-private";

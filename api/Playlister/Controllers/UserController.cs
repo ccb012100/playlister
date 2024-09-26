@@ -4,6 +4,7 @@ using Playlister.Attributes;
 using Playlister.CQRS.Handlers;
 using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyApi;
+using Playlister.Services.Implementations;
 using Playlister.Utilities;
 
 namespace Playlister.Controllers;
@@ -14,11 +15,11 @@ namespace Playlister.Controllers;
 public class UserController(
     IAccessTokenUtility tokenUtility ,
     CurrentUserHandler currentUserHandler
-    ) : BaseApiController( tokenUtility ) {
+) : BaseApiController( tokenUtility ) {
     private readonly CurrentUserHandler _currentUserHandler = currentUserHandler;
 
     /// <summary>
-    ///     Get the User who was assigned the Access Token in the Request <see cref="Playlister.Services.TokenService.UserTokenCookieName" /> cookie.
+    ///     Get the User who was assigned the Access Token in the Request <see cref="TokenService.UserTokenCookieName" /> cookie.
     /// </summary>
     /// <returns></returns>
     [HttpGet( "me" )]

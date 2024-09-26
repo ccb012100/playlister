@@ -1,6 +1,6 @@
 using System.Net;
 
-using Playlister.Services;
+using Playlister.Services.Implementations;
 
 using Polly;
 

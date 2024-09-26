@@ -1,4 +1,4 @@
-namespace Playlister.Repositories;
+namespace Playlister.Data;
 
 public static class SqlQueries {
     public static class Read {
@@ -116,7 +116,7 @@ public static class SqlQueries {
 
     public static class Delete {
         /// <summary>
-        ///     Delete rows from <see cref="DataTables.PlaylistTrack" />s with outdated <see cref="Models.PlaylistTrack.SnapshotId" />
+        ///     Delete rows from <see cref="Data.DataTables.PlaylistTrack" />s with outdated <see cref="Models.PlaylistTrack.SnapshotId" />
         /// </summary>
         public const string OrphanedTracks =
             """
@@ -135,7 +135,7 @@ public static class SqlQueries {
 
     public static class Insert {
         /// <summary>
-        ///     Populate <see cref="Data.DataTables.PlaylistAlbum"/> from scratch.
+        ///     Populate <see cref="Data.DataTables.PlaylistAlbum" /> from scratch.
         /// </summary>
         public const string PopulatePlaylistAlbum =
             """
