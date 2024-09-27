@@ -54,12 +54,8 @@ pub fn add_albums_to_file(mut albums: Vec<Album>, file: &Path) -> Result<()> {
     let mut tsvs = Vec::<AlbumTsv>::new();
 
     albums.into_iter().for_each(|album| {
-        #[cfg(debug_assertions)]
-        {
-            match album.validate() {
-                Ok(_) => {}
-                Err(err) => panic!("{}", err),
-            }
+        if let Err(err) = album.validate() {
+            panic!("{}", err)
         }
         tsvs.push(album.to_tsv_entry());
     });

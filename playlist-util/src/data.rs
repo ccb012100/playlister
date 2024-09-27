@@ -256,24 +256,6 @@ impl FromStr for DateAdded {
 /* Associated methods */
 
 impl Album {
-    pub fn new(
-        name: AlbumName,
-        artists: AlbumArtists,
-        tracks: TrackCount,
-        release_year: ReleaseYear,
-        date_added: DateAdded,
-        playlist: Playlist,
-    ) -> Self {
-        Self {
-            name,
-            artists,
-            tracks,
-            release_year,
-            date_added,
-            playlist,
-        }
-    }
-
     pub fn to_tsv_entry(&self) -> AlbumTsv {
         AlbumTsv(format!(
             "{}\t{}\t{}\t{}\t{}\t{}",
@@ -392,7 +374,6 @@ impl Album {
         );
     }
 
-    #[cfg(debug_assertions)]
     pub fn validate(&self) -> anyhow::Result<()> {
         let mut errors = Vec::new();
 
@@ -511,14 +492,14 @@ mod tests {
 
     #[test]
     fn album_new() {
-        let album = Album::new(
-            AlbumName("foo".to_string()),
-            AlbumArtists("bar".to_string()),
-            TrackCount(20),
-            ReleaseYear(2018),
-            DateAdded("baz".to_string()),
-            Playlist("bat".to_string()),
-        );
+        let album = Album {
+            name: AlbumName("foo".to_string()),
+            artists: AlbumArtists("bar".to_string()),
+            tracks: TrackCount(20),
+            release_year: ReleaseYear(2018),
+            date_added: DateAdded("baz".to_string()),
+            playlist: Playlist("bat".to_string()),
+        };
 
         assert_eq!(album.name.0, "foo");
         assert_eq!(album.artists.0, "bar");
@@ -530,14 +511,14 @@ mod tests {
 
     #[test]
     fn valid_album() {
-        let album = Album::new(
-            AlbumName("foo".to_string()),
-            AlbumArtists("bar".to_string()),
-            TrackCount(20),
-            ReleaseYear(2018),
-            DateAdded("2024-08-06 17:55:45".to_string()),
-            Playlist("bat".to_string()),
-        );
+        let album = Album {
+            name: AlbumName("foo".to_string()),
+            artists: AlbumArtists("bar".to_string()),
+            tracks: TrackCount(20),
+            release_year: ReleaseYear(2018),
+            date_added: DateAdded("2024-08-06 17:55:45".to_string()),
+            playlist: Playlist("bat".to_string()),
+        };
 
         assert!(album.validate().is_ok());
     }
@@ -554,27 +535,27 @@ mod tests {
 
         let expected_error = "Failed validation:\n\tInvalid name: \n\tInvalid date_added: baz";
 
-        let album = Album::new(
-            AlbumName("".to_string()),
-            AlbumArtists("bar".to_string()),
-            TrackCount(20),
-            ReleaseYear(2018),
-            DateAdded("baz".to_string()),
-            Playlist("bat".to_string()),
-        );
+        let album = Album {
+            name: AlbumName("".to_string()),
+            artists: AlbumArtists("bar".to_string()),
+            tracks: TrackCount(20),
+            release_year: ReleaseYear(2018),
+            date_added: DateAdded("baz".to_string()),
+            playlist: Playlist("bat".to_string()),
+        };
 
         assert_invalid(album, expected_error);
 
         let expected_error = "Failed validation:\n\tInvalid release_year: 2030";
 
-        let album = Album::new(
-            AlbumName("foo bar quux".to_string()),
-            AlbumArtists("bar".to_string()),
-            TrackCount(20),
-            ReleaseYear(2030),
-            DateAdded("2024-08-06 17:55:45".to_string()),
-            Playlist("bat baz #120".to_string()),
-        );
+        let album = Album {
+            name: AlbumName("foo bar quux".to_string()),
+            artists: AlbumArtists("bar".to_string()),
+            tracks: TrackCount(20),
+            release_year: ReleaseYear(2030),
+            date_added: DateAdded("2024-08-06 17:55:45".to_string()),
+            playlist: Playlist("bat baz #120".to_string()),
+        };
 
         assert_invalid(album, expected_error);
     }
@@ -583,14 +564,14 @@ mod tests {
     fn album_to_tsv_entry() {
         let expected = AlbumTsv("bar\tfoo\t20\t2018\tbaz\tbat".to_string());
 
-        let actual = Album::new(
-            AlbumName("foo".to_string()),
-            AlbumArtists("bar".to_string()),
-            TrackCount(20),
-            ReleaseYear(2018),
-            DateAdded("baz".to_string()),
-            Playlist("bat".to_string()),
-        )
+        let actual = Album {
+            name: AlbumName("foo".to_string()),
+            artists: AlbumArtists("bar".to_string()),
+            tracks: TrackCount(20),
+            release_year: ReleaseYear(2018),
+            date_added: DateAdded("baz".to_string()),
+             playlist: Playlist("bat".to_string()),
+        }
         .to_tsv_entry();
 
         assert_eq!(actual, expected);

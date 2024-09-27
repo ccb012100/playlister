@@ -66,14 +66,14 @@ fn run_db_query<'a, T: Params>(
     let mut stmt = conn.prepare(query)?;
 
     let albums = stmt.query_map(params, |row| {
-        Ok(Album::new(
-            AlbumName(row.get(1)?),
-            AlbumArtists(row.get(0)?),
-            TrackCount(row.get::<usize, u16>(2)?),
-            ReleaseYear(row.get::<usize, String>(3)?.parse::<i32>().unwrap()),
-            DateAdded(row.get(5)?),
-            Playlist(row.get(4)?),
-        ))
+        Ok(Album {
+            name: AlbumName(row.get(1)?),
+            artists: AlbumArtists(row.get(0)?),
+            tracks: TrackCount(row.get::<usize, u16>(2)?),
+            release_year: ReleaseYear(row.get::<usize, String>(3)?.parse::<i32>().unwrap()),
+            date_added: DateAdded(row.get(5)?),
+            playlist: Playlist(row.get(4)?),
+        })
     })?;
 
     let mut x: Vec<Album> = Vec::new();
