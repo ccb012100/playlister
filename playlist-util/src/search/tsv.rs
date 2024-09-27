@@ -33,8 +33,9 @@ pub fn search<'a>(request: &'a SearchRequest<'a>) -> Result<SearchResults<'a>> {
         // if the text contains the search term, parse it and add it to the matches
         if row.to_uppercase().contains(search_query_upper) {
             let album: Album = AlbumTsv::from_str(&row)
-                .with_context(|| format!("failed to parse value to Album: {}", &row))?
-                .to_album();
+                .with_context(|| format!("failed to parse value to AlbumTsv: {}", &row))?
+                .to_album()
+                .with_context(|| format!("failed to parse value to Album: {}", &row))?;
 
             results.push(album);
         }

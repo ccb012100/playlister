@@ -29,7 +29,9 @@ pub fn sync(source: &PathBuf, destination: &PathBuf) -> Result<()> {
         destination, last_added_to_tsv
     );
 
-    let last_album_added = last_added_to_tsv.to_album();
+    let last_album_added = last_added_to_tsv
+        .to_album()
+        .with_context(|| format!("❌ Failed to convert tsv to album: {}", last_added_to_tsv))?;
 
     debug!("\n🪵 Last album as Album: {:#?} 🔍", last_album_added);
 

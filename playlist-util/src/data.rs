@@ -220,6 +220,7 @@ impl FromStr for ReleaseYear {
 impl FromStr for AlbumTsv {
     type Err = Error;
 
+    /// Returns an `Error` result if the string is not valid
     fn from_str(s: &str) -> result::Result<Self, Self::Err> {
         match AlbumTsv::validate_str(s) {
             Ok(_) => Ok(AlbumTsv(s.to_string())),
@@ -256,6 +257,9 @@ impl FromStr for DateAdded {
 /* Associated methods */
 
 impl Album {
+    /// Create new instance of `Album`.
+    ///
+    /// Returns an `Error` result if the data is invalid.
     pub fn new(
         name: AlbumName,
         artists: AlbumArtists,
@@ -263,15 +267,19 @@ impl Album {
         release_year: ReleaseYear,
         date_added: DateAdded,
         playlist: Playlist,
-    ) -> Self {
-        Self {
+    ) -> anyhow::Result<Self> {
+        let album = Self {
             name,
             artists,
             tracks,
             release_year,
             date_added,
             playlist,
-        }
+        };
+
+        album.validate()?;
+
+        Ok(album)
     }
 
     pub fn to_tsv_entry(&self) -> AlbumTsv {
@@ -392,8 +400,7 @@ impl Album {
         );
     }
 
-    #[cfg(debug_assertions)]
-    pub fn validate(&self) -> anyhow::Result<()> {
+    fn validate(&self) -> anyhow::Result<()> {
         let mut errors = Vec::new();
 
         if self.name.0.trim().is_empty() {
@@ -424,18 +431,18 @@ impl Album {
 }
 
 impl AlbumTsv {
-    pub fn to_album(&self) -> Album {
+    pub fn to_album(&self) -> anyhow::Result<Album> {
         let parts: Vec<&str> = self.0.split('\t').collect();
         assert_eq!(parts.len(), 6);
 
-        Album {
-            name: AlbumName::from_str(parts[1]).unwrap(),
-            artists: AlbumArtists::from_str(parts[0]).unwrap(),
-            tracks: TrackCount::from_str(parts[2]).unwrap(),
-            release_year: ReleaseYear::from_str(parts[3]).unwrap(),
-            date_added: DateAdded::from_str(parts[4]).unwrap(),
-            playlist: Playlist::from_str(parts[5]).unwrap(),
-        }
+        Album::new(
+            AlbumName::from_str(parts[1]).unwrap(),
+            AlbumArtists::from_str(parts[0]).unwrap(),
+            TrackCount::from_str(parts[2]).unwrap(),
+            ReleaseYear::from_str(parts[3]).unwrap(),
+            DateAdded::from_str(parts[4]).unwrap(),
+            Playlist::from_str(parts[5]).unwrap(),
+        )
     }
 
     pub fn validate_str(s: &str) -> anyhow::Result<()> {
@@ -518,7 +525,8 @@ mod tests {
             ReleaseYear(2018),
             DateAdded("baz".to_string()),
             Playlist("bat".to_string()),
-        );
+        )
+        .expect("album data should be valid");
 
         assert_eq!(album.name.0, "foo");
         assert_eq!(album.artists.0, "bar");
@@ -539,17 +547,13 @@ mod tests {
             Playlist("bat".to_string()),
         );
 
-        assert!(album.validate().is_ok());
+        assert!(album.is_ok());
     }
 
     #[test]
     fn invalid_album() {
-        let assert_invalid = |actual: Album, expected: &str| {
-            match actual.validate() {
-                Ok(_) => todo!(),
-                Err(e) => println!("{:#?}", e),
-            }
-            assert!(actual.validate().is_err_and(|e| e.to_string() == expected))
+        let assert_invalid = |actual: anyhow::Result<Album>, expected: &str| {
+            assert!(actual.is_err_and(|e| e.to_string() == expected))
         };
 
         let expected_error = "Failed validation:\n\tInvalid name: \n\tInvalid date_added: baz";
@@ -591,6 +595,7 @@ mod tests {
             DateAdded("baz".to_string()),
             Playlist("bat".to_string()),
         )
+        .expect("should be valid")
         .to_tsv_entry();
 
         assert_eq!(actual, expected);

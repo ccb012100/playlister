@@ -73,13 +73,14 @@ fn run_db_query<'a, T: Params>(
             ReleaseYear(row.get::<usize, String>(3)?.parse::<i32>().unwrap()),
             DateAdded(row.get(5)?),
             Playlist(row.get(4)?),
-        ))
+        )
+        .unwrap_or_else(|_| panic!("row was not a valid Album: {:#?}", row)))
     })?;
 
     let mut x: Vec<Album> = Vec::new();
 
     for album in albums {
-        x.push(album?);
+        x.push(album.unwrap());
     }
 
     Ok(x)
