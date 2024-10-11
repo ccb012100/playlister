@@ -8,17 +8,25 @@ using Microsoft.Extensions.Options;
 using Playlister.Configuration;
 using Playlister.CQRS.Queries;
 using Playlister.Models.SpotifyAccounts;
+using Playlister.Models.SpotifyApi;
 using Playlister.RefitClients;
 
 namespace Playlister.Services.Implementations;
 
-public class AuthService( ISpotifyAccountsApi api , IOptions<SpotifyOptions> options , ILogger<AuthService> logger ) : IAuthService {
+public class AuthService(
+    ISpotifyAccountsApi accountsApi ,
+    ISpotifyApi spotifyApi ,
+    IOptions<SpotifyOptions> options ,
+    ILogger<AuthService> logger
+)
+    : IAuthService {
     private const string AuthScope = "user-read-private";
     private static string s_state = Guid.Empty.ToString( );
 
     private readonly ILogger<AuthService> _logger = logger;
     private readonly SpotifyOptions _options = options.Value;
-    private readonly ISpotifyAccountsApi _spotifyAccountsApi = api;
+    private readonly ISpotifyAccountsApi _spotifyAccountsAccountsApi = accountsApi;
+    private readonly ISpotifyApi _spotifyApi = spotifyApi;
 
     /// <summary>
     ///     See <a href="https://developer.spotify.com/documentation/web-api/tutorials/code-pkce-flow">Spotify Developer Documentation</a>
@@ -48,7 +56,7 @@ public class AuthService( ISpotifyAccountsApi api , IOptions<SpotifyOptions> opt
             throw new InvalidCredentialException( $"Invalid 'state' value: \"{auth.State}\"! Expected \"{s_state}\"" );
         }
 
-        SpotifyAccessToken token = await _spotifyAccountsApi.RequestAccessTokenAsync(
+        SpotifyAccessToken token = await _spotifyAccountsAccountsApi.RequestAccessTokenAsync(
             AuthHeaderValue( ) ,
             new AccessTokenRequestParams {
                 Code = auth.Code ,
@@ -59,11 +67,20 @@ public class AuthService( ISpotifyAccountsApi api , IOptions<SpotifyOptions> opt
 
         _logger.LogDebug( "Successfully requested access token from Spotify API" );
 
-        return TokenService.SetToken( token.ToUserAccessToken( ) );
+        PrivateUserObject user = await _spotifyApi.GetCurrentUserAsync( token.AccessToken , ct );
+
+        // Make sure the current user is the user configured for this application
+        if ( user.Uri.ToString( ) == _options.SpotifyUri ) {
+            return TokenService.SetToken( token.ToUserAccessToken( ) );
+        }
+
+        _logger.LogError( "Invalid user: {User}" , user );
+
+        throw new InvalidOperationException( $"Invalid user. Expected: '{_options.SpotifyUri}'. Got: '{user.Uri}'" );
     }
 
     public async Task<Guid> RefreshSpotifyToken( RefreshTokenQuery query , CancellationToken ct = default ) {
-        SpotifyAccessToken token = await _spotifyAccountsApi.RefreshTokenAsync(
+        SpotifyAccessToken token = await _spotifyAccountsAccountsApi.RefreshTokenAsync(
             AuthHeaderValue( ) ,
             new TokenRefreshParams( query.RefreshToken ) ,
             ct

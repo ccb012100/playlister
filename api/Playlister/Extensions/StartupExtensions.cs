@@ -1,3 +1,5 @@
+using System.Text.RegularExpressions;
+
 using Microsoft.Extensions.Options;
 
 using Playlister.Configuration;
@@ -14,7 +16,7 @@ using Refit;
 
 namespace Playlister.Extensions;
 
-public static class StartupExtensions {
+public static partial class StartupExtensions {
     public static IServiceCollection AddServices( this IServiceCollection services ) {
         return services
             .AddSingleton<IHttpContextAccessor , HttpContextAccessor>( )
@@ -68,7 +70,7 @@ public static class StartupExtensions {
                 o => o.CallbackUrl == new Uri( "https://localhost:5001/login" )
                     || o.CallbackUrl == new Uri( "https://localhost:5001/app/home/login" ) ,
                 "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>"
-            )
+            ).Validate( o=> SpotifyUserRegex( ).IsMatch(o.SpotifyUri.Trim()) )
             .ValidateOnStart( );
 
         builder.Services
@@ -113,4 +115,7 @@ public static class StartupExtensions {
 
         return services;
     }
+
+    [GeneratedRegex( @"^spotify:user:\d{10}$" )]
+    private static partial Regex SpotifyUserRegex( );
 }

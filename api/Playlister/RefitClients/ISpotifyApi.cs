@@ -18,7 +18,7 @@ public interface ISpotifyApi {
     ///     Get playlist.
     /// </summary>
     /// <param name="token"></param>
-    /// <param name="playlistId">Spotify Id of the playlist</param>
+    /// <param name="playlistId">Spotify ID of the playlist</param>
     /// <param name="ct"></param>
     /// <returns></returns>
     [Get( "/playlists/{playlistId}" )]

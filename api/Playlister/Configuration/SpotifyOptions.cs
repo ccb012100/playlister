@@ -20,4 +20,13 @@ public record SpotifyOptions {
     /// </summary>
     [Required]
     public required Uri CallbackUrl { get; init; }
+
+    /// <summary>
+    /// The **SpotifyUri** for the current User.
+    /// </summary>
+    /// <remarks>
+    /// Should be in the format <c>spotify:user:USER_ID</c>, e.g. <c>spotify:user:1234567890</c>
+    /// </remarks>
+    [Required]
+    public required string SpotifyUri { get; init; }
 }
