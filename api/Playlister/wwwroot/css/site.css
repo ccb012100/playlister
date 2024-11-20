@@ -34,6 +34,7 @@ input {
 table {
     border: none;
     border-collapse: collapse;
+    box-shadow: 1rem 1rem 0 0 black;
 }
 
 caption {
