@@ -148,6 +148,14 @@ public class PlaylistService : IPlaylistService {
             playlist.LoggingTag
         );
 
+        const string tempQueuePlaylist = "_queue";
+
+        if ( playlist.Name.Trim( ).Equals( tempQueuePlaylist, StringComparison.InvariantCultureIgnoreCase ) ) {
+            _logger.LogWarning( "{Playlist} Skipping temp queue playlist" , playlist.LoggingTag );
+
+            return;
+        }
+
         if ( !forceSync && IsCurrent( playlist ) && HasAllTracks( playlist ) ) {
             _logger.LogDebug( "{PlaylistTag} playlist is up-to-date. Skipping sync" , playlist.LoggingTag );
 
