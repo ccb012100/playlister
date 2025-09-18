@@ -22,7 +22,7 @@ public class Startup {
                 o => o.AddPolicy(
                     CorsPolicyName ,
                     corsBuilder => {
-                        corsBuilder.WithOrigins( "https://localhost:5001" ).WithMethods( "GET" , "POST" ).AllowAnyHeader( ).AllowCredentials( );
+                        corsBuilder.WithOrigins( "https://127.0.0.1:5001" ).WithMethods( "GET" , "POST" ).AllowAnyHeader( ).AllowCredentials( );
                     }
                 )
             )

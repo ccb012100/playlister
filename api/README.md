@@ -34,7 +34,7 @@ APIs are accessed through a mixture of `Refit` and `HttpClient`.
 
 Configured in the Spotify Developer Portal.
 
-- Points to `https://localhost:5001/app/home/login`
+- Points to `https://127.0.0.1:5001/app/home/login`
 
 ## Integration Tests
 

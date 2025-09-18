@@ -1,5 +1,8 @@
 using System.Diagnostics;
 
+using Microsoft.Extensions.Options;
+
+using Playlister.Configuration;
 using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
 
@@ -14,16 +17,20 @@ public class PlaylistService : IPlaylistService {
     private readonly IPlaylistReadRepository _readRepository;
     private readonly IPlaylistWriteRepository _writeRepository;
 
+    private readonly string _persistentQueueName;
+
     public PlaylistService(
         IPlaylistReadRepository readRepository ,
         IPlaylistWriteRepository writeRepository ,
         ISpotifyApiService api ,
+        IOptions<SpotifyOptions> options ,
         ILogger<PlaylistService> logger
     ) {
         _readRepository = readRepository;
         _writeRepository = writeRepository;
         _api = api;
         _logger = logger;
+        _persistentQueueName = options.Value.PersistentQueueName;
 
         _ = s_playlistCache.Initialize( PopulateCaches );
     }
@@ -148,9 +155,8 @@ public class PlaylistService : IPlaylistService {
             playlist.LoggingTag
         );
 
-        const string tempQueuePlaylist = "_queue";
-
-        if ( playlist.Name.Trim( ).Equals( tempQueuePlaylist, StringComparison.InvariantCultureIgnoreCase ) ) {
+        // Skip the persistent queue playlist entirely.
+        if ( playlist.Name.Trim( ).Equals( _persistentQueueName , StringComparison.InvariantCultureIgnoreCase ) ) {
             _logger.LogWarning( "{Playlist} Skipping temp queue playlist" , playlist.LoggingTag );
 
             return;

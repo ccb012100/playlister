@@ -44,16 +44,14 @@ public static partial class StartupExtensions {
 
         services
             .AddRefitClient<ISpotifyAccountsApi>( JsonUtility.SnakeCaseRefitSettings )
-            .ConfigureHttpClient(
-                ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.AccountsApiBaseAddress; }
+            .ConfigureHttpClient( ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.AccountsApiBaseAddress; }
             )
             .AddHttpLoggingMiddleware( debugOptions )
             .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
 
         services
             .AddRefitClient<ISpotifyApi>( JsonUtility.SnakeCaseRefitSettings )
-            .ConfigureHttpClient(
-                ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.ApiBaseAddress; }
+            .ConfigureHttpClient( ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.ApiBaseAddress; }
             )
             .AddHttpLoggingMiddleware( debugOptions )
             .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
@@ -67,10 +65,14 @@ public static partial class StartupExtensions {
             .Bind( builder.Configuration.GetSection( SpotifyOptions.Spotify ) )
             .ValidateDataAnnotations( )
             .Validate(
-                o => o.CallbackUrl == new Uri( "https://localhost:5001/login" )
-                    || o.CallbackUrl == new Uri( "https://localhost:5001/app/home/login" ) ,
-                "CallbackUrl must be one of <https://localhost:5001/app/home/login> or <https://localhost:5001/login>"
-            ).Validate( o=> SpotifyUserRegex( ).IsMatch(o.SpotifyUri.Trim()) )
+                o => o.CallbackUrl == new Uri( "https://127.0.0.1:5001/login" )
+                    || o.CallbackUrl == new Uri( "https://127.0.0.1:5001/app/home/login" ) ,
+                "CallbackUrl must be one of <https://127.0.0.1:5001/app/home/login> or <https://127.0.0.1:5001/login>"
+            )
+            .Validate( o => SpotifyUserRegex( ).IsMatch( o.SpotifyUri.Trim( ) ) )
+            .Validate( o => !string.IsNullOrWhiteSpace( o.PersistentQueueName ) )
+            .Validate( o => !string.IsNullOrWhiteSpace( o.ClientId ) )
+            .Validate( o => !string.IsNullOrWhiteSpace( o.ClientSecret ) )
             .ValidateOnStart( );
 
         builder.Services
