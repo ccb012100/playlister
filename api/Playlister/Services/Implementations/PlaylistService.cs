@@ -196,9 +196,8 @@ public class PlaylistService : IPlaylistService {
 
         string playlistId = playlist.Id;
 
-        ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy(
-                x =>
-                    new DistinctPlaylistTracks.DistinctPlaylistTrack( playlistId , x.Track.Id , x.AddedAt )
+        ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy( x =>
+                new DistinctPlaylistTracks.DistinctPlaylistTrack( playlistId , x.Track.Id , x.AddedAt )
             )
             .ToImmutableArray( );
 
@@ -290,7 +289,7 @@ public class PlaylistService : IPlaylistService {
         Playlist pl = s_playlistCache.Items.AddOrUpdate(
             playlist.Id ,
             playlist ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : playlist
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : playlist
         );
 
         _logger.LogTrace( "{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}" , playlist.LoggingTag , pl.Name , pl.SnapshotId );
@@ -308,13 +307,13 @@ public class PlaylistService : IPlaylistService {
         return playlist;
     }
 
-    private void CacheMissingTracks( (string, int) playlistWithCount ) {
-        (string playlistId, int count) = playlistWithCount;
+    private void CacheMissingTracks( (string , int) playlistWithCount ) {
+        ( string playlistId , int count ) = playlistWithCount;
 
         string _ = s_missingTracksCache.Items.AddOrUpdate(
             playlistId ,
             count.ToString( ) ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : count.ToString( )
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : count.ToString( )
         );
 
         _logger.LogDebug(
@@ -325,11 +324,13 @@ public class PlaylistService : IPlaylistService {
     }
 
     private void DecacheMissingTracks( Playlist playlist ) {
-        if ( s_missingTracksCache.Items.Remove( playlist.Id , out string? _ ) ) {
-            _logger.LogTrace( "{PlaylistTag} Removed {PlaylistId} playlist from the MissingTracks cache" , playlist.LoggingTag , playlist.Id );
-        } else {
-            _logger.LogTrace( "{PlaylistTag} Playlist {PlaylistId} was not present in the MissingTracks cache" , playlist.LoggingTag , playlist.Id );
-        }
+        _logger.LogTrace(
+            s_missingTracksCache.Items.Remove( playlist.Id , out string? _ )
+                ? "{PlaylistTag} Removed {PlaylistId} playlist from the MissingTracks cache"
+                : "{PlaylistTag} Playlist {PlaylistId} was not present in the MissingTracks cache" ,
+            playlist.LoggingTag ,
+            playlist.Id
+        );
     }
 
     private void CacheUpdatedPlaylist( Playlist playlist ) {
@@ -372,7 +373,7 @@ public class PlaylistService : IPlaylistService {
         async Task PopulateMissingTracksCache( ) {
             _logger.LogDebug( "Populating MissingTracks cache..." );
 
-            IEnumerable<(string, int)> missingTracks = await _readRepository.GetPlaylistsWithMissingTracksAsync( );
+            IEnumerable<(string , int)> missingTracks = await _readRepository.GetPlaylistsWithMissingTracksAsync( );
 
             missingTracks.AsParallel( ).ForAll( CacheMissingTracks );
 
