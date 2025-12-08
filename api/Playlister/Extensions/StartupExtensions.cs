@@ -70,7 +70,7 @@ public static partial class StartupExtensions {
                 "CallbackUrl must be one of <https://127.0.0.1:5001/app/home/login> or <https://127.0.0.1:5001/login>"
             )
             .Validate( o => SpotifyUserRegex( ).IsMatch( o.SpotifyUri.Trim( ) ) )
-            .Validate( o => !string.IsNullOrWhiteSpace( o.PersistentQueueName ) )
+            .Validate( o => !string.IsNullOrWhiteSpace( o.PersistentQueueNamePrefix ) )
             .Validate( o => !string.IsNullOrWhiteSpace( o.ClientId ) )
             .Validate( o => !string.IsNullOrWhiteSpace( o.ClientSecret ) )
             .ValidateOnStart( );

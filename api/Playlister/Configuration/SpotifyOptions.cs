@@ -64,12 +64,12 @@ public record SpotifyOptions {
     public required string SpotifyUri { get; init; }
 
     /// <summary>
-    /// Name of the playlist used to keep the "now playing" Queue persistent across listening sessions.
+    /// Prefix used on playlist used to keep the "now playing" Queue persistent across listening sessions.
     /// </summary>
     /// <remarks>
     /// Sometimes, and seemingly randomly, Spotify will wipe out the Queue, so I created a playlist to house it when I'm checking out new music and
-    /// have queued up a lot of stuff. I don't want to sync it locally, though.
+    /// have queued up a lot of stuff. I don't want to sync it locally, though. It's now expanded to multiple queues.
     /// </remarks>
     [Required]
-    public required string PersistentQueueName { get; init; }
+    public required string PersistentQueueNamePrefix { get; init; }
 }

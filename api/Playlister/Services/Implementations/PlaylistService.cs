@@ -17,7 +17,7 @@ public class PlaylistService : IPlaylistService {
     private readonly IPlaylistReadRepository _readRepository;
     private readonly IPlaylistWriteRepository _writeRepository;
 
-    private readonly string _persistentQueueName;
+    private readonly string _persistentQueueNamePrefix;
 
     public PlaylistService(
         IPlaylistReadRepository readRepository ,
@@ -30,7 +30,7 @@ public class PlaylistService : IPlaylistService {
         _writeRepository = writeRepository;
         _api = api;
         _logger = logger;
-        _persistentQueueName = options.Value.PersistentQueueName;
+        _persistentQueueNamePrefix = options.Value.PersistentQueueNamePrefix;
 
         _ = s_playlistCache.Initialize( PopulateCaches );
     }
@@ -155,8 +155,8 @@ public class PlaylistService : IPlaylistService {
             playlist.LoggingTag
         );
 
-        // Skip the persistent queue playlist entirely.
-        if ( playlist.Name.Trim( ).Equals( _persistentQueueName , StringComparison.InvariantCultureIgnoreCase ) ) {
+        // Skip the persistent queue playlists entirely.
+        if ( playlist.Name.Trim( ).StartsWith( _persistentQueueNamePrefix , StringComparison.InvariantCultureIgnoreCase ) ) {
             _logger.LogWarning( "{Playlist} Skipping temp queue playlist" , playlist.LoggingTag );
 
             return;
