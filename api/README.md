@@ -77,7 +77,7 @@ EOF
     - [ ] Unit
         - [ ] Property-based
 - [ ] Add `Polly` Policy to attempt re-auths for 401s
-- [ ] Upgrade to .NET 8
+- [ ] Upgrade to .NET 10
     - [ ] Swap out `Polly` for `Microsoft.Extensions.Http.Resilience`
 - Spotify Access Token
     - [ ] Validate that the `state` value matches the original value sent to user

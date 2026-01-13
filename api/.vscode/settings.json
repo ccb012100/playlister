@@ -1,3 +1,8 @@
 {
-    "dotnet.defaultSolution": "Playlister.sln"
+    "dotnet.defaultSolution": "Playlister.sln",
+    "markdownlint.config": {
+        "MD007": {
+            "indent": 4
+        },
+    },
 }

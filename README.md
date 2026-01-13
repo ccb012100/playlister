@@ -16,3 +16,10 @@ The [playlist-util](/playlist-util/) folder contains a **Rust** utility for sear
 Schema for the **SQLite** database containing synced **Spotify** data.
 
 ![SQLite database schema](/images/db_schema.png)
+
+## TODO
+
+- [ ] Why does Spotify see these 2 albums as the _same_ album?
+  - possibly some tracks are from 1 and some from the other?
+  - Martha Reeves & The Vandellas - **Dance Party**
+  - Various Artists - **Motown: The Complete No. 1's**
