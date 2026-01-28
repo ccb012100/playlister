@@ -4,9 +4,7 @@ namespace Playlister.Services;
 
 public interface ISpotifyApiService {
     /// <summary>
-    ///     Get the tracks for specified
-    ///     <param name="playlistId"></param>
-    ///     .
+    ///     Get a subset of the tracks for the specified playlist.
     /// </summary>
     /// <param name="accessToken"></param>
     /// <param name="playlistId">Spotify Id of the playlist</param>
@@ -23,6 +21,7 @@ public interface ISpotifyApiService {
     );
 
     /// <summary>
+    ///     Get all tracks for the specified playlist.
     /// </summary>
     /// <param name="accessToken"></param>
     /// <param name="next"></param>

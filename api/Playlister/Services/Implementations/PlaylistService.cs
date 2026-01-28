@@ -65,7 +65,7 @@ public class PlaylistService : IPlaylistService {
         Stopwatch sw = Stopwatch.StartNew( );
 
         foreach ( Playlist playlist in playlists.AsParallel( ) ) {
-            await UpdatePlaylistAsync( accessToken , playlist , 0 , 50 , ct );
+            await UpdatePlaylistAsync( accessToken , playlist , 50 , ct );
         }
 
         sw.Stop( );
@@ -101,7 +101,7 @@ public class PlaylistService : IPlaylistService {
 
         Playlist playlist = playlistObject.ToPlaylist( );
 
-        await UpdatePlaylistAsync( accessToken , playlist , 0 , 50 , ct );
+        await UpdatePlaylistAsync( accessToken , playlist , 50 , ct );
     }
 
     public async Task ForceSyncPlaylistAsync(
@@ -113,7 +113,7 @@ public class PlaylistService : IPlaylistService {
 
         Playlist playlist = playlistObject.ToPlaylist( );
 
-        await UpdatePlaylistAsync( accessToken , playlist , 0 , 50 , ct , true );
+        await UpdatePlaylistAsync( accessToken , playlist , 50 , ct , true );
     }
 
     public async Task<int> DeleteOrphanedPlaylistTracksAsync( CancellationToken ct ) {
@@ -137,7 +137,6 @@ public class PlaylistService : IPlaylistService {
     /// </summary>
     /// <param name="accessToken"></param>
     /// <param name="playlist"></param>
-    /// <param name="offset"></param>
     /// <param name="limit"></param>
     /// <param name="ct"></param>
     /// <param name="forceSync">If <see langword="true" />, sync the playlist regardless of whether it's changed since the last sync</param>
@@ -145,7 +144,6 @@ public class PlaylistService : IPlaylistService {
     private async Task UpdatePlaylistAsync(
         string accessToken ,
         Playlist playlist ,
-        int offset ,
         int limit ,
         CancellationToken ct ,
         bool forceSync = false
@@ -175,7 +173,7 @@ public class PlaylistService : IPlaylistService {
         PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync(
             accessToken ,
             playlist.Id ,
-            offset ,
+            0 ,
             limit ,
             ct
         );
@@ -303,7 +301,7 @@ public class PlaylistService : IPlaylistService {
         Playlist pl = s_playlistCache.Items.AddOrUpdate(
             playlist.Id ,
             playlist ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : playlist
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : playlist
         );
 
         _logger.LogTrace( "{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}" , playlist.LoggingTag , pl.Name , pl.SnapshotId );
@@ -322,12 +320,12 @@ public class PlaylistService : IPlaylistService {
     }
 
     private void CacheMissingTracks( (string , int) playlistWithCount ) {
-        ( string playlistId , int count ) = playlistWithCount;
+        (string playlistId , int count) = playlistWithCount;
 
         string _ = s_missingTracksCache.Items.AddOrUpdate(
             playlistId ,
             count.ToString( ) ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : count.ToString( )
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : count.ToString( )
         );
 
         _logger.LogDebug(
