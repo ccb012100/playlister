@@ -20,16 +20,10 @@ public class MockSpotifyApiProvider : ISpotifyApi {
 
     private readonly Dictionary<string , SimplifiedPlaylistObject> _playlists;
     private readonly Dictionary<string , PagingObject<PlaylistItem>> _playlistTracks;
-    private readonly Dictionary<string , Artist> _artists;
-    private readonly Dictionary<string , Album> _albums;
-    private readonly Dictionary<string , Track> _tracks;
 
     public MockSpotifyApiProvider( ) {
         _playlists = [ ];
         _playlistTracks = [ ];
-        _artists = [ ];
-        _albums = [ ];
-        _tracks = [ ];
 
         InitializeTestData( );
     }
@@ -143,106 +137,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
 
     #region initialize with test data
     private void InitializeTestData( ) {
-        InitializeArtists( );
-        InitializeAlbums( );
-        InitializeTracks( );
         InitializePlaylists( );
-    }
-
-    private void InitializeArtists( ) {
-        var artists = new[ ]
-        {
-                new { Id = "artist001", Name = "The Beatles" } ,
-                new { Id = "artist002", Name = "Pink Floyd" } ,
-                new { Id = "artist003", Name = "Led Zeppelin" } ,
-                new { Id = "artist004", Name = "Queen" } ,
-                new { Id = "artist005", Name = "David Bowie" } ,
-                new { Id = "artist006", Name = "Radiohead" } ,
-                new { Id = "artist007", Name = "Nirvana" } ,
-                new { Id = "artist008", Name = "Pearl Jam" }
-            };
-
-        foreach ( var artist in artists ) {
-            _artists[artist.Id] = new Artist { Id = artist.Id , Name = artist.Name };
-        }
-    }
-
-    private void InitializeAlbums( ) {
-        var albums = new[ ]
-        {
-                new { Id = "album001", Name = "Abbey Road", ArtistId = "artist001", TotalTracks = 17, AlbumType = "album", ReleaseDate = "1969-09-26" } ,
-                new { Id = "album002", Name = "The Dark Side of the Moon", ArtistId = "artist002", TotalTracks = 10, AlbumType = "album", ReleaseDate = "1973-03-01" } ,
-                new { Id = "album003", Name = "Led Zeppelin IV", ArtistId = "artist003", TotalTracks = 8, AlbumType = "album", ReleaseDate = "1971-11-08" } ,
-                new { Id = "album004", Name = "A Night at the Opera", ArtistId = "artist004", TotalTracks = 12, AlbumType = "album", ReleaseDate = "1975-11-21" } ,
-                new { Id = "album005", Name = "The Rise and Fall of Ziggy Stardust", ArtistId = "artist005", TotalTracks = 11, AlbumType = "album", ReleaseDate = "1972-06-16" } ,
-                new { Id = "album006", Name = "OK Computer", ArtistId = "artist006", TotalTracks = 12, AlbumType = "album", ReleaseDate = "1997-05-21" } ,
-                new { Id = "album007", Name = "Nevermind", ArtistId = "artist007", TotalTracks = 12, AlbumType = "album", ReleaseDate = "1991-09-24" } ,
-                new { Id = "album008", Name = "Ten", ArtistId = "artist008", TotalTracks = 11, AlbumType = "album", ReleaseDate = "1991-08-27" } ,
-                new { Id = "album009", Name = "In Rainbows", ArtistId = "artist006", TotalTracks = 10, AlbumType = "album", ReleaseDate = "2007-10-10" } ,
-                new { Id = "album010", Name = "MTV Unplugged in New York", ArtistId = "artist007", TotalTracks = 14, AlbumType = "album", ReleaseDate = "1994-11-01" }
-            };
-
-        foreach ( var album in albums ) {
-            Artist artist = _artists[album.ArtistId];
-
-            _albums[album.Id] = new Album {
-                AlbumType = album.AlbumType ,
-                Artists = new List<Artist> { artist } ,
-                Id = album.Id ,
-                Name = album.Name ,
-                ReleaseDate = album.ReleaseDate ,
-                ReleaseDatePrecision = "day" ,
-                TotalTracks = album.TotalTracks
-            };
-        }
-    }
-
-    private void InitializeTracks( ) {
-        var tracks = new[ ]
-        {
-                new { Id = "track001", Name = "Come Together", TrackNumber = 1, DiscNumber = 1, DurationMs = 259000, AlbumId = "album001" } ,
-                new { Id = "track002", Name = "Something", TrackNumber = 2, DiscNumber = 1, DurationMs = 183000, AlbumId = "album001" } ,
-                new { Id = "track003", Name = "Here Comes the Sun", TrackNumber = 7, DiscNumber = 1, DurationMs = 185000, AlbumId = "album001" } ,
-                new { Id = "track004", Name = "Speak to Me", TrackNumber = 1, DiscNumber = 1, DurationMs = 68000, AlbumId = "album002" } ,
-                new { Id = "track005", Name = "Time", TrackNumber = 4, DiscNumber = 1, DurationMs = 413000, AlbumId = "album002" } ,
-                new { Id = "track006", Name = "Money", TrackNumber = 6, DiscNumber = 1, DurationMs = 382000, AlbumId = "album002" } ,
-                new { Id = "track007", Name = "Black Dog", TrackNumber = 1, DiscNumber = 1, DurationMs = 296000, AlbumId = "album003" } ,
-                new { Id = "track008", Name = "Stairway to Heaven", TrackNumber = 4, DiscNumber = 1, DurationMs = 482000, AlbumId = "album003" } ,
-                new { Id = "track009", Name = "Rock and Roll", TrackNumber = 2, DiscNumber = 1, DurationMs = 220000, AlbumId = "album003" } ,
-                new { Id = "track010", Name = "Bohemian Rhapsody", TrackNumber = 11, DiscNumber = 1, DurationMs = 355000, AlbumId = "album004" } ,
-                new { Id = "track011", Name = "You're My Best Friend", TrackNumber = 4, DiscNumber = 1, DurationMs = 170000, AlbumId = "album004" } ,
-                new { Id = "track012", Name = "Starman", TrackNumber = 4, DiscNumber = 1, DurationMs = 255000, AlbumId = "album005" } ,
-                new { Id = "track013", Name = "Ziggy Stardust", TrackNumber = 9, DiscNumber = 1, DurationMs = 194000, AlbumId = "album005" } ,
-                new { Id = "track014", Name = "Paranoid Android", TrackNumber = 2, DiscNumber = 1, DurationMs = 386000, AlbumId = "album006" } ,
-                new { Id = "track015", Name = "Karma Police", TrackNumber = 6, DiscNumber = 1, DurationMs = 264000, AlbumId = "album006" } ,
-                new { Id = "track016", Name = "No Surprises", TrackNumber = 10, DiscNumber = 1, DurationMs = 228000, AlbumId = "album006" } ,
-                new { Id = "track017", Name = "Smells Like Teen Spirit", TrackNumber = 1, DiscNumber = 1, DurationMs = 301000, AlbumId = "album007" } ,
-                new { Id = "track018", Name = "Come as You Are", TrackNumber = 3, DiscNumber = 1, DurationMs = 219000, AlbumId = "album007" } ,
-                new { Id = "track019", Name = "Lithium", TrackNumber = 5, DiscNumber = 1, DurationMs = 257000, AlbumId = "album007" } ,
-                new { Id = "track020", Name = "Even Flow", TrackNumber = 2, DiscNumber = 1, DurationMs = 293000, AlbumId = "album008" } ,
-                new { Id = "track021", Name = "Alive", TrackNumber = 4, DiscNumber = 1, DurationMs = 341000, AlbumId = "album008" } ,
-                new { Id = "track022", Name = "Jeremy", TrackNumber = 7, DiscNumber = 1, DurationMs = 318000, AlbumId = "album008" } ,
-                new { Id = "track023", Name = "15 Step", TrackNumber = 1, DiscNumber = 1, DurationMs = 237000, AlbumId = "album009" } ,
-                new { Id = "track024", Name = "Weird Fishes/Arpeggi", TrackNumber = 4, DiscNumber = 1, DurationMs = 318000, AlbumId = "album009" } ,
-                new { Id = "track025", Name = "Reckoner", TrackNumber = 7, DiscNumber = 1, DurationMs = 290000, AlbumId = "album009" } ,
-                new { Id = "track026", Name = "About a Girl", TrackNumber = 1, DiscNumber = 1, DurationMs = 217000, AlbumId = "album010" } ,
-                new { Id = "track027", Name = "The Man Who Sold the World", TrackNumber = 6, DiscNumber = 1, DurationMs = 258000, AlbumId = "album010" }
-            };
-
-        foreach ( var track in tracks ) {
-            Album album = _albums[track.AlbumId];
-            Artist artist = album.Artists.First( );
-
-            _tracks[track.Id] = new Track {
-                Album = album ,
-                Artists = new List<Artist> { artist } ,
-                DiscNumber = track.DiscNumber ,
-                DurationMs = track.DurationMs ,
-                Id = track.Id ,
-                Name = track.Name ,
-                TrackNumber = track.TrackNumber
-            };
-        }
     }
 
     private void InitializePlaylists( ) {
@@ -256,29 +151,86 @@ public class MockSpotifyApiProvider : ISpotifyApi {
             Uri = new Uri( "spotify:user:testuser" )
         };
 
+        // Build all artists inline
+        var artists = new Dictionary<string , Artist> {
+            { "artist001", new Artist { Id = "artist001", Name = "The Beatles" } } ,
+            { "artist002", new Artist { Id = "artist002", Name = "Pink Floyd" } } ,
+            { "artist003", new Artist { Id = "artist003", Name = "Led Zeppelin" } } ,
+            { "artist004", new Artist { Id = "artist004", Name = "Queen" } } ,
+            { "artist005", new Artist { Id = "artist005", Name = "David Bowie" } } ,
+            { "artist006", new Artist { Id = "artist006", Name = "Radiohead" } } ,
+            { "artist007", new Artist { Id = "artist007", Name = "Nirvana" } } ,
+            { "artist008", new Artist { Id = "artist008", Name = "Pearl Jam" } }
+        };
+
+        // Build all albums inline
+        var albums = new Dictionary<string , Album> {
+            { "album001", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist001"] }, Id = "album001", Name = "Abbey Road", ReleaseDate = "1969-09-26", ReleaseDatePrecision = "day", TotalTracks = 17 } } ,
+            { "album002", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist002"] }, Id = "album002", Name = "The Dark Side of the Moon", ReleaseDate = "1973-03-01", ReleaseDatePrecision = "day", TotalTracks = 10 } } ,
+            { "album003", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist003"] }, Id = "album003", Name = "Led Zeppelin IV", ReleaseDate = "1971-11-08", ReleaseDatePrecision = "day", TotalTracks = 8 } } ,
+            { "album004", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist004"] }, Id = "album004", Name = "A Night at the Opera", ReleaseDate = "1975-11-21", ReleaseDatePrecision = "day", TotalTracks = 12 } } ,
+            { "album005", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist005"] }, Id = "album005", Name = "The Rise and Fall of Ziggy Stardust", ReleaseDate = "1972-06-16", ReleaseDatePrecision = "day", TotalTracks = 11 } } ,
+            { "album006", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist006"] }, Id = "album006", Name = "OK Computer", ReleaseDate = "1997-05-21", ReleaseDatePrecision = "day", TotalTracks = 12 } } ,
+            { "album007", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist007"] }, Id = "album007", Name = "Nevermind", ReleaseDate = "1991-09-24", ReleaseDatePrecision = "day", TotalTracks = 12 } } ,
+            { "album008", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist008"] }, Id = "album008", Name = "Ten", ReleaseDate = "1991-08-27", ReleaseDatePrecision = "day", TotalTracks = 11 } } ,
+            { "album009", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist006"] }, Id = "album009", Name = "In Rainbows", ReleaseDate = "2007-10-10", ReleaseDatePrecision = "day", TotalTracks = 10 } } ,
+            { "album010", new Album { AlbumType = "album", Artists = new List<Artist> { artists["artist007"] }, Id = "album010", Name = "MTV Unplugged in New York", ReleaseDate = "1994-11-01", ReleaseDatePrecision = "day", TotalTracks = 14 } }
+        };
+
+        // Build all tracks inline
+        var tracks = new Dictionary<string , Track> {
+            { "track001", new Track { Album = albums["album001"], Artists = new List<Artist> { artists["artist001"] }, DiscNumber = 1, DurationMs = 259000, Id = "track001", Name = "Come Together", TrackNumber = 1 } } ,
+            { "track002", new Track { Album = albums["album001"], Artists = new List<Artist> { artists["artist001"] }, DiscNumber = 1, DurationMs = 183000, Id = "track002", Name = "Something", TrackNumber = 2 } } ,
+            { "track003", new Track { Album = albums["album001"], Artists = new List<Artist> { artists["artist001"] }, DiscNumber = 1, DurationMs = 185000, Id = "track003", Name = "Here Comes the Sun", TrackNumber = 7 } } ,
+            { "track004", new Track { Album = albums["album002"], Artists = new List<Artist> { artists["artist002"] }, DiscNumber = 1, DurationMs = 68000, Id = "track004", Name = "Speak to Me", TrackNumber = 1 } } ,
+            { "track005", new Track { Album = albums["album002"], Artists = new List<Artist> { artists["artist002"] }, DiscNumber = 1, DurationMs = 413000, Id = "track005", Name = "Time", TrackNumber = 4 } } ,
+            { "track006", new Track { Album = albums["album002"], Artists = new List<Artist> { artists["artist002"] }, DiscNumber = 1, DurationMs = 382000, Id = "track006", Name = "Money", TrackNumber = 6 } } ,
+            { "track007", new Track { Album = albums["album003"], Artists = new List<Artist> { artists["artist003"] }, DiscNumber = 1, DurationMs = 296000, Id = "track007", Name = "Black Dog", TrackNumber = 1 } } ,
+            { "track008", new Track { Album = albums["album003"], Artists = new List<Artist> { artists["artist003"] }, DiscNumber = 1, DurationMs = 482000, Id = "track008", Name = "Stairway to Heaven", TrackNumber = 4 } } ,
+            { "track009", new Track { Album = albums["album003"], Artists = new List<Artist> { artists["artist003"] }, DiscNumber = 1, DurationMs = 220000, Id = "track009", Name = "Rock and Roll", TrackNumber = 2 } } ,
+            { "track010", new Track { Album = albums["album004"], Artists = new List<Artist> { artists["artist004"] }, DiscNumber = 1, DurationMs = 355000, Id = "track010", Name = "Bohemian Rhapsody", TrackNumber = 11 } } ,
+            { "track011", new Track { Album = albums["album004"], Artists = new List<Artist> { artists["artist004"] }, DiscNumber = 1, DurationMs = 170000, Id = "track011", Name = "You're My Best Friend", TrackNumber = 4 } } ,
+            { "track012", new Track { Album = albums["album005"], Artists = new List<Artist> { artists["artist005"] }, DiscNumber = 1, DurationMs = 255000, Id = "track012", Name = "Starman", TrackNumber = 4 } } ,
+            { "track013", new Track { Album = albums["album005"], Artists = new List<Artist> { artists["artist005"] }, DiscNumber = 1, DurationMs = 194000, Id = "track013", Name = "Ziggy Stardust", TrackNumber = 9 } } ,
+            { "track014", new Track { Album = albums["album006"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 386000, Id = "track014", Name = "Paranoid Android", TrackNumber = 2 } } ,
+            { "track015", new Track { Album = albums["album006"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 264000, Id = "track015", Name = "Karma Police", TrackNumber = 6 } } ,
+            { "track016", new Track { Album = albums["album006"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 228000, Id = "track016", Name = "No Surprises", TrackNumber = 10 } } ,
+            { "track017", new Track { Album = albums["album007"], Artists = new List<Artist> { artists["artist007"] }, DiscNumber = 1, DurationMs = 301000, Id = "track017", Name = "Smells Like Teen Spirit", TrackNumber = 1 } } ,
+            { "track018", new Track { Album = albums["album007"], Artists = new List<Artist> { artists["artist007"] }, DiscNumber = 1, DurationMs = 219000, Id = "track018", Name = "Come as You Are", TrackNumber = 3 } } ,
+            { "track019", new Track { Album = albums["album007"], Artists = new List<Artist> { artists["artist007"] }, DiscNumber = 1, DurationMs = 257000, Id = "track019", Name = "Lithium", TrackNumber = 5 } } ,
+            { "track020", new Track { Album = albums["album008"], Artists = new List<Artist> { artists["artist008"] }, DiscNumber = 1, DurationMs = 293000, Id = "track020", Name = "Even Flow", TrackNumber = 2 } } ,
+            { "track021", new Track { Album = albums["album008"], Artists = new List<Artist> { artists["artist008"] }, DiscNumber = 1, DurationMs = 341000, Id = "track021", Name = "Alive", TrackNumber = 4 } } ,
+            { "track022", new Track { Album = albums["album008"], Artists = new List<Artist> { artists["artist008"] }, DiscNumber = 1, DurationMs = 318000, Id = "track022", Name = "Jeremy", TrackNumber = 7 } } ,
+            { "track023", new Track { Album = albums["album009"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 237000, Id = "track023", Name = "15 Step", TrackNumber = 1 } } ,
+            { "track024", new Track { Album = albums["album009"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 318000, Id = "track024", Name = "Weird Fishes/Arpeggi", TrackNumber = 4 } } ,
+            { "track025", new Track { Album = albums["album009"], Artists = new List<Artist> { artists["artist006"] }, DiscNumber = 1, DurationMs = 290000, Id = "track025", Name = "Reckoner", TrackNumber = 7 } } ,
+            { "track026", new Track { Album = albums["album010"], Artists = new List<Artist> { artists["artist007"] }, DiscNumber = 1, DurationMs = 217000, Id = "track026", Name = "About a Girl", TrackNumber = 1 } } ,
+            { "track027", new Track { Album = albums["album010"], Artists = new List<Artist> { artists["artist007"] }, DiscNumber = 1, DurationMs = 258000, Id = "track027", Name = "The Man Who Sold the World", TrackNumber = 6 } }
+        };
+
         // Playlist 1: Classic Rock Essentials (15 tracks, 7 albums)
         string playlist1Id = "playlist001";
         string[ ] playlist1Tracks = new[ ] { "track001" , "track002" , "track003" , "track004" , "track005" , "track006" , "track007" , "track008" , "track010" , "track012" , "track013" , "track020" , "track021" , "track017" , "track018" };
         _playlists[playlist1Id] = CreatePlaylist( playlist1Id , "Classic Rock Essentials" , "The best classic rock tracks" , true , 15 , owner , "snap001" );
-        _playlistTracks[playlist1Id] = CreatePlaylistTracksForPlaylist( playlist1Id , playlist1Tracks );
+        _playlistTracks[playlist1Id] = CreatePlaylistTracksForPlaylist( playlist1Id , playlist1Tracks , tracks );
 
         // Playlist 2: 90s Alternative (9 tracks, 3 albums)
         string playlist2Id = "playlist002";
         string[ ] playlist2Tracks = new[ ] { "track014" , "track015" , "track016" , "track017" , "track018" , "track019" , "track020" , "track021" , "track022" };
         _playlists[playlist2Id] = CreatePlaylist( playlist2Id , "90s Alternative" , "Alternative rock from the 90s" , false , 9 , owner , "snap002" );
-        _playlistTracks[playlist2Id] = CreatePlaylistTracksForPlaylist( playlist2Id , playlist2Tracks );
+        _playlistTracks[playlist2Id] = CreatePlaylistTracksForPlaylist( playlist2Id , playlist2Tracks , tracks );
 
         // Playlist 3: British Invasion (8 tracks, 5 albums)
         string playlist3Id = "playlist003";
         string[ ] playlist3Tracks = new[ ] { "track001" , "track002" , "track003" , "track004" , "track005" , "track010" , "track012" , "track014" };
         _playlists[playlist3Id] = CreatePlaylist( playlist3Id , "British Invasion" , "UK bands that changed music" , false , 8 , owner , "snap003" );
-        _playlistTracks[playlist3Id] = CreatePlaylistTracksForPlaylist( playlist3Id , playlist3Tracks );
+        _playlistTracks[playlist3Id] = CreatePlaylistTracksForPlaylist( playlist3Id , playlist3Tracks , tracks );
 
         // Playlist 4: Queue Test Playlist (3 tracks, 1 album - with _queue prefix)
         string playlist4Id = "playlist004";
         string[ ] playlist4Tracks = new[ ] { "track023" , "track024" , "track025" };
         _playlists[playlist4Id] = CreatePlaylist( playlist4Id , "_queue Test Playlist" , "Playlist with queue prefix for testing" , true , 3 , owner , "snap004" );
-        _playlistTracks[playlist4Id] = CreatePlaylistTracksForPlaylist( playlist4Id , playlist4Tracks );
+        _playlistTracks[playlist4Id] = CreatePlaylistTracksForPlaylist( playlist4Id , playlist4Tracks , tracks );
 
         // Playlist 5: Empty Playlist (0 tracks)
         string playlist5Id = "playlist005";
@@ -314,14 +266,14 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         };
     }
 
-    private PagingObject<PlaylistItem> CreatePlaylistTracksForPlaylist( string playlistId , string[ ] trackIds ) {
-        var tracks = new List<PlaylistItem>( );
+    private PagingObject<PlaylistItem> CreatePlaylistTracksForPlaylist( string playlistId , string[ ] trackIds , Dictionary<string , Track> tracks ) {
+        var playlistItems = new List<PlaylistItem>( );
         var baseDateTime = new DateTime( 2024 , 1 , 15 , 10 , 30 , 0 , DateTimeKind.Utc );
 
         for ( int i = 0 ; i < trackIds.Length ; i++ ) {
             string trackId = trackIds[i];
-            if ( _tracks.TryGetValue( trackId , out Track? track ) ) {
-                tracks.Add( new PlaylistItem {
+            if ( tracks.TryGetValue( trackId , out Track? track ) ) {
+                playlistItems.Add( new PlaylistItem {
                     AddedAt = baseDateTime.AddSeconds( i * 60 ) ,
                     Track = track
                 } );
@@ -330,12 +282,12 @@ public class MockSpotifyApiProvider : ISpotifyApi {
 
         return new PagingObject<PlaylistItem> {
             Href = new Uri( $"{s_baseUri}/playlists/{playlistId}/tracks" ) ,
-            Items = tracks ,
+            Items = playlistItems ,
             Limit = 100 ,
             Next = null ,
             Offset = 0 ,
             Previous = null ,
-            Total = tracks.Count
+            Total = playlistItems.Count
         };
     }
     #endregion
