@@ -35,6 +35,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Playlister\Playlister.csproj" />
     <None Include="appsettings.Integration.json" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="SQLite\*.sqlite" CopyToOutputDirectory="PreserveNewest"/>
+    <None Include="SQLite\*.sql" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 
 </Project>
