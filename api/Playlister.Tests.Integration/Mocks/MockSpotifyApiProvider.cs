@@ -19,7 +19,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
     private const int _limit = 50;
 
     private readonly Dictionary<string , SimplifiedPlaylistObject> _playlists;
-    private readonly Dictionary<string , PagingObject<PlaylistItem>> _playlistTracks;
+    private readonly Dictionary<string , List<PlaylistItem>> _playlistTracks;
 
     public MockSpotifyApiProvider( ) {
         _playlists = [ ];
@@ -90,14 +90,14 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         int? limit ,
         CancellationToken ct
     ) {
-        if ( !_playlistTracks.TryGetValue( playlistId , out PagingObject<PlaylistItem>? tracks ) ) {
+        if ( !_playlistTracks.TryGetValue( playlistId , out List<PlaylistItem>? allTracks ) ) {
             throw new InvalidOperationException( $"Playlist {playlistId} not found" );
         }
 
         offset ??= 0;
         limit ??= 50;
 
-        var items = tracks.Items.ToList( );
+        var items = allTracks.ToList( );
         var paging = new PagingObject<PlaylistItem> {
             Href = new Uri( $"{s_baseUri}/playlists/{playlistId}/tracks" ) ,
             Items = items.Skip( offset.Value ).Take( limit.Value ) ,
@@ -235,15 +235,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         // Playlist 5: Empty Playlist (0 tracks)
         string playlist5Id = "playlist005";
         _playlists[playlist5Id] = CreatePlaylist( playlist5Id , "Empty Playlist" , "A playlist with no tracks" , true , 0 , owner , "snap005" );
-        _playlistTracks[playlist5Id] = new PagingObject<PlaylistItem> {
-            Href = new Uri( $"{s_baseUri}/playlists/{playlist5Id}/tracks" ) ,
-            Items = new List<PlaylistItem>( ) ,
-            Limit = 100 ,
-            Next = null ,
-            Offset = 0 ,
-            Previous = null ,
-            Total = 0
-        };
+        _playlistTracks[playlist5Id] = new List<PlaylistItem>( );
     }
 
     private SimplifiedPlaylistObject CreatePlaylist( string id , string name , string description , bool isPublic , int trackCount , PublicUserObject owner , string snapshotId ) {
@@ -266,7 +258,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         };
     }
 
-    private PagingObject<PlaylistItem> CreatePlaylistTracksForPlaylist( string playlistId , string[ ] trackIds , Dictionary<string , Track> tracks ) {
+    private List<PlaylistItem> CreatePlaylistTracksForPlaylist( string playlistId , string[ ] trackIds , Dictionary<string , Track> tracks ) {
         var playlistItems = new List<PlaylistItem>( );
         var baseDateTime = new DateTime( 2024 , 1 , 15 , 10 , 30 , 0 , DateTimeKind.Utc );
 
@@ -280,15 +272,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
             }
         }
 
-        return new PagingObject<PlaylistItem> {
-            Href = new Uri( $"{s_baseUri}/playlists/{playlistId}/tracks" ) ,
-            Items = playlistItems ,
-            Limit = 100 ,
-            Next = null ,
-            Offset = 0 ,
-            Previous = null ,
-            Total = playlistItems.Count
-        };
+        return playlistItems;
     }
     #endregion
 }
