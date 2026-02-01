@@ -1,15 +1,10 @@
 using Dapper;
 
-using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
-using Playlister.CQRS.Commands;
-using Playlister.CQRS.Handlers;
 using Playlister.Models;
-using Playlister.Models.SpotifyApi;
 using Playlister.Repositories;
-using Playlister.Services;
 
 namespace Playlister.Tests.Integration;
 
