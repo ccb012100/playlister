@@ -22,9 +22,6 @@ public class PlaylistSyncIntegrationTests : IClassFixture<CustomWebApplicationFa
     private readonly SqliteConnection _db;
 
     public PlaylistSyncIntegrationTests( CustomWebApplicationFactory<Startup> factory ) {
-        // Configure factory to not seed the database - we want to start empty
-        factory.SeedDatabase = false;
-
         _factory = factory;
         _db = factory.Services.GetRequiredService<IConnectionFactory>( ).Connection;
     }

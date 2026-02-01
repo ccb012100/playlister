@@ -65,7 +65,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         CancellationToken ct
     ) {
         offset ??= 0;
-        limit ??= 20;
+        limit ??= 50;
 
         var playlists = _playlists.Values.ToList( );
         var paging = new PagingObject<SimplifiedPlaylistObject> {
@@ -97,7 +97,7 @@ public class MockSpotifyApiProvider : ISpotifyApi {
         }
 
         offset ??= 0;
-        limit ??= 100;
+        limit ??= 50;
 
         var items = tracks.Items.ToList( );
         var paging = new PagingObject<Models.PlaylistItem> {
