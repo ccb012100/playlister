@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 using Playlister.Repositories;
+using Playlister.Tests.Integration.Utilities;
 
 namespace Playlister.Tests.Integration;
 

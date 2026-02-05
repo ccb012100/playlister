@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Playlister.Models;
 using Playlister.Repositories;
 
-namespace Playlister.Tests.Integration;
+namespace Playlister.Tests.Integration.SyncPlaylists;
 
 /// <summary>
 ///     Integration test that verifies playlist sync functionality by starting with an empty database

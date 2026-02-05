@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 using Dapper;
 
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -7,8 +5,6 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
 using Playlister.Repositories;
-
-using Xunit.Abstractions;
 
 namespace Playlister.Tests.Integration;
 

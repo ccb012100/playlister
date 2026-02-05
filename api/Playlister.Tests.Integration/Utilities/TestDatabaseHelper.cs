@@ -2,7 +2,7 @@ using Dapper;
 
 using Microsoft.Data.Sqlite;
 
-namespace Playlister.Tests.Integration;
+namespace Playlister.Tests.Integration.Utilities;
 
 /// <summary>
 ///     Helper class for initializing test databases with schema and seed data.

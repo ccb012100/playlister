@@ -7,7 +7,7 @@ using Playlister.Models;
 using Playlister.Repositories;
 using Playlister.Services;
 
-namespace Playlister.Tests.Integration;
+namespace Playlister.Tests.Integration.SyncPlaylists;
 
 /// <summary>
 ///     Integration test that verifies syncing playlists with unchanged data results in no database updates.
