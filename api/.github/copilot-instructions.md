@@ -90,11 +90,16 @@ Set `"HandsFree": true` in config to automatically sync all playlists after logi
 ### Testing
 - Unit tests in `Playlister.Tests/`
 - Integration tests in `Playlister.Tests.Integration/` use in-memory SQLite
+- **Test Parallelization**: Tests run in parallel by default - each test class gets its own isolated factory instance with separate in-memory database
 - Custom `WebApplicationFactory` in `CustomWebApplicationFactory.cs` for integration testing setup
+  - Creates shared in-memory database per factory instance using `Data Source=file:{guid}?mode=memory&cache=shared`
+  - Keeps connection open to maintain in-memory database throughout test lifecycle
+  - Properly disposes connection when factory is disposed
 - **Database seeding**: Tests auto-initialize with schema + seed data via `TestDatabaseHelper`
   - Schema: `SQLite/create_db.sqlite`
   - Seed data: `SQLite/seed_db.sql` (8 artists, 10 albums, 27 tracks, 5 playlists)
   - Set `factory.SeedDatabase = false` to skip seeding for specific tests
+- **Configuration override**: Factory uses `ConfigureAppConfiguration` to override `Database:ConnectionString` with in-memory connection string
 
 ### Logging
 - Serilog file logging configured in `appsettings.json`
