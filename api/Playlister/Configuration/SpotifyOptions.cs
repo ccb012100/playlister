@@ -2,7 +2,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Playlister.Configuration;
 
-public record SpotifyOptions {
+public record SpotifyOptions
+{
     public const string Spotify = "Spotify";
 
     /// <summary>

@@ -5,12 +5,14 @@ using Playlister.Configuration;
 
 namespace Playlister.Repositories.Implementations;
 
-public class ConnectionFactory( IOptions<DatabaseOptions> options ) : IConnectionFactory {
-    private readonly string _connectionString = new SqliteConnectionStringBuilder( options.Value.ConnectionString ) {
-        Mode = SqliteOpenMode.ReadWriteCreate ,
-        Cache = SqliteCacheMode.Shared ,
+public class ConnectionFactory(IOptions<DatabaseOptions> options) : IConnectionFactory
+{
+    private readonly string _connectionString = new SqliteConnectionStringBuilder(options.Value.ConnectionString)
+    {
+        Mode = SqliteOpenMode.ReadWriteCreate,
+        Cache = SqliteCacheMode.Shared,
         ForeignKeys = true
-    }.ToString( );
+    }.ToString();
 
-    public SqliteConnection Connection => new( _connectionString );
+    public SqliteConnection Connection => new(_connectionString);
 }

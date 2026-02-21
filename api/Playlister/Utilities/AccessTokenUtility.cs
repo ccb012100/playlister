@@ -2,7 +2,8 @@ using Playlister.Services.Implementations;
 
 namespace Playlister.Utilities;
 
-public class AccessTokenUtility( IHttpContextAccessor httpContextAccessor ) : IAccessTokenUtility {
+public class AccessTokenUtility(IHttpContextAccessor httpContextAccessor) : IAccessTokenUtility
+{
     private readonly IHttpContextAccessor _httpContextAccessor = httpContextAccessor;
 
     /// <summary>
@@ -14,21 +15,25 @@ public class AccessTokenUtility( IHttpContextAccessor httpContextAccessor ) : IA
     ///     The method is called outside an <see cref="HttpContext" />
     ///     or the <c>"user-token"</c> cookie is missing/has an invalid value
     /// </exception>
-    public string GetTokenFromUserCookie( ) {
-        if ( _httpContextAccessor.HttpContext is null ) {
-            throw new InvalidOperationException( "HttpContext is null" );
+    public string GetTokenFromUserCookie()
+    {
+        if (_httpContextAccessor.HttpContext is null)
+        {
+            throw new InvalidOperationException("HttpContext is null");
         }
 
         string? cookie = _httpContextAccessor.HttpContext.Request.Cookies[TokenService.UserTokenCookieName];
 
-        if ( string.IsNullOrWhiteSpace( cookie ) ) {
-            throw new InvalidOperationException( $"{TokenService.UserTokenCookieName} cookie missing!" );
+        if (string.IsNullOrWhiteSpace(cookie))
+        {
+            throw new InvalidOperationException($"{TokenService.UserTokenCookieName} cookie missing!");
         }
 
-        if ( !Guid.TryParse( cookie , out Guid viewToken ) ) {
-            throw new InvalidOperationException( $"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}" );
+        if (!Guid.TryParse(cookie, out Guid viewToken))
+        {
+            throw new InvalidOperationException($"Invalid {TokenService.UserTokenCookieName} cooke value: {cookie}");
         }
 
-        return TokenService.GetAuthenticationToken( viewToken ).AccessToken;
+        return TokenService.GetAuthenticationToken(viewToken).AccessToken;
     }
 }

@@ -1,6 +1,7 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record SimplifiedArtistObject {
+public record SimplifiedArtistObject
+{
     /// <summary>
     ///     Known external URLs for this artist.
     /// </summary>

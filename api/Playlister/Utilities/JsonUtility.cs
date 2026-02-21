@@ -4,13 +4,14 @@ using Refit;
 
 namespace Playlister.Utilities;
 
-public static class JsonUtility {
-    private static readonly JsonSerializerOptions s_prettyPrintOptions = new( ) { WriteIndented = true };
+public static class JsonUtility
+{
+    private static readonly JsonSerializerOptions s_prettyPrintOptions = new() { WriteIndented = true };
 
-    private static JsonSerializerOptions SnakeCaseSerializerOptions => new( ) { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
+    private static JsonSerializerOptions SnakeCaseSerializerOptions => new() { PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower };
 
     public static RefitSettings SnakeCaseRefitSettings =>
-        new( ) { ContentSerializer = new SystemTextJsonContentSerializer( SnakeCaseSerializerOptions ) };
+        new() { ContentSerializer = new SystemTextJsonContentSerializer(SnakeCaseSerializerOptions) };
 
     /// <summary>
     ///     Serialize object to pretty-printed JSON string.
@@ -18,7 +19,8 @@ public static class JsonUtility {
     /// <param name="t">Object you want converted to JSON</param>
     /// <typeparam name="T">Type of <paramref name="t" /></typeparam>
     /// <returns>String representation of the object as pretty-printed JSON</returns>
-    public static string PrettyPrint<T>( this T t ) {
-        return JsonSerializer.Serialize( t , s_prettyPrintOptions );
+    public static string PrettyPrint<T>(this T t)
+    {
+        return JsonSerializer.Serialize(t, s_prettyPrintOptions);
     }
 }
