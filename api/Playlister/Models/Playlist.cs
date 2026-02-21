@@ -16,12 +16,15 @@ public record Playlist {
     public bool? Public { get; init; }
 
     /// <summary>
-    ///     Number of tracks in the playlist
+    ///     Number of tracks in the playlist.
     /// </summary>
+    /// <remarks>
+    ///    WARNING: Adding a duplicate track will sometimes fail to increment this number.
+    /// </remarks>
     public int Count { get; init; }
 
     /// <summary>
-    ///     Number of unique tracks in the playlist (i.e. without duplicates)
+    /// TODO: remove this from the database. The Playlist.Count returned from Spotify _is_ the count of unique tracks.
     /// </summary>
     public int CountUnique { get; init; }
 

@@ -24,7 +24,7 @@ public class TimeSpanExtensionsTests {
     [InlineData( 0 , 0 , 2 , 0 , 300 , 371 , "2min0.300s" )]
     [InlineData( 0 , 1 , 19 , 1 , 34 , 12 , "1h19min1s" )]
     [Theory]
-    public void ToLogString_ShouldReturnFormattedString( int d , int h , int min , int s , int ms , int μs , string expectedResult ) {
+    public void ToDisplayString_ShouldReturnFormattedString( int d , int h , int min , int s , int ms , int μs , string expectedResult ) {
         new TimeSpan( d , h , min , s , ms , μs ).ToDisplayString( )
             .Should( )
             .Be( expectedResult );
