@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.DependencyInjection;
 
+using Playlister.Models;
 using Playlister.Repositories;
 
 namespace Playlister.Tests.Integration;
@@ -12,6 +13,7 @@ public class PlaylisterTests : IClassFixture<CustomWebApplicationFactory<Startup
     private readonly HttpClient _client;
     private readonly SqliteConnection _db;
     private readonly CustomWebApplicationFactory<Startup> _factory;
+    private readonly IPlaylistReadRepository _playlistReadRepository;
 
     public PlaylisterTests( CustomWebApplicationFactory<Startup> factory ) {
         factory.SeedDatabase = true;
@@ -19,6 +21,7 @@ public class PlaylisterTests : IClassFixture<CustomWebApplicationFactory<Startup
 
         _client = factory.CreateClient( new WebApplicationFactoryClientOptions { AllowAutoRedirect = false } );
         _db = factory.Services.GetService<IConnectionFactory>( )!.Connection;
+        _playlistReadRepository = factory.Services.GetRequiredService<IPlaylistReadRepository>( );
     }
 
     [Fact]
@@ -60,23 +63,15 @@ public class PlaylisterTests : IClassFixture<CustomWebApplicationFactory<Startup
     [Fact]
     public async Task CanQueryPlaylistWithTracks( ) {
         // act
-        IEnumerable<dynamic> results = await _db.QueryAsync(
-            """
-            SELECT p.name AS PlaylistName, COUNT(pt.track_id) AS TrackCount
-            FROM Playlist p
-            LEFT JOIN PlaylistTrack pt ON p.id = pt.playlist_id
-            GROUP BY p.id
-            ORDER BY TrackCount DESC
-            """
-        );
-
-        dynamic[ ] playlists = results.ToArray( );
+        IEnumerable<Playlist> playlists = ( await _playlistReadRepository.GetAllAsync( ) )
+            .OrderByDescending( p => p.Count )
+            .ToList( );
 
         // assert
         playlists.Should( ).HaveCount( 5 );
-        ( ( string ) playlists[0].PlaylistName ).Should( ).Be( "Classic Rock Essentials" );
-        ( ( long ) playlists[0].TrackCount ).Should( ).Be( 15 );
-        ( ( string ) playlists[^1].PlaylistName ).Should( ).Be( "Empty Playlist" );
-        ( ( long ) playlists[^1].TrackCount ).Should( ).Be( 0 );
+        playlists.First( ).Name.Should( ).Be( "Classic Rock Essentials" );
+        playlists.First( ).Count.Should( ).Be( 15 );
+        playlists.Last( ).Name.Should( ).Be( "Empty Playlist" );
+        playlists.Last( ).Count.Should( ).Be( 0 );
     }
 }
