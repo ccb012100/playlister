@@ -1,6 +1,7 @@
 namespace Playlister.Models.SpotifyApi;
 
-public record PublicUserObject {
+public record PublicUserObject
+{
     /// <summary>
     ///     The name displayed on the user’s profile. <c>null</c> if not available.
     /// </summary>

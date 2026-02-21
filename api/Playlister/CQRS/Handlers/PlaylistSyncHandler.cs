@@ -3,7 +3,8 @@ using Playlister.Services;
 
 namespace Playlister.CQRS.Handlers;
 
-public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteDatabaseService databaseService ) {
+public class PlaylistSyncHandler(IPlaylistService playlistService, ISqliteDatabaseService databaseService)
+{
     private readonly ISqliteDatabaseService _databaseService = databaseService;
     private readonly IPlaylistService _playlistService = playlistService;
 
@@ -18,13 +19,14 @@ public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteData
     /// <remarks>
     ///     Syncing is a no-op for any Playlists that are already up-to-date.
     /// </remarks>
-    public async Task<int> SyncMultiple( SyncPlaylistsCommand command , CancellationToken ct = default ) {
+    public async Task<int> SyncMultiple(SyncPlaylistsCommand command, CancellationToken ct = default)
+    {
         return await Task.Run(
-            ( ) => _playlistService.SyncPlaylistsAsync(
-                command.AccessToken ,
-                command.Playlists.Select( p => p.ToPlaylist( ) ) ,
+            () => _playlistService.SyncPlaylistsAsync(
+                command.AccessToken,
+                command.Playlists.Select(p => p.ToPlaylist()),
                 ct
-            ) ,
+            ),
             ct
         );
     }
@@ -38,17 +40,18 @@ public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteData
     /// <remarks>
     ///     If the Playlist is up-to-date, this is a no-op.
     /// </remarks>
-    public async Task SyncSingle( SyncPlaylistCommand command , CancellationToken ct = default ) {
+    public async Task SyncSingle(SyncPlaylistCommand command, CancellationToken ct = default)
+    {
         await Task.Run(
-            ( ) => _playlistService.SyncPlaylistAsync(
-                command.AccessToken ,
-                command.PlaylistId ,
+            () => _playlistService.SyncPlaylistAsync(
+                command.AccessToken,
+                command.PlaylistId,
                 ct
-            ) ,
+            ),
             ct
         );
 
-        await _databaseService.VacuumDatabase( ct );
+        await _databaseService.VacuumDatabase(ct);
     }
 
     /// <summary>
@@ -61,29 +64,34 @@ public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteData
     ///     Syncing is a no-op for any Playlists that are already up-to-date.
     /// </remarks>
     public async Task<SyncResults> SyncAllForCurrentUser(
-        SyncCurrentUserPlaylistsCommand command ,
+        SyncCurrentUserPlaylistsCommand command,
         CancellationToken ct = default
-    ) {
-        ImmutableArray<Playlist> playlists = await _playlistService.GetUserPlaylistsAsync( command.AccessToken , ct );
+    )
+    {
+        ImmutableArray<Playlist> playlists = await _playlistService.GetUserPlaylistsAsync(command.AccessToken, ct);
 
-        int updated = await _playlistService.SyncPlaylistsAsync( command.AccessToken , playlists , ct );
+        int updated = await _playlistService.SyncPlaylistsAsync(command.AccessToken, playlists, ct);
 
         int deleted, albumTotal;
 
         // skip these if nothing was updated
-        if ( updated > 0 ) {
-            deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync( ct );
-            albumTotal = await _playlistService.RebuildPlaylistAlbumTable( ct );
-            await _databaseService.VacuumDatabase( ct );
-        } else {
+        if (updated > 0)
+        {
+            deleted = await _playlistService.DeleteOrphanedPlaylistTracksAsync(ct);
+            albumTotal = await _playlistService.RebuildPlaylistAlbumTable(ct);
+            await _databaseService.VacuumDatabase(ct);
+        }
+        else
+        {
             deleted = 0;
             albumTotal = 0;
         }
 
-        return new SyncResults {
-            OrphanedTracksDeleted = deleted ,
-            PlaylistAlbumCount = albumTotal ,
-            PlaylistCount = playlists.Length ,
+        return new SyncResults
+        {
+            OrphanedTracksDeleted = deleted,
+            PlaylistAlbumCount = albumTotal,
+            PlaylistCount = playlists.Length,
             PlaylistsUpdated = updated
         };
     }
@@ -96,13 +104,15 @@ public class PlaylistSyncHandler( IPlaylistService playlistService , ISqliteData
     /// <remarks>
     ///     This always performs a fresh sync of the Playlist.
     /// </remarks>
-    public async Task ForceSync( ForceSyncPlaylistCommand command , CancellationToken ct = default ) {
-        await _playlistService.ForceSyncPlaylistAsync( command.AccessToken , command.PlaylistId , ct );
-        await _playlistService.RebuildPlaylistAlbumTable( ct );
-        await _databaseService.VacuumDatabase( ct );
+    public async Task ForceSync(ForceSyncPlaylistCommand command, CancellationToken ct = default)
+    {
+        await _playlistService.ForceSyncPlaylistAsync(command.AccessToken, command.PlaylistId, ct);
+        await _playlistService.RebuildPlaylistAlbumTable(ct);
+        await _databaseService.VacuumDatabase(ct);
     }
 
-    public record SyncResults {
+    public record SyncResults
+    {
         public required int OrphanedTracksDeleted { get; init; }
         public required int PlaylistAlbumCount { get; init; }
         public required int PlaylistCount { get; init; }

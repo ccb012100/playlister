@@ -4,7 +4,8 @@ using Playlister.Models.SpotifyApi.Enums;
 
 namespace Playlister.Models.SpotifyApi;
 
-public record SimplifiedPlaylistObject : ISpotifyApiObject {
+public record SimplifiedPlaylistObject : ISpotifyApiObject
+{
     /// <summary>
     ///     <c>true</c> if the owner allows other users to modify the playlist.
     /// </summary>
@@ -48,7 +49,7 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject {
     /// <summary>
     ///     The version identifier for the current playlist. Can be supplied in other requests to target a specific playlist version.
     /// </summary>
-    [JsonPropertyName( "snapshot_id" )]
+    [JsonPropertyName("snapshot_id")]
     public string? SnapshotId { get; init; }
 
     /// <summary>
@@ -78,14 +79,16 @@ public record SimplifiedPlaylistObject : ISpotifyApiObject {
     /// </summary>
     public required Uri Uri { get; init; }
 
-    public Playlist ToPlaylist( ) {
-        return new Playlist {
-            Id = Id ,
-            SnapshotId = SnapshotId ,
-            Name = Name ,
-            Collaborative = Collaborative ,
-            Description = Description ,
-            Public = Public ,
+    public Playlist ToPlaylist()
+    {
+        return new Playlist
+        {
+            Id = Id,
+            SnapshotId = SnapshotId,
+            Name = Name,
+            Collaborative = Collaborative,
+            Description = Description,
+            Public = Public,
             Count = Tracks.Total
         };
     }

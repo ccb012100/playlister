@@ -2,10 +2,11 @@ using System.Text.Json.Serialization;
 
 namespace Playlister.Models;
 
-public record Playlist {
+public record Playlist
+{
     public required string Id { get; init; }
 
-    [JsonPropertyName( "snapshot_id" )] public string? SnapshotId { get; init; }
+    [JsonPropertyName("snapshot_id")] public string? SnapshotId { get; init; }
 
     public required string Name { get; init; }
 
@@ -28,9 +29,10 @@ public record Playlist {
     /// </summary>
     public int CountUnique { get; init; }
 
-    public string LoggingTag => $"[{ToString( )}]";
+    public string LoggingTag => $"[{ToString()}]";
 
-    public override string ToString( ) {
+    public override string ToString()
+    {
         return $"Playlist `{Id}` (\"{Name}\")";
     }
 }

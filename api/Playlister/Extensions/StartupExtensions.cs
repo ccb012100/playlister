@@ -16,108 +16,119 @@ using Refit;
 
 namespace Playlister.Extensions;
 
-public static partial class StartupExtensions {
-    public static IServiceCollection AddServices( this IServiceCollection services ) {
+public static partial class StartupExtensions
+{
+    public static IServiceCollection AddServices(this IServiceCollection services)
+    {
         return services
-            .AddSingleton<IHttpContextAccessor , HttpContextAccessor>( )
-            .AddSingleton<IConnectionFactory , ConnectionFactory>( )
-            .AddScoped<ISqliteDatabaseService , SqliteDatabaseService>( )
-            .AddScoped<IPlaylistService , PlaylistService>( )
-            .AddScoped<IAuthService , AuthService>( )
-            .AddTransient<IAccessTokenUtility , AccessTokenUtility>( )
-            .AddHandlers( );
+            .AddSingleton<IHttpContextAccessor, HttpContextAccessor>()
+            .AddSingleton<IConnectionFactory, ConnectionFactory>()
+            .AddScoped<ISqliteDatabaseService, SqliteDatabaseService>()
+            .AddScoped<IPlaylistService, PlaylistService>()
+            .AddScoped<IAuthService, AuthService>()
+            .AddTransient<IAccessTokenUtility, AccessTokenUtility>()
+            .AddHandlers();
     }
 
-    private static IServiceCollection AddHandlers( this IServiceCollection services ) {
+    private static IServiceCollection AddHandlers(this IServiceCollection services)
+    {
         return services
-            .AddTransient<CurrentUserHandler>( )
-            .AddTransient<PlaylistSyncHandler>( )
-            .AddTransient<SpotifyAuthorizationHandler>( );
+            .AddTransient<CurrentUserHandler>()
+            .AddTransient<PlaylistSyncHandler>()
+            .AddTransient<SpotifyAuthorizationHandler>();
     }
 
-    public static IServiceCollection AddMiddleware( this IServiceCollection services ) {
-        return services.AddTransient<HttpLoggingMiddleware>( );
+    public static IServiceCollection AddMiddleware(this IServiceCollection services)
+    {
+        return services.AddTransient<HttpLoggingMiddleware>();
     }
 
-    public static IServiceCollection AddRefitClients( this IServiceCollection services ) {
-        IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider( ).GetService<IOptions<DebuggingOptions>>( );
+    public static IServiceCollection AddRefitClients(this IServiceCollection services)
+    {
+        IOptions<DebuggingOptions>? debugOptions = services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>();
 
         services
-            .AddRefitClient<ISpotifyAccountsApi>( JsonUtility.SnakeCaseRefitSettings )
-            .ConfigureHttpClient( ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.AccountsApiBaseAddress; }
+            .AddRefitClient<ISpotifyAccountsApi>(JsonUtility.SnakeCaseRefitSettings)
+            .ConfigureHttpClient((svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.AccountsApiBaseAddress; }
             )
-            .AddHttpLoggingMiddleware( debugOptions )
-            .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
+            .AddHttpLoggingMiddleware(debugOptions)
+            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
         services
-            .AddRefitClient<ISpotifyApi>( JsonUtility.SnakeCaseRefitSettings )
-            .ConfigureHttpClient( ( svc , c ) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>( )?.Value.ApiBaseAddress; }
+            .AddRefitClient<ISpotifyApi>(JsonUtility.SnakeCaseRefitSettings)
+            .ConfigureHttpClient((svc, c) => { c.BaseAddress = svc.GetService<IOptions<SpotifyOptions>>()?.Value.ApiBaseAddress; }
             )
-            .AddHttpLoggingMiddleware( debugOptions )
-            .AddPolicyHandler( PollyUtility.RetryAfterPolicy );
+            .AddHttpLoggingMiddleware(debugOptions)
+            .AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
         return services;
     }
 
-    public static WebApplicationBuilder AddAndValidateConfiguration( this WebApplicationBuilder builder ) {
+    public static WebApplicationBuilder AddAndValidateConfiguration(this WebApplicationBuilder builder)
+    {
         builder.Services
-            .AddOptions<SpotifyOptions>( )
-            .Bind( builder.Configuration.GetSection( SpotifyOptions.Spotify ) )
-            .ValidateDataAnnotations( )
+            .AddOptions<SpotifyOptions>()
+            .Bind(builder.Configuration.GetSection(SpotifyOptions.Spotify))
+            .ValidateDataAnnotations()
             .Validate(
-                o => o.CallbackUrl == new Uri( "https://127.0.0.1:5001/login" )
-                    || o.CallbackUrl == new Uri( "https://127.0.0.1:5001/app/home/login" ) ,
+                o => o.CallbackUrl == new Uri("https://127.0.0.1:5001/login")
+                    || o.CallbackUrl == new Uri("https://127.0.0.1:5001/app/home/login"),
                 "CallbackUrl must be one of <https://127.0.0.1:5001/app/home/login> or <https://127.0.0.1:5001/login>"
             )
-            .Validate( o => SpotifyUserRegex( ).IsMatch( o.SpotifyUri.Trim( ) ) )
-            .Validate( o => !string.IsNullOrWhiteSpace( o.PersistentQueueNamePrefix ) )
-            .Validate( o => !string.IsNullOrWhiteSpace( o.ClientId ) )
-            .Validate( o => !string.IsNullOrWhiteSpace( o.ClientSecret ) )
-            .ValidateOnStart( );
+            .Validate(o => SpotifyUserRegex().IsMatch(o.SpotifyUri.Trim()))
+            .Validate(o => !string.IsNullOrWhiteSpace(o.PersistentQueueNamePrefix))
+            .Validate(o => !string.IsNullOrWhiteSpace(o.ClientId))
+            .Validate(o => !string.IsNullOrWhiteSpace(o.ClientSecret))
+            .ValidateOnStart();
 
         builder.Services
-            .AddOptions<DebuggingOptions>( )
-            .Bind( builder.Configuration.GetSection( DebuggingOptions.Debugging ) )
-            .ValidateDataAnnotations( )
-            .ValidateOnStart( );
+            .AddOptions<DebuggingOptions>()
+            .Bind(builder.Configuration.GetSection(DebuggingOptions.Debugging))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         builder.Services
-            .AddOptions<DatabaseOptions>( )
-            .Bind( builder.Configuration.GetSection( DatabaseOptions.Database ) )
-            .ValidateDataAnnotations( )
-            .ValidateOnStart( );
+            .AddOptions<DatabaseOptions>()
+            .Bind(builder.Configuration.GetSection(DatabaseOptions.Database))
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
 
         return builder;
     }
 
     private static IHttpClientBuilder AddHttpLoggingMiddleware(
-        this IHttpClientBuilder httpClientBuilder ,
+        this IHttpClientBuilder httpClientBuilder,
         IOptions<DebuggingOptions>? debugOptions
-    ) {
+    )
+    {
         return debugOptions is { Value.UseHttpLoggingMiddleware: true }
-            ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>( )
+            ? httpClientBuilder.AddHttpMessageHandler<HttpLoggingMiddleware>()
             : httpClientBuilder;
     }
 
-    public static void AddDebuggingOptions( this IServiceCollection services ) {
-        if ( services.BuildServiceProvider( ).GetService<IOptions<DebuggingOptions>>( ) is { Value.UseLoggingBehavior: true } ) {
+    public static void AddDebuggingOptions(this IServiceCollection services)
+    {
+        if (services.BuildServiceProvider().GetService<IOptions<DebuggingOptions>>() is { Value.UseLoggingBehavior: true })
+        {
             // TODO
         }
     }
 
-    public static IServiceCollection AddRepositories( this IServiceCollection services ) {
+    public static IServiceCollection AddRepositories(this IServiceCollection services)
+    {
         return services
-            .AddScoped<ISqliteDatabaseRepository , SqliteDatabaseRepository>( )
-            .AddScoped<IPlaylistReadRepository , PlaylistReadRepository>( )
-            .AddScoped<IPlaylistWriteRepository , PlaylistWriteRepository>( );
+            .AddScoped<ISqliteDatabaseRepository, SqliteDatabaseRepository>()
+            .AddScoped<IPlaylistReadRepository, PlaylistReadRepository>()
+            .AddScoped<IPlaylistWriteRepository, PlaylistWriteRepository>();
     }
 
-    public static IServiceCollection AddHttpClientWithPollyPolicy( this IServiceCollection services ) {
-        services.AddHttpClient<ISpotifyApiService , SpotifyApiService>( ).AddPolicyHandler( PollyUtility.RetryAfterPolicy );
+    public static IServiceCollection AddHttpClientWithPollyPolicy(this IServiceCollection services)
+    {
+        services.AddHttpClient<ISpotifyApiService, SpotifyApiService>().AddPolicyHandler(PollyUtility.RetryAfterPolicy);
 
         return services;
     }
 
-    [GeneratedRegex( @"^spotify:user:\d{10}$" )]
-    private static partial Regex SpotifyUserRegex( );
+    [GeneratedRegex(@"^spotify:user:\d{10}$")]
+    private static partial Regex SpotifyUserRegex();
 }

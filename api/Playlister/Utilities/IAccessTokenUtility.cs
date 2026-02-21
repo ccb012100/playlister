@@ -1,5 +1,6 @@
 namespace Playlister.Utilities;
 
-public interface IAccessTokenUtility {
-    public string GetTokenFromUserCookie( );
+public interface IAccessTokenUtility
+{
+    public string GetTokenFromUserCookie();
 }

@@ -1,6 +1,7 @@
 namespace Playlister.Configuration;
 
-public record DebuggingOptions {
+public record DebuggingOptions
+{
     public const string Debugging = "Debugging";
 
     public bool PrintEnvironmentInfo { get; init; }
