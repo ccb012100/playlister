@@ -25,7 +25,7 @@ public class PlaylisterTests : IClassFixture<CustomWebApplicationFactory<Startup
     }
 
     [Fact]
-    public async Task CanQueryPlaylistWithTracks( ) {
+    public async Task CanQueryPlaylistViaRepository( ) {
         // act
         IEnumerable<Playlist> playlists = ( await _playlistReadRepository.GetAllAsync( ) )
             .OrderByDescending( p => p.Count )
