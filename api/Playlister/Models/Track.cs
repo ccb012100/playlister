@@ -32,8 +32,7 @@ public record Track {
     /// </summary>
     /// <returns>Collection of track id, artist id tuples</returns>
     public IEnumerable<ArtistTrackIdPair> GetArtistTrackIdPairings( ) {
-        return Artists.Select(
-            a => new ArtistTrackIdPair {
+        return Artists.Select( a => new ArtistTrackIdPair {
                 TrackId = Id ,
                 ArtistId = a.Id
             }
@@ -43,5 +42,10 @@ public record Track {
     public record ArtistTrackIdPair {
         public required string TrackId { get; init; }
         public required string ArtistId { get; init; }
+    }
+
+    public override string ToString( ) {
+        return
+            $"Track ( Id={Id} Name={Name} AlbumId={AlbumId} AlbumName={Album.Name} Artists=[ {string.Join( ", " , Artists.Select( a => $"( Id={a.Id} Name={a.Name} ) " ) )} ] )";
     }
 }

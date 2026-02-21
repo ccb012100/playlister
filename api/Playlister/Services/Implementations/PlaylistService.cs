@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 
 using Microsoft.Extensions.Options;
@@ -9,9 +10,11 @@ using Playlister.Repositories;
 namespace Playlister.Services.Implementations;
 
 public class PlaylistService : IPlaylistService {
+    /* TODO: separate out the caches into a separate service */
     private static readonly CacheObject<Playlist> s_playlistCache = new( );
     private static readonly CacheObject<string> s_missingTracksCache = new( );
     private static readonly CacheObject<string> s_updatedPlaylistsCache = new( );
+
     private readonly ISpotifyApiService _api;
     private readonly ILogger<PlaylistService> _logger;
     private readonly IPlaylistReadRepository _readRepository;
@@ -23,14 +26,14 @@ public class PlaylistService : IPlaylistService {
         IPlaylistReadRepository readRepository ,
         IPlaylistWriteRepository writeRepository ,
         ISpotifyApiService api ,
-        IOptions<SpotifyOptions> options ,
+        IOptions<SpotifyOptions> spotifyOptions ,
         ILogger<PlaylistService> logger
     ) {
         _readRepository = readRepository;
         _writeRepository = writeRepository;
         _api = api;
         _logger = logger;
-        _persistentQueueNamePrefix = options.Value.PersistentQueueNamePrefix;
+        _persistentQueueNamePrefix = spotifyOptions.Value.PersistentQueueNamePrefix;
 
         _ = s_playlistCache.Initialize( PopulateCaches );
     }
@@ -46,7 +49,7 @@ public class PlaylistService : IPlaylistService {
             ct
         );
 
-        List<Playlist> lists = page.Items.Select( i => i.ToPlaylist( ) ).ToList( );
+        List<Playlist> lists = [.. page.Items.Select( i => i.ToPlaylist( ) )];
 
         while ( page.Next is not null ) {
             page = await _api.GetCurrentUserPlaylistsAsync( accessToken , page.Next , ct );
@@ -169,65 +172,70 @@ public class PlaylistService : IPlaylistService {
         Stopwatch sw = new( );
         sw.Start( );
 
-        // get first page of playlist items
-        PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync(
-            accessToken ,
-            playlist.Id ,
-            0 ,
-            limit ,
-            ct
-        );
-
-        /*
-         * NOTE: this takes 10s of seconds to update the largest playlists (once the track count starts getting into
-         * the thousands; I would like to update this to only grab changes made after the last sync, but the
-         * Spotify API's GetPlaylistItems endpoint does not allow filtering or ordering
-         */
-
-        /*
-         * TODO,PERF: Grab the first page and then calculate the number of remaining pages based on (total/limit).
-         *       Then grab those pages in parallel and combine into a single collection.
-         */
-
         // We want to get all the items for the playlist so that they can be inserted into the repository in a single Transaction
-        List<PlaylistItem> allItems = page.Items.ToList( );
+        ConcurrentBag<PlaylistItem> playlistBag = [];
 
-        while ( page.Next is not null ) {
-            page = await _api.GetPlaylistTracksAsync( accessToken , page.Next , ct );
-            allItems.AddRange( page.Items );
+        // To grab all the pages in parallel, we calculate all the pages based on the playlist count and the limit size
+        int nextOffset = 0;
+        int total = playlist.Count;
+        List<int> offsets = [];
+
+        while ( nextOffset < total ) {
+            offsets.Add( nextOffset );
+
+            nextOffset += limit;
         }
 
-        if ( allItems.Count != playlist.Count ) {
-            _logger.LogWarning(
-                "{PlaylistTag} The number of tracks returned from the API does not match Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}" ,
+        await Parallel.ForEachAsync(
+            offsets ,
+            new ParallelOptions { MaxDegreeOfParallelism = 10 } ,
+            async ( offset , token ) => {
+                PagingObject<PlaylistItem> page = await _api.GetPlaylistTracksAsync( accessToken , playlist.Id , offset , limit , token );
+
+                foreach ( PlaylistItem track in page.Items ) {
+                    playlistBag.Add( track );
+                }
+            }
+        );
+
+        PlaylistItem[ ] allItems = playlistBag.ToArray( );
+
+        if ( allItems.Length < playlist.Count ) {
+            // Sometimes, when there are duplicate tracks, the playlist's count is not incremented
+            _logger.LogError(
+                "{PlaylistTag} The number of tracks returned from the API is less than Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}" ,
                 playlist.LoggingTag ,
                 playlist.Count ,
-                allItems.Count
+                allItems.Length
+            );
+
+            sw.Stop( );
+
+            return;
+        }
+
+        if ( allItems.Length > playlist.Count ) {
+            // Sometimes, when there are duplicate tracks, the playlist's count is not incremented
+            _logger.LogWarning(
+                "{PlaylistTag} The number of tracks returned from the API is more than Playlist.Count. Expected: {PlaylistCount}. Actual: {PlaylistTrackCount}" ,
+                playlist.LoggingTag ,
+                playlist.Count ,
+                allItems.Length
             );
         }
 
-        string playlistId = playlist.Id;
-
-        ImmutableArray<PlaylistItem> uniqueTracks = allItems.DistinctBy( x =>
-                new DistinctPlaylistTracks.DistinctPlaylistTrack( playlistId , x.Track.Id , x.AddedAt )
-            )
-            .ToImmutableArray( );
-
-        playlist = playlist with { CountUnique = uniqueTracks.Length };
-
-        _logger.LogInformation(
-            "{PlaylistTag} playlist contains {CountUnique} unique tracks (out of {Count})" ,
-            playlist.LoggingTag ,
-            uniqueTracks.Length ,
-            playlist.Count
-        );
-
-        await _writeRepository.UpsertAsync( playlist , uniqueTracks , ct );
+        await _writeRepository.UpsertAsync( playlist , allItems , ct );
 
         // only cache after data has been written to database
         Cache( playlist );
         CacheUpdatedPlaylist( playlist );
         DecacheMissingTracks( playlist );
+
+        IEnumerable<IGrouping<string , Track>> duplicates = allItems.Select( x => x.Track ).GroupBy( x => x.Id ).Where( x => x.Count( ) > 1 );
+
+        foreach ( IGrouping<string , Track> dupe in duplicates ) {
+            _logger.LogWarning( "{PlaylistTag} Duplicate track detected: {Track}" , playlist.LoggingTag , dupe.First( ) );
+        }
 
         sw.Stop( );
 
@@ -297,11 +305,16 @@ public class PlaylistService : IPlaylistService {
 
     #region cache
 
+    /// <summary>
+    /// Add or update the playlist to the cache.
+    /// </summary>
+    /// <param name="playlist"></param>
+    /// <exception cref="ArgumentNullException"></exception>
     private void Cache( Playlist playlist ) {
         Playlist pl = s_playlistCache.Items.AddOrUpdate(
             playlist.Id ,
             playlist ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : playlist
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : playlist
         );
 
         _logger.LogTrace( "{PlaylistTag} Added playlist to the cache: {Playlist} {PlayListId}" , playlist.LoggingTag , pl.Name , pl.SnapshotId );
@@ -319,13 +332,18 @@ public class PlaylistService : IPlaylistService {
         return playlist;
     }
 
+    /// <summary>
+    /// Add or update the playlist to the missing tracks cache.
+    /// </summary>
+    /// <param name="playlistWithCount"></param>
+    /// <exception cref="ArgumentNullException"></exception>
     private void CacheMissingTracks( (string , int) playlistWithCount ) {
-        (string playlistId , int count) = playlistWithCount;
+        ( string playlistId , int count ) = playlistWithCount;
 
         string _ = s_missingTracksCache.Items.AddOrUpdate(
             playlistId ,
             count.ToString( ) ,
-            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof( b ) ) : count.ToString( )
+            ( _ , b ) => b == null ? throw new ArgumentNullException( nameof(b) ) : count.ToString( )
         );
 
         _logger.LogDebug(
@@ -335,6 +353,10 @@ public class PlaylistService : IPlaylistService {
         );
     }
 
+    /// <summary>
+    /// Remove the playlist from the missing tracks cache.
+    /// </summary>
+    /// <param name="playlist"></param>
     private void DecacheMissingTracks( Playlist playlist ) {
         _logger.LogTrace(
             s_missingTracksCache.Items.Remove( playlist.Id , out string? _ )

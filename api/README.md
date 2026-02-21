@@ -72,6 +72,7 @@ EOF
 
 ### .NET
 
+- Separate out the playlist cache from `PlaylistService` into a seperate service.
 - Tests
     - [ ] Integration
     - [ ] Unit
@@ -84,9 +85,7 @@ EOF
     - [x] Generate a client token to return so that the Spotify Access Token is never exposed outside the API
 - [ ] `SpotifyAuthUrlHandler.cs` => cache `state` so that it can be validated on the access token command
 - [ ] [Get User's saved tracks](https://developer.spotify.com/documentation/web-api/reference/get-users-saved-tracks)
-- [ ] `PlaylistService.cs` => Fix performance issue with updating large playlists
-    - There doesn't seem to be a way to fix this; Spotify's API does not allow sorting/filtering when calling the Spotify
-      [Get Playlist Items](https://developer.spotify.com/documentation/web-api/reference/get-playlists-tracks) endpoint.
+- [x] `PlaylistService.cs` => Fix performance issue with updating large playlists
 - [ ] Add `.devcontainer`
 - [ ] Documentation/visualisations
 - SQLite
