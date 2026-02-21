@@ -5,7 +5,9 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
+using Playlister.RefitClients;
 using Playlister.Repositories;
+using Playlister.Tests.Integration.Mocks;
 using Playlister.Tests.Integration.Utilities;
 
 namespace Playlister.Tests.Integration;
@@ -18,6 +20,11 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
     ///     Whether to seed the test database with sample data.
     /// </summary>
     public bool SeedDatabase { get; set; }
+
+    /// <summary>
+    ///     Whether to use mock Spotify API. Default is true.
+    /// </summary>
+    public bool UseMockSpotifyApi { get; set; } = true;
 
     protected override void ConfigureWebHost( IWebHostBuilder builder ) {
         // Set Environment
@@ -44,6 +51,22 @@ public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<TProg
 
         builder.ConfigureAppConfiguration( configBuilder => configBuilder.AddConfiguration( configuration ) )
             .ConfigureTestServices( services => {
+                // Replace the Spotify API clients with mocks if enabled
+                if ( UseMockSpotifyApi ) {
+                    // Remove existing Refit client registrations
+                    var descriptorsToRemove = services
+                        .Where( d => d.ServiceType == typeof( ISpotifyApi ) || d.ServiceType == typeof( ISpotifyAccountsApi ) )
+                        .ToList( );
+
+                    foreach ( var descriptor in descriptorsToRemove ) {
+                        services.Remove( descriptor );
+                    }
+
+                    // Add mock implementations
+                    services.AddSingleton<ISpotifyApi>( new MockSpotifyApiProvider( ) );
+                    services.AddSingleton<ISpotifyAccountsApi>( new MockSpotifyAccountsApi( ) );
+                }
+
                 // Keep a shared connection open to maintain the in-memory database
                 ServiceProvider sp = services.BuildServiceProvider( );
                 IConnectionFactory factory = sp.GetRequiredService<IConnectionFactory>( );
